@@ -2,9 +2,11 @@
 #define _LOTTERYSAMPLING_H_
 
 #include "../Algorithm.h"
+#include "../../InputParser.h"
 
-class LotterySampling {
-
+class LotterySampling : public Algorithm {
+public:
+    LotterySampling(const InputParser& parameters);
 };
 
 

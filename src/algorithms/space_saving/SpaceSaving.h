@@ -2,9 +2,11 @@
 #define _SPACESAVING_H_
 
 #include "../Algorithm.h"
+#include "../../InputParser.h"
 
-class SpaceSaving {
-
+class SpaceSaving : public Algorithm{
+public:
+    SpaceSaving(const InputParser& parameters);
 };
 
 
