@@ -21,3 +21,16 @@ void Stats::finish_counting(counter& counter) {
     auto duration = duration_cast<microseconds>(end_time - start_time).count();
     counter += duration;
 }
+
+void Stats::report(std::ostream& stream) {
+    // Python string format to build a dictionary
+    stream << "\"{";
+    stream << "'frequent_query_time' : " << frequent_query_time << ",";
+    stream << "'frequent_query_count' : " << frequent_query_count << ",";
+    stream << "'k_top_query_time' : " << k_top_query_time << ",";
+    stream << "'k_top_query_count' : " << k_top_query_count << ",";
+    stream << "'process_element_time' : " << process_element_time << ",";
+    stream << "'process_element_count' : " << process_element_count << "}\"";
+    stream << std::endl;
+}
+

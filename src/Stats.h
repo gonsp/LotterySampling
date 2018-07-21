@@ -2,6 +2,7 @@
 #define _Stats_H_
 
 #include <chrono>
+#include <ostream>
 
 typedef unsigned long long int counter;
 
@@ -25,6 +26,7 @@ public:
 
     void finish_counting(counter& counter);
 
+    void report(std::ostream& stream);
 };
 
 
