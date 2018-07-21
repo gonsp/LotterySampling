@@ -2,16 +2,16 @@
 #define _ALGORITHM_H_
 
 #include <ostream>
+#include "Stats.h"
 
 class Algorithm {
 
 public:
-    void frequent_query(std::ostream& stream);
+    virtual void frequent_query(std::ostream& stream) = 0;
 
-    void k_top_query(std::ostream& stream);
+    virtual void k_top_query(std::ostream& stream) = 0;
 
-    void process_element(std::string element);
-
+    virtual void process_element(std::string element) = 0;
 };
 
 #endif //_ALGORITHM_H_
