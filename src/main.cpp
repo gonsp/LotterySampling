@@ -18,6 +18,7 @@ int main(int num_args, char* args[]) {
         algorithm = new SpaceSaving(params);
     }
 
+    Stats stats;
     string s;
     while(cin >> s) {
         if(s == "q") { // It's a query over the sampled elements
@@ -25,14 +26,20 @@ int main(int num_args, char* args[]) {
             if(s == "f") { // "More frequent than f" query
                 float f;
                 cin >> f;
+                stats.start_counting(stats.frequent_query_count);
                 algorithm->frequent_query(cout);
+                stats.finish_counting(stats.frequent_query_time);
             } else if(s == "k") { // k-top frequent elements query
                 int k;
                 cin >> k;
+                stats.start_counting(stats.k_top_query_count);
                 algorithm->k_top_query(cout);
+                stats.finish_counting(stats.k_top_query_time);
             }
         } else { // It's a new element in the data stream
+            stats.start_counting(stats.process_element_count);
             algorithm->process_element(s);
+            stats.start_counting(stats.process_element_time);
         }
     }
 
