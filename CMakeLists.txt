@@ -19,17 +19,20 @@ set(SOURCE_FILES
         src/InputParser.h
         src/InputParser.cpp
         src/algorithms/Algorithm.h
-        src/algorithms/Algorithm.cpp
         src/algorithms/lottery_sampling/LotterySampling.h
         src/algorithms/lottery_sampling/LotterySampling.cpp
         src/algorithms/space_saving/SpaceSaving.h
         src/algorithms/space_saving/SpaceSaving.cpp
+        src/Stats.h
+        src/Stats.cpp
         )
+
 
 
 ###################################################
 # Executable
 add_executable(k-hitting ${SOURCE_FILES})
+target_include_directories(k-hitting PUBLIC src)
 
 
 
