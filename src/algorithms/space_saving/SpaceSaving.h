@@ -12,9 +12,11 @@ class SpaceSaving : public Algorithm{
 private:
 
     struct Element {
+        std::string id;
         int over_estimation;
 
-        Element(int over_estimation) {
+        Element(std::string id, int over_estimation) {
+            this->id = id;
             this->over_estimation = over_estimation;
         }
     };
