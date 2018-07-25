@@ -1,17 +1,19 @@
 #include "SpaceSaving.h"
+#include <iostream>
+using namespace std;
 
 SpaceSaving::SpaceSaving(const InputParser& parameters) {
-    m = stoi(parameters.get_parameter("-m"));
+    m = (unsigned  int) stoul(parameters.get_parameter("-m"));
     // TODO experiment with different max_load_factor
     monitored_elements.max_load_factor(1);
     monitored_elements.reserve(m);
 }
 
-void SpaceSaving::frequent_query(std::ostream& stream) {
+void SpaceSaving::frequent_query(ostream& stream) {
 
 }
 
-void SpaceSaving::k_top_query(std::ostream& stream) {
+void SpaceSaving::k_top_query(ostream& stream) {
 
 }
 
@@ -31,7 +33,7 @@ void SpaceSaving::increment_counter(ElementLocator& locator) {
     locator.element_iterator = prev(locator.bucket_iterator->elements.end());
 }
 
-void SpaceSaving::process_element(std::string& element_id) {
+void SpaceSaving::process_element(string& element_id) {
     MonitoredElements::iterator it = monitored_elements.find(element_id);
     if(it == monitored_elements.end()) { // element wasn't being sampled
         ElementLocator locator;
@@ -46,7 +48,7 @@ void SpaceSaving::process_element(std::string& element_id) {
         } else { // Max number of monitored elements is reached. This new one will replace the one with less hits
             locator.bucket_iterator = prev(stream_summary.end());
             locator.element_iterator = locator.bucket_iterator->elements.begin(); // We select the oldest element with less hits
-            std::string removed_id = locator.element_iterator->id;
+            string removed_id = locator.element_iterator->id;
             monitored_elements.erase(removed_id);
 
             // Replacing the old element
@@ -59,4 +61,19 @@ void SpaceSaving::process_element(std::string& element_id) {
     } else { // element was being sampled
         increment_counter(it->second);
     }
+}
+
+void SpaceSaving::print_state() {
+    int n_elements = 0;
+    for(auto i = stream_summary.begin(); i != stream_summary.end(); ++i) {
+        cout << "-----------------------" << endl;
+        cout << "%%%%%% " << i->count << " %%%%%%" << endl;
+        for(auto j = i->elements.begin(); j != i->elements.end(); ++j) {
+            cout << j->id << ", " << j->over_estimation << endl;
+            assert(i == monitored_elements[j->id].bucket_iterator);
+            assert(j == monitored_elements[j->id].element_iterator);
+            ++n_elements;
+        }
+    }
+    assert(n_elements == monitored_elements.size());
 }

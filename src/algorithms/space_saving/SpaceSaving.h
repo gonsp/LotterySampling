@@ -41,7 +41,7 @@ private:
 
     StreamSummary stream_summary;
     MonitoredElements monitored_elements;
-    int m;
+    unsigned int m;
 
     void increment_counter(ElementLocator& locator);
 
@@ -53,6 +53,8 @@ public:
     void k_top_query(std::ostream& stream) override;
 
     void process_element(std::string& element_id) override;
+
+    void print_state() override;
 };
 
 
