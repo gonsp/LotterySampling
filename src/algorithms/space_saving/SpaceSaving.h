@@ -45,14 +45,14 @@ private:
 
     void increment_counter(ElementLocator& locator);
 
+    void process_element(std::string& element_id) override;
+
 public:
     SpaceSaving(const InputParser& parameters);
 
-    void frequent_query(std::ostream& stream) override;
+    void frequent_query(float f, std::ostream& stream) override;
 
-    void k_top_query(std::ostream& stream) override;
-
-    void process_element(std::string& element_id) override;
+    void k_top_query(int k, std::ostream& stream) override;
 
     void print_state() override;
 };

@@ -9,12 +9,23 @@ SpaceSaving::SpaceSaving(const InputParser& parameters) {
     monitored_elements.reserve(m);
 }
 
-void SpaceSaving::frequent_query(ostream& stream) {
-
+void SpaceSaving::frequent_query(float f, ostream& stream) {
+    for(auto i = stream_summary.begin(); i != stream_summary.end() && i->count >= f*N; ++i) {
+        for(auto j = i->elements.begin(); j != i->elements.end(); ++j) {
+            stream << j->id << " " << i->count / (float) N << endl;
+        }
+    }
 }
 
-void SpaceSaving::k_top_query(ostream& stream) {
-
+void SpaceSaving::k_top_query(int k, std::ostream& stream) {
+    for(auto i = stream_summary.begin(); i != stream_summary.end(); ++i) {
+        for(auto j = i->elements.begin(); j != i->elements.end(); ++j) {
+            if(k-- <= 0) {
+                return;
+            }
+            stream << j->id << " " << i->count / (float) N << endl;
+        }
+    }
 }
 
 void SpaceSaving::increment_counter(ElementLocator& locator) {

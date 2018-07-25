@@ -4,11 +4,11 @@ LotterySampling::LotterySampling(const InputParser& parameters) {
 
 }
 
-void LotterySampling::frequent_query(std::ostream& stream) {
+void LotterySampling::frequent_query(float f, std::ostream& stream) {
 
 }
 
-void LotterySampling::k_top_query(std::ostream& stream) {
+void LotterySampling::k_top_query(int k, std::ostream& stream) {
 
 }
 

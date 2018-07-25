@@ -6,14 +6,24 @@
 
 class Algorithm {
 
-public:
-    virtual void frequent_query(std::ostream& stream) = 0;
+protected:
 
-    virtual void k_top_query(std::ostream& stream) = 0;
+    int N = 0;
 
     virtual void process_element(std::string& element_id) = 0;
 
+public:
+    virtual void frequent_query(float f, std::ostream& stream) = 0;
+
+    virtual void k_top_query(int k, std::ostream& stream) = 0;
+
+    void register_element(std::string& element_id) {
+        N++;
+        process_element(element_id);
+    }
+
     virtual void print_state() = 0; // For debugging purposes
 };
+
 
 #endif //_ALGORITHM_H_
