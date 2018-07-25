@@ -20,10 +20,10 @@ void SpaceSaving::process_element(std::string& element_id) {
                 stream_summary.push_back(Bucket(1));
             }
             ElementLocator locator;
-            locator.bucket_iterator = stream_summary.end()--;
+            locator.bucket_iterator = --stream_summary.end();
             locator.bucket_iterator->elements.emplace_back(0);
-            locator.element_iterator = locator.bucket_iterator->elements.end()--;
-            monitored_elements[id] = locator;
+            locator.element_iterator = --locator.bucket_iterator->elements.end();
+            monitored_elements[element_id] = locator;
         } else { // Max number of monitored elements is reached. This new one will replace the one with less hits
 
         }
@@ -42,6 +42,6 @@ void SpaceSaving::process_element(std::string& element_id) {
             stream_summary.erase(aux_it);
         }
         locator.bucket_iterator->elements.push_back(element);
-        locator.element_iterator = locator.bucket_iterator->elements.end()--;
+        locator.element_iterator = --locator.bucket_iterator->elements.end();
     }
 }
