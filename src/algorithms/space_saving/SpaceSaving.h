@@ -41,8 +41,9 @@ private:
 
     StreamSummary stream_summary;
     MonitoredElements monitored_elements;
-
     int m;
+
+    void increment_counter(ElementLocator& locator);
 
 public:
     SpaceSaving(const InputParser& parameters);
