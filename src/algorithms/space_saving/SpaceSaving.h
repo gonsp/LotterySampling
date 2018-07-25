@@ -49,7 +49,7 @@ public:
 
     void k_top_query(std::ostream& stream) override;
 
-    void process_element(std::string element) override;
+    void process_element(std::string& element_id) override;
 };
 
 

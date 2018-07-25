@@ -12,6 +12,6 @@ void LotterySampling::k_top_query(std::ostream& stream) {
 
 }
 
-void LotterySampling::process_element(std::string element) {
+void LotterySampling::process_element(std::string& element_id) {
 
 }

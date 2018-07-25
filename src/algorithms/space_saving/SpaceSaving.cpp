@@ -12,8 +12,8 @@ void SpaceSaving::k_top_query(std::ostream& stream) {
 
 }
 
-void SpaceSaving::process_element(std::string id) {
-    MonitoredElements::iterator it = monitored_elements.find(id);
+void SpaceSaving::process_element(std::string& element_id) {
+    MonitoredElements::iterator it = monitored_elements.find(element_id);
     if(it == monitored_elements.end()) { // element wasn't being sampled
         if(monitored_elements.size() < m) {
             if(stream_summary.empty()) { // There were no sampled elements

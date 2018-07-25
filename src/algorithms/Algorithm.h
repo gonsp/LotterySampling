@@ -11,7 +11,7 @@ public:
 
     virtual void k_top_query(std::ostream& stream) = 0;
 
-    virtual void process_element(std::string element) = 0;
+    virtual void process_element(std::string& element_id) = 0;
 };
 
 #endif //_ALGORITHM_H_
