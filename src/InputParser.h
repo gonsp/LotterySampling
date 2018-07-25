@@ -9,7 +9,7 @@ class InputParser {
 private:
     std::map<std::string, std::string> parameters;
 
-    void error();
+    void error() const;
 
 public:
     InputParser(int num_args, char* args[]);
