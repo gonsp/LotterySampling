@@ -31,6 +31,10 @@ typedef std::list<Bucket> StreamSummary;
 struct ElementLocator {
     StreamSummary::iterator bucket_iterator;
     std::list<Element>::iterator element_iterator;
+
+    bool is_valid() {
+        return true;
+    }
 };
 
 

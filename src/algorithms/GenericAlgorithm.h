@@ -47,7 +47,10 @@ public:
         ++N;
         typename MonitoredElements::iterator it = monitored_elements.find(element_id);
         if(it == monitored_elements.end()) { // element wasn't being sampled
-            monitored_elements[element_id] = insert_element(element_id);
+            ElementLocator locator = insert_element(element_id);
+            if(locator.is_valid()) {
+                monitored_elements[element_id] = locator;
+            }
         } else { // element was being sampled
             update_element(it->second);
         }

@@ -29,7 +29,11 @@ typedef std::multiset<Element> StreamSummary;
 
 struct ElementLocator {
     StreamSummary::iterator element_iterator;
-    bool is_level_1;
+    int level;
+
+    bool is_valid() {
+        return level != -1;
+    }
 };
 
 

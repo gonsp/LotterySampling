@@ -20,16 +20,17 @@ ElementLocator Algorithm::insert_element(std::string& element_id) {
     Ticket ticket;
     if(size() < m) {
         locator.element_iterator = level_1.emplace(element_id, ticket, 1);
-        locator.is_level_1 = true;
+        locator.level = 1;
     } else {
         if(ticket > level_1.begin()->ticket) {
             locator.element_iterator = level_1.emplace(element_id, ticket, 1);
-            locator.is_level_1 = true;
+            locator.level = 1;
             // continue
         } else if(ticket > level_2.begin()->ticket) {
-            locator.is_level_1 = false;
+            locator.level = 2;
             // continue
         } else {
+            locator.level = -1;
             // continue
         }
     }
