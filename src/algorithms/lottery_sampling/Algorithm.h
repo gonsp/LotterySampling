@@ -8,16 +8,19 @@
 namespace LotterySampling {
 
 
-class Algorithm : public GenericAlgorithm<int> {
+class Algorithm : public GenericAlgorithm<ElementLocator> {
 
 private:
 
-    StreamSummary s1;
-    StreamSummary s2;
+    StreamSummary level_1;
+    StreamSummary level_2;
 
-    int insert_element(std::string& element_id) override;
+    unsigned int m;
+    bool aging;
 
-    void update_element(int& locator) override;
+    ElementLocator insert_element(std::string& element_id) override;
+
+    void update_element(ElementLocator& locator) override;
 
 public:
     Algorithm(const InputParser& parameters);

@@ -7,12 +7,14 @@
 namespace LotterySampling {
 
 
+typedef uint64_t Ticket;
+
 struct Element {
     std::string id;
-    uint64_t ticket;
+    Ticket ticket;
     int freq;
 
-    Element(std::string id, uint64_t ticket, int freq) {
+    Element(std::string id, Ticket ticket, int freq) {
         this->id = id;
         this->ticket = ticket;
         this->freq = freq;
@@ -24,6 +26,11 @@ struct Element {
 };
 
 typedef std::multiset<Element> StreamSummary;
+
+struct ElementLocator {
+    StreamSummary::iterator element_iterator;
+    bool is_level_1;
+};
 
 
 }
