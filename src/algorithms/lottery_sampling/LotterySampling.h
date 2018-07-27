@@ -3,6 +3,7 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "InputParser.h"
+#include "Types.h"
 
 namespace LotterySampling {
 
@@ -10,6 +11,10 @@ namespace LotterySampling {
 class Algorithm : public GenericAlgorithm<int> {
 
 private:
+
+    StreamSummary s1;
+    StreamSummary s2;
+
     int insert_element(std::string& element_id) override;
 
     void update_element(int& locator) override;
