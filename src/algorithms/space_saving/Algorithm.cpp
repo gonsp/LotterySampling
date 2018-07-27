@@ -1,4 +1,4 @@
-#include "SpaceSaving.h"
+#include "Algorithm.h"
 #include <iostream>
 
 using namespace SpaceSaving;

@@ -1,5 +1,5 @@
-#ifndef _Types_H_
-#define _Types_H_
+#ifndef _Types_SpaceSaving_H_
+#define _Types_SpaceSaving_H_
 
 #include <list>
 #include <string>
@@ -36,4 +36,4 @@ struct ElementLocator {
 
 }
 
-#endif //_Types_H_
+#endif //_Types_SpaceSaving_H_

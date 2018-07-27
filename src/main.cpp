@@ -1,7 +1,7 @@
 #include "InputParser.h"
 #include "algorithms/GenericAlgorithm.h"
-#include "algorithms/lottery_sampling/LotterySampling.h"
-#include "algorithms/space_saving/SpaceSaving.h"
+#include "algorithms/lottery_sampling/Algorithm.h"
+#include "algorithms/space_saving/Algorithm.h"
 #include <iostream>
 #include <string>
 

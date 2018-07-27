@@ -1,5 +1,5 @@
-#ifndef _Types_H_
-#define _Types_H_
+#ifndef _Types_LotterySampling_H_
+#define _Types_LotterySampling_H_
 
 #include <string>
 #include <set>
@@ -28,4 +28,4 @@ typedef std::multiset<Element> StreamSummary;
 
 }
 
-#endif //_Types_H_
+#endif //_Types_LotterySampling_H_

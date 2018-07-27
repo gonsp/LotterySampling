@@ -1,4 +1,4 @@
-#include "LotterySampling.h"
+#include "Algorithm.h"
 
 using namespace LotterySampling;
 
