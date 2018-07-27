@@ -15,16 +15,17 @@ set(CMAKE_CXX_FLAGS_RELEASEWITHASSERTS "-Wall -O3")
 ###################################################
 # Source files
 set(SOURCE_FILES
-        src/main.cpp
+        src/Main.cpp
         src/InputParser.h
         src/InputParser.cpp
+        src/Stats.h
+        src/Stats.cpp
         src/algorithms/GenericAlgorithm.h
         src/algorithms/lottery_sampling/LotterySampling.h
         src/algorithms/lottery_sampling/LotterySampling.cpp
         src/algorithms/space_saving/SpaceSaving.h
         src/algorithms/space_saving/SpaceSaving.cpp
-        src/Stats.h
-        src/Stats.cpp
+        src/algorithms/space_saving/Types.h
         )
 
 

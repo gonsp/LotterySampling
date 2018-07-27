@@ -3,37 +3,11 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "InputParser.h"
+#include "Types.h"
 #include <string>
-#include <list>
+
 
 namespace SpaceSaving {
-
-
-struct Element {
-    std::string id;
-    int over_estimation;
-
-    Element(std::string id, int over_estimation) {
-        this->id = id;
-        this->over_estimation = over_estimation;
-    }
-};
-
-struct Bucket {
-    int count;
-    std::list<Element> elements;
-
-    Bucket(int count) {
-        this->count = count;
-    }
-};
-
-typedef std::list<Bucket> StreamSummary;
-
-struct ElementLocator {
-    StreamSummary::iterator bucket_iterator;
-    std::list<Element>::iterator element_iterator;
-};
 
 
 class Algorithm : public GenericAlgorithm<ElementLocator> {
