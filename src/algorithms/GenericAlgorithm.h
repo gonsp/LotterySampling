@@ -33,6 +33,14 @@ protected:
 
     virtual void update_element(ElementLocator& locator) = 0;
 
+    int size() {
+        return (int) (monitored_elements.size());
+    }
+
+    void remove_element(std::string& element_id) {
+        monitored_elements.erase(element_id);
+    }
+
 public:
 
     void process_element(std::string& element_id) override {
