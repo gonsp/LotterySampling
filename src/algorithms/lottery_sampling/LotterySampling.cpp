@@ -1,20 +1,26 @@
 #include "LotterySampling.h"
 
-LotterySampling::LotterySampling(const InputParser& parameters) {
+using namespace LotterySampling;
+
+Algorithm::Algorithm(const InputParser& parameters) {
 
 }
 
-void LotterySampling::frequent_query(float f, std::ostream& stream) {
+void Algorithm::frequent_query(float f, std::ostream& stream) {
 
 }
 
-void LotterySampling::k_top_query(int k, std::ostream& stream) {
+void Algorithm::k_top_query(int k, std::ostream& stream) {
 
 }
 
-void LotterySampling::process_element(std::string& element_id) {
+int Algorithm::insert_element(std::string& element_id) {
+    return 0;
+}
+
+void Algorithm::update_element(int& locator) {
 
 }
 
-void LotterySampling::print_state() {
+void Algorithm::print_state() {
 }

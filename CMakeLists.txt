@@ -18,7 +18,7 @@ set(SOURCE_FILES
         src/main.cpp
         src/InputParser.h
         src/InputParser.cpp
-        src/algorithms/Algorithm.h
+        src/algorithms/GenericAlgorithm.h
         src/algorithms/lottery_sampling/LotterySampling.h
         src/algorithms/lottery_sampling/LotterySampling.cpp
         src/algorithms/space_saving/SpaceSaving.h

@@ -1,16 +1,21 @@
 #ifndef _LOTTERYSAMPLING_H_
 #define _LOTTERYSAMPLING_H_
 
-#include "algorithms/Algorithm.h"
+#include "algorithms/GenericAlgorithm.h"
 #include "InputParser.h"
 
-class LotterySampling : public Algorithm {
+namespace LotterySampling {
+
+
+class Algorithm : public GenericAlgorithm<int> {
 
 private:
-    void process_element(std::string& element_id) override;
+    int insert_element(std::string& element_id) override;
+
+    void update_element(int& locator) override;
 
 public:
-    LotterySampling(const InputParser& parameters);
+    Algorithm(const InputParser& parameters);
 
     void frequent_query(float f, std::ostream& stream) override;
 
@@ -19,5 +24,7 @@ public:
     void print_state() override;
 };
 
+
+}
 
 #endif //_LOTTERYSAMPLING_H_

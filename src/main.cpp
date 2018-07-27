@@ -1,5 +1,5 @@
 #include "InputParser.h"
-#include "algorithms/Algorithm.h"
+#include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling/LotterySampling.h"
 #include "algorithms/space_saving/SpaceSaving.h"
 #include <iostream>
@@ -11,11 +11,11 @@ int main(int num_args, char* args[]) {
 
     InputParser params(num_args, args);
 
-    Algorithm* algorithm;
+    GenericAlgorithmInterface* algorithm;
     if(!params.has_parameter("-a") || params.get_parameter("-a") == "lottery_sampling") {
-        algorithm = new LotterySampling(params);
+        algorithm = new LotterySampling::Algorithm(params);
     } else if(params.get_parameter("-a") == "space_saving") {
-        algorithm = new SpaceSaving(params);
+        algorithm = new SpaceSaving::Algorithm(params);
     }
 
     Stats stats;
@@ -42,7 +42,7 @@ int main(int num_args, char* args[]) {
             algorithm->print_state();
         } else { // It's a new element in the data stream
             stats.start_counting(stats.process_element_count);
-            algorithm->register_element(s);
+            algorithm->process_element(s);
             stats.start_counting(stats.process_element_time);
         }
     }
