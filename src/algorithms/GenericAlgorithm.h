@@ -22,11 +22,10 @@ public:
 template <class ElementLocator>
 class GenericAlgorithm : public GenericAlgorithmInterface {
 
-private:
+protected:
+
     typedef std::unordered_map<std::string, ElementLocator> MonitoredElements;
     MonitoredElements monitored_elements;
-
-protected:
 
     int N = 0;
 
