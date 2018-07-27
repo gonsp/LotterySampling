@@ -16,6 +16,8 @@ int main(int num_args, char* args[]) {
         algorithm = new LotterySampling::Algorithm(params);
     } else if(params.get_parameter("-a") == "space_saving") {
         algorithm = new SpaceSaving::Algorithm(params);
+    } else {
+        params.error();
     }
 
     Stats stats;
