@@ -22,10 +22,11 @@ public:
 template <class ElementLocator>
 class GenericAlgorithm : public GenericAlgorithmInterface {
 
-protected:
-
+private:
     typedef std::unordered_map<std::string, ElementLocator> MonitoredElements;
     MonitoredElements monitored_elements;
+
+protected:
 
     int N = 0;
 
@@ -39,6 +40,10 @@ protected:
 
     void remove_element(std::string& element_id) {
         monitored_elements.erase(element_id);
+    }
+
+    ElementLocator& get_locator(std::string& element_id) {
+        return monitored_elements[element_id];
     }
 
 public:
