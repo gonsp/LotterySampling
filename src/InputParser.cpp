@@ -6,15 +6,18 @@ using namespace std;
 
 InputParser::InputParser(int num_args, char** args) {
 
-    if((num_args-1) % 2 != 0) {
-        error();
-    }
-
-    for(int i = 1; i < num_args; i += 2) {
+    int i = 1;
+    while(i < num_args) {
         if(args[i][0] != '-') {
             error();
         }
-        parameters.insert(pair<string, string>(args[i], args[i+1]));
+        if(i < num_args - 1 && args[i+1][0] != '-') {
+            parameters.emplace(args[i], args[i+1]);
+            ++i;
+        } else {
+            parameters.emplace(args[i], "");
+        }
+        ++i;
     }
 }
 
