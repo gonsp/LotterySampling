@@ -22,6 +22,8 @@ private:
 
     void update_element(ElementLocator& locator) override;
 
+    Ticket generate_ticket() const;
+
 public:
     Algorithm(const InputParser& parameters);
 
