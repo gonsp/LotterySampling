@@ -4,6 +4,7 @@
 #include "algorithms/GenericAlgorithm.h"
 #include "InputParser.h"
 #include "Types.h"
+#include <random>
 
 namespace LotterySampling {
 
@@ -18,11 +19,15 @@ private:
     unsigned int m;
     bool aging;
 
+    int seed;
+    std::mt19937_64 rng;
+    std::uniform_int_distribution<Ticket> dist;
+
     ElementLocator insert_element(std::string& element_id) override;
 
     void update_element(ElementLocator& locator) override;
 
-    Ticket generate_ticket() const;
+    Ticket generate_ticket();
 
     void free_up_level_1();
 

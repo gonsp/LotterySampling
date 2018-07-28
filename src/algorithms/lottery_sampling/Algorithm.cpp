@@ -6,6 +6,17 @@ using namespace std;
 Algorithm::Algorithm(const InputParser& parameters) {
     m = (unsigned  int) stoul(parameters.get_parameter("-m"));
     aging = parameters.has_parameter("-aging");
+    if(parameters.has_parameter("-seed")) {
+        seed = stoi(parameters.get_parameter("-seed"));
+    } else {
+        seed = random_device()();
+    }
+    rng = mt19937_64(seed);
+    if(aging) {
+        // If aging is used, then the range of the tickets is decreased
+        // in half to avoid overflows.
+        dist = uniform_int_distribution<Ticket>(0, static_cast<unsigned long long int>(numeric_limits<int64_t>::max()) - 1);
+    }
 }
 
 void Algorithm::frequent_query(float f, std::ostream& stream) {
@@ -45,7 +56,7 @@ ElementLocator Algorithm::insert_element(std::string& element_id) {
             locator.element_iterator = level_1.emplace(element_id, ticket, 1);
             locator.level = 1;
         } else if(ticket > level_2.begin()->ticket) {
-            free_up_level_2()
+            free_up_level_2();
 
             locator.element_iterator = level_2.emplace(element_id, ticket, 1);
             locator.level = 2;
@@ -76,8 +87,8 @@ void Algorithm::update_element(ElementLocator& locator) {
     }
 }
 
-Ticket Algorithm::generate_ticket() const {
-    Ticket ticket = 0; // TODO implement this
+Ticket Algorithm::generate_ticket() {
+    Ticket ticket = dist(rng);
     if(aging) {
         ticket += N;
     }
