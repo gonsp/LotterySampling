@@ -16,7 +16,10 @@ Algorithm::Algorithm(const InputParser& parameters) {
     if(aging) {
         // If aging is used, then the range of the tickets is decreased
         // in half to avoid overflows.
-        dist = uniform_int_distribution<Ticket>(0, static_cast<unsigned long long int>(numeric_limits<int64_t>::max()) - 1);
+        MAX_TICKET = static_cast<unsigned long long int>(numeric_limits<int64_t>::max() - 1);
+        dist = uniform_int_distribution<Ticket>(0, MAX_TICKET);
+    } else {
+        MAX_TICKET = numeric_limits<uint64_t>::max();
     }
 }
 
@@ -51,15 +54,18 @@ ElementLocator Algorithm::insert_element(std::string& element_id) {
         locator.element_iterator = level_1.emplace(element_id, ticket, 1);
         locator.level = 1;
     } else {
+        unsigned int freq;
         if(ticket > level_1.begin()->ticket) {
             free_up_level_1();
 
-            locator.element_iterator = level_1.emplace(element_id, ticket, 1);
+            freq = estimate_frequency(level_1.begin()->ticket);
+            locator.element_iterator = level_1.emplace(element_id, ticket, freq);
             locator.level = 1;
         } else if(ticket > level_2.begin()->ticket) {
             free_up_level_2();
 
-            locator.element_iterator = level_2.emplace(element_id, ticket, 1);
+            freq = estimate_frequency(level_2.begin()->ticket);
+            locator.element_iterator = level_2.emplace(element_id, ticket, freq);
             locator.level = 2;
         } else {
             // New element didn't get a good enough ticket to get sampled, so it's discarded
@@ -94,6 +100,11 @@ Ticket Algorithm::generate_ticket() {
         ticket += N;
     }
     return ticket;
+}
+
+inline unsigned int Algorithm::estimate_frequency(Ticket min_ticket) const {
+    // TODO Protect from infinity
+    return static_cast<unsigned int>(1 / (1 - min_ticket / (double) MAX_TICKET));
 }
 
 void print_level(const StreamSummary& level) {

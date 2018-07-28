@@ -12,7 +12,7 @@ typedef uint64_t Ticket;
 struct Element {
     std::string id;
     Ticket ticket;
-    int freq;
+    unsigned int freq;
 
     Element(std::string id, Ticket ticket, int freq) {
         this->id = id;

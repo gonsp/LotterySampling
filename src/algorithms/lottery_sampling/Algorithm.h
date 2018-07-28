@@ -18,6 +18,7 @@ private:
 
     unsigned int m;
     bool aging;
+    Ticket MAX_TICKET;
 
     int seed;
     std::mt19937_64 rng;
@@ -28,6 +29,8 @@ private:
     void update_element(ElementLocator& locator) override;
 
     Ticket generate_ticket();
+
+    unsigned int estimate_frequency(Ticket min_ticket) const;
 
     void free_up_level_1();
 
