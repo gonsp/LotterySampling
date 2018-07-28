@@ -24,6 +24,10 @@ private:
 
     Ticket generate_ticket() const;
 
+    void free_up_level_1();
+
+    void free_up_level_2();
+
 public:
     Algorithm(const InputParser& parameters);
 
