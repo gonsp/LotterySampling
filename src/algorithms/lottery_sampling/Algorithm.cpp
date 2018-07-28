@@ -1,4 +1,5 @@
 #include "Algorithm.h"
+#include <iostream>
 
 using namespace LotterySampling;
 using namespace std;
@@ -95,5 +96,17 @@ Ticket Algorithm::generate_ticket() {
     return ticket;
 }
 
+void print_level(const StreamSummary& level) {
+    for(auto it = level.rbegin(); it != level.rend(); ++it) {
+        cout << it->id << ", " << it->ticket << ", " << it->freq << endl;
+    }
+}
+
 void Algorithm::print_state() {
+    cout << "-----------------------" << endl;
+    cout << "%%%%%% level_1 %%%%%%" << endl;
+    print_level(level_1);
+    cout << "-----------------------" << endl;
+    cout << "%%%%%% level_2 %%%%%%" << endl;
+    print_level(level_2);
 }
