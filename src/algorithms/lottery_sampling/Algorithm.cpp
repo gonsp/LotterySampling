@@ -42,9 +42,9 @@ void Algorithm::update_element(ElementLocator& locator) {
     const_cast<Element&>(*locator.element_iterator).freq++; // Casting needed because multiset::iterator is const
     Ticket old_ticket = locator.element_iterator->ticket;
     Ticket ticket = generate_ticket();
-    if(ticket > locator.element_iterator->ticket) { // The new ticket is better than the old one
-
-        if(old_ticket < level_1.begin()->ticket && ticket > level_1.begin()->ticket) {
+    if(ticket > old_ticket) { // The new ticket is better than the old one
+        Ticket level_1_threshold = level_1.begin()->ticket;
+        if(old_ticket < level_1_threshold && level_1_threshold < ticket) {
             // element is moving from level_2 to level_1, so we kick out the lowest ticket from level_1 to level_2
             Element replaced_element = *level_1.begin();
             level_1.erase(level_1.begin());
@@ -56,8 +56,8 @@ void Algorithm::update_element(ElementLocator& locator) {
         Element element = *locator.element_iterator;
         element.ticket = ticket; // Updating (the better) ticket
         (locator.level == 1 ? level_1 : level_2).erase(locator.element_iterator);
-        locator.element_iterator = (ticket > level_1.begin()->ticket ? level_1 : level_2).insert(element);
-        locator.level = (ticket > level_1.begin()->ticket ? 1 : 2);
+        locator.element_iterator = (ticket > level_1_threshold ? level_1 : level_2).insert(element);
+        locator.level = (ticket > level_1_threshold ? 1 : 2);
     }
 }
 
