@@ -38,6 +38,7 @@ int main(int num_args, char* args[]) {
                 algorithm->k_top_query(k, cout);
                 stats.finish_counting(stats.k_top_query_time);
             }
+            cout << ":end" << endl;
         } else if(s == ":s") {
             stats.report(cout);
         } else if(s == ":d") {
