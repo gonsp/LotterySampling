@@ -42,7 +42,7 @@ CMakeCache.txt
 .idea
 
 # Python
-test/__pycache__/
+__pycache__/
 
 # MACOS
 .DS_Store
