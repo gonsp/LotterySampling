@@ -41,5 +41,8 @@ CMakeCache.txt
 # IDE
 .idea
 
+# Python
+test/__pycache__/
+
 # MACOS
 .DS_Store
