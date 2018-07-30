@@ -4,10 +4,16 @@ class Stream():
 
     def __init__(self):
         self.N = 0
+        self.elements = {}
 
 
-    def next_element(self):
+    def next_element(self, element):
         self.N += 1
+        if element in self.elements:
+            self.elements[element] += 1
+        else:
+            self.elements[element] = 1
+        self.n = len(self.elements)
 
 
 class Zipf(Stream):
@@ -18,5 +24,6 @@ class Zipf(Stream):
 
 
     def next_element(self):
-        super().next_element()
-        return np.random.zipf(self.alpha)
+        element = np.random.zipf(self.alpha)
+        super().next_element(element)
+        return element
