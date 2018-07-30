@@ -5,7 +5,7 @@ class Stream():
     def __init__(self):
         self.N = 0
         self.elements = {}
-
+        # TODO consider AVL tree implementation for dict for O(k) queries https://pypi.org/project/bintrees/
 
     def next_element(self, element):
         self.N += 1

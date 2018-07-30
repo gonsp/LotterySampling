@@ -6,7 +6,7 @@ class Instance():
     def __init__(self, exec_path, params):
         command = [exec_path] + params.split()
         self.process = subprocess.Popen(command, bufsize=1, universal_newlines=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-
+        print(self.process.pid)
 
     def process_element(self, element):
         self.process.stdin.write(element + '\n')
@@ -42,6 +42,7 @@ class Instance():
     def get_stats(self):
         self.process.stdin.write(':s\n')
         output = self.process.stdout.readline()
+        # TODO add memory usage
         return ast.literal_eval(output)
 
 

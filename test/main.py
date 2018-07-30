@@ -7,7 +7,7 @@ import heapq
 
 def test(stream, instances):
 
-    for i in range(10000):
+    for i in range(100):
         element = stream.next_element()
         for instance in instances:
             instance.process_element(str(element))
@@ -18,6 +18,7 @@ def test(stream, instances):
         print(instance.k_top_query(k))
         print(instance.get_stats())
 
+    input()
     top_k_elements = [(element, stream.elements[element]/stream.N) for element in heapq.nlargest(k, stream.elements, key=stream.elements.get)]
 
     print(top_k_elements)
@@ -28,7 +29,7 @@ def main():
     stream_name = sys.argv[2]
 
     if stream_name == "zipf":
-        stream = streams.Zipf(2)
+        stream = streams.Zipf(1.5)
     else:
         exit(1)
 
