@@ -32,7 +32,7 @@ void Algorithm::k_top_query(int k, std::ostream& stream) {
 
 ElementLocator Algorithm::insert_element(std::string& element_id) {
     ElementLocator locator;
-    if(size() < m) {
+    if(sample_size() < m) {
         if(stream_summary.empty() || prev(stream_summary.end())->count != 1) {
             // There are no buckets or the smallest one has count greater than 1
             stream_summary.push_back(Bucket(1));
@@ -55,7 +55,7 @@ ElementLocator Algorithm::insert_element(std::string& element_id) {
     return locator;
 }
 
-void Algorithm::update_element(SpaceSaving::ElementLocator& locator) {
+void Algorithm::update_element(ElementLocator& locator) {
     increment_counter(locator);
 }
 
@@ -87,5 +87,5 @@ void Algorithm::print_state() {
             ++n_elements;
         }
     }
-    assert(n_elements == size());
+    assert(n_elements == sample_size());
 }

@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <ostream>
+#include <algorithms/GenericAlgorithm.h>
 
 typedef unsigned long long int counter;
 
@@ -26,7 +27,7 @@ public:
 
     void finish_counting(counter& counter);
 
-    void report(std::ostream& stream);
+    void report(std::ostream& stream, GenericAlgorithmInterface* algorithm);
 };
 
 

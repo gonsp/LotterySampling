@@ -3,7 +3,6 @@
 
 #include <ostream>
 #include <unordered_map>
-#include "Stats.h"
 
 // This interface is needed so it's possible to create a pointer
 // to a GenericAlgorithm, since GenericAlgorithm is a template class
@@ -14,6 +13,8 @@ public:
     virtual void k_top_query(int k, std::ostream& stream) = 0;
 
     virtual void process_element(std::string& element_id) = 0;
+
+    virtual unsigned int sample_size() = 0;
 
     virtual void print_state() = 0; // For debugging purposes
 };
@@ -32,10 +33,6 @@ protected:
     virtual ElementLocator insert_element(std::string& element_id) = 0;
 
     virtual void update_element(ElementLocator& locator) = 0;
-
-    int size() {
-        return (int) (monitored_elements.size());
-    }
 
     void remove_element(std::string& element_id) {
         monitored_elements.erase(element_id);
@@ -58,6 +55,10 @@ public:
         } else { // element was being sampled
             update_element(it->second);
         }
+    }
+
+    unsigned int sample_size() override {
+        return (int) (monitored_elements.size());
     }
 };
 

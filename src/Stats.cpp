@@ -1,3 +1,4 @@
+#include <algorithms/GenericAlgorithm.h>
 #include "Stats.h"
 
 using namespace std::chrono;
@@ -22,9 +23,10 @@ void Stats::finish_counting(counter& counter) {
     counter += duration;
 }
 
-void Stats::report(std::ostream& stream) {
+void Stats::report(std::ostream& stream, GenericAlgorithmInterface* algorithm) {
     // Python string format to build a dictionary
     stream << "{";
+    stream << "'sample_size' : " << algorithm->sample_size() << ",";
     stream << "'frequent_query_time' : " << frequent_query_time << ",";
     stream << "'frequent_query_count' : " << frequent_query_count << ",";
     stream << "'k_top_query_time' : " << k_top_query_time << ",";

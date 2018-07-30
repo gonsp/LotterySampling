@@ -50,7 +50,7 @@ void Algorithm::free_up_level_2() {
 ElementLocator Algorithm::insert_element(std::string& element_id) {
     ElementLocator locator;
     Ticket ticket = generate_ticket();
-    if(size() < m) {
+    if(sample_size() < m) {
         locator.element_iterator = level_1.emplace(element_id, ticket, 1);
         locator.level = 1;
     } else {

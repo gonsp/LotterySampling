@@ -1,4 +1,5 @@
 #include "InputParser.h"
+#include "Stats.h"
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling/Algorithm.h"
 #include "algorithms/space_saving/Algorithm.h"
@@ -40,7 +41,7 @@ int main(int num_args, char* args[]) {
             }
             cout << ":end" << endl;
         } else if(s == ":s") {
-            stats.report(cout);
+            stats.report(cout, algorithm);
         } else if(s == ":d") {
             algorithm->print_state();
         } else { // It's a new element in the data stream
