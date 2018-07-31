@@ -23,10 +23,11 @@ public:
 template <class ElementLocator>
 class GenericAlgorithm : public GenericAlgorithmInterface {
 
-protected:
-
+private:
     typedef std::unordered_map<std::string, ElementLocator> MonitoredElements;
     MonitoredElements monitored_elements;
+
+protected:
 
     int N = 0;
 
@@ -40,6 +41,12 @@ protected:
 
     ElementLocator& get_locator(std::string& element_id) {
         return monitored_elements[element_id];
+    }
+
+    void set_monitored_size(unsigned int m) {
+        // TODO experiment with different max_load_factor
+        monitored_elements.max_load_factor(1);
+        monitored_elements.reserve(m);
     }
 
 public:

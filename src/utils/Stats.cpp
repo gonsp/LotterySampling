@@ -28,7 +28,7 @@ void Stats::report(std::ostream& stream, GenericAlgorithmInterface* algorithm) {
     // Python string format to build a dictionary
     stream << "{";
     stream << "'sample_size' : " << algorithm->sample_size() << ",";
-    stream << "'memory_usage' : " << mstats().bytes_used << ",";
+    stream << "'memory_usage' : " << mstats().bytes_used/1024 << ",";
     stream << "'frequent_query_time' : " << frequent_query_time << ",";
     stream << "'frequent_query_count' : " << frequent_query_count << ",";
     stream << "'k_top_query_time' : " << k_top_query_time << ",";

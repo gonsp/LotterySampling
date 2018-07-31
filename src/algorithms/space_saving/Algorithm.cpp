@@ -6,9 +6,7 @@ using namespace std;
 
 Algorithm::Algorithm(const InputParser& parameters) {
     m = (unsigned  int) stoul(parameters.get_parameter("-m"));
-    // TODO experiment with different max_load_factor
-    monitored_elements.max_load_factor(1);
-    monitored_elements.reserve(m);
+    set_monitored_size(m);
 }
 
 void Algorithm::frequent_query(float f, ostream& stream) {

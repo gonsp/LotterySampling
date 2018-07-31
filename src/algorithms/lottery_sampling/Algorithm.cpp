@@ -8,6 +8,9 @@ Algorithm::Algorithm(const InputParser& parameters) {
     m = (unsigned  int) stoul(parameters.get_parameter("-m"));
     aging = parameters.has_parameter("-aging");
     multilevel = parameters.has_parameter("-multilevel");
+    if(multilevel) {
+        set_monitored_size(m);
+    }
     int seed;
     if(parameters.has_parameter("-seed")) {
         seed = stoi(parameters.get_parameter("-seed"));
