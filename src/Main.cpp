@@ -1,5 +1,5 @@
-#include "InputParser.h"
-#include "Stats.h"
+#include "utils/InputParser.h"
+#include "utils/Stats.h"
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling/Algorithm.h"
 #include "algorithms/space_saving/Algorithm.h"

@@ -2,7 +2,7 @@
 #define _LOTTERYSAMPLING_H_
 
 #include "algorithms/GenericAlgorithm.h"
-#include "InputParser.h"
+#include "utils/InputParser.h"
 #include "Types.h"
 #include <random>
 

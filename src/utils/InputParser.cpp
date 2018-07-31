@@ -31,6 +31,7 @@ const string InputParser::get_parameter(const string& parameter_name) const {
     } catch(std::out_of_range) {
         cerr << "Missing parameter: " << parameter_name << endl;
         error();
+        return "";
     }
 }
 
