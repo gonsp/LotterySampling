@@ -81,7 +81,7 @@ void Algorithm::update_element(ElementLocator& locator) {
     Ticket ticket = generate_ticket();
     if(ticket > old_ticket) { // The new ticket is better than the old one
         Ticket level_1_threshold = level_1.begin()->ticket;
-        if(old_ticket < level_1_threshold && level_1_threshold < ticket) {
+        if(locator.level == 2 && level_1_threshold < ticket) {
             // element is moving from level_2 to level_1, so we kick out the lowest ticket from level_1 to level_2
             free_up_level_1();
         }
