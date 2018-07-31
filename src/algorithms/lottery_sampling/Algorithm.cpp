@@ -61,7 +61,7 @@ ElementLocator Algorithm::insert_element(std::string& element_id) {
             freq = estimate_frequency(level_1.begin()->ticket);
             locator.element_iterator = level_1.emplace(element_id, ticket, freq);
             locator.level = 1;
-        } else if(ticket > level_2.begin()->ticket) {
+        } else if(!level_2.empty() && ticket > level_2.begin()->ticket) {
             free_up_level_2();
 
             freq = estimate_frequency(level_2.begin()->ticket);
