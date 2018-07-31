@@ -22,29 +22,33 @@ def test(stream, instances):
     top_k_elements = [(element, stream.elements[element]/stream.N) for element in heapq.nlargest(k, stream.elements, key=stream.elements.get)]
     print(top_k_elements)
 
-    print("n =", stream.n)
+    print('n =', stream.n)
     input()
+
 
 def main():
     exec_path = sys.argv[1]
     stream_name = sys.argv[2]
 
-    # seed = random.randrange(10000000)
-    seed = 5629943
-    print("Seed was:", seed)
+    seed = random.randrange(10000000)
+    print('Using seed:', seed)
     if stream_name == "zipf":
-        stream = streams.Zipf(2, seed)
+        stream = streams.Zipf(1.5, seed)
     else:
         exit(1)
 
-    m = 10
+    m = 10000
     instances = [
-        Instance(exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed 1 -aging'),
+        Instance(exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging'),
         Instance(exec_path, '-a space_saving -m ' + str(m))
     ]
 
+    for i, instance in enumerate(instances):
+        print('Instance', i, 'pid:', instance.pid)
+
+    print('Starting test')
     test(stream, instances)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
