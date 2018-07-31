@@ -4,8 +4,10 @@ class Stream():
 
     def __init__(self):
         self.N = 0
+        self.n = 0
         self.elements = {}
         # TODO consider AVL tree implementation for dict for O(k) queries https://pypi.org/project/bintrees/
+
 
     def next_element(self, element):
         self.N += 1
@@ -18,9 +20,10 @@ class Stream():
 
 class Zipf(Stream):
 
-    def __init__(self, alpha=1.5):
+    def __init__(self, alpha=1.5, seed=None):
         super().__init__()
         self.alpha = alpha
+        np.random.seed(seed)
 
 
     def next_element(self):
