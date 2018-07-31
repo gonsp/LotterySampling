@@ -35,38 +35,21 @@ protected:
 
     virtual void update_element(ElementLocator& locator) = 0;
 
-    void remove_element(std::string& element_id) {
-        monitored_elements.erase(element_id);
-    }
+    void remove_element(std::string& element_id);
 
-    ElementLocator& get_locator(std::string& element_id) {
-        return monitored_elements[element_id];
-    }
+    ElementLocator& get_locator(std::string& element_id);
 
-    void set_monitored_size(unsigned int m) {
-        // TODO experiment with different max_load_factor
-        monitored_elements.max_load_factor(1);
-        monitored_elements.reserve(m);
-    }
+    void set_monitored_size(unsigned int m);
 
 public:
 
-    void process_element(std::string& element_id) override {
-        ++N;
-        typename MonitoredElements::iterator it = monitored_elements.find(element_id);
-        if(it == monitored_elements.end()) { // element wasn't being sampled
-            ElementLocator locator = insert_element(element_id);
-            if(locator.is_valid()) {
-                monitored_elements[element_id] = locator;
-            }
-        } else { // element was being sampled
-            update_element(it->second);
-        }
-    }
+    void process_element(std::string& element_id) override;
 
-    unsigned int sample_size() override {
-        return (int) (monitored_elements.size());
-    }
+    unsigned int sample_size() override;
 };
+
+
+#include "GenericAlgorithm.cpp"
+
 
 #endif //_ALGORITHM_H_

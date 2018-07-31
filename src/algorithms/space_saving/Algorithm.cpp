@@ -80,8 +80,8 @@ void Algorithm::print_state() {
         cout << "%%%%%% " << i->count << " %%%%%%" << endl;
         for(auto j = i->elements.begin(); j != i->elements.end(); ++j) {
             cout << j->id << ", " << j->over_estimation << endl;
-            assert(i == monitored_elements[j->id].bucket_iterator);
-            assert(j == monitored_elements[j->id].element_iterator);
+            assert(i == get_locator(j->id).bucket_iterator);
+            assert(j == get_locator(j->id).element_iterator);
             ++n_elements;
         }
     }
