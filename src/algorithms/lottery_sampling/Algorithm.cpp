@@ -7,12 +7,14 @@ using namespace std;
 Algorithm::Algorithm(const InputParser& parameters) {
     m = (unsigned  int) stoul(parameters.get_parameter("-m"));
     aging = parameters.has_parameter("-aging");
+    multilevel = parameters.has_parameter("-multilevel");
+    int seed;
     if(parameters.has_parameter("-seed")) {
         seed = stoi(parameters.get_parameter("-seed"));
     } else {
         seed = random_device()();
     }
-    rng = mt19937_64(seed);
+    random_state = mt19937_64(seed);
     if(aging) {
         // If aging is used, then the range of the tickets is decreased
         // in half to avoid overflows.
@@ -32,12 +34,17 @@ void Algorithm::k_top_query(int k, std::ostream& stream) {
 }
 
 void Algorithm::free_up_level_1() {
-    // Element is kicked out from level 1 to level 2
     Element replaced_element = *level_1.begin();
     level_1.erase(level_1.begin());
-    ElementLocator& replaced_locator = get_locator(replaced_element.id);
-    replaced_locator.element_iterator = level_2.insert(replaced_element);
-    replaced_locator.level = 2;
+    if(multilevel) {
+        // Element is kicked out from level 1 to level 2
+        ElementLocator& replaced_locator = get_locator(replaced_element.id);
+        replaced_locator.element_iterator = level_2.insert(replaced_element);
+        replaced_locator.level = 2;
+    } else {
+        // Element is just removed since multilevel is not being used
+        remove_element(replaced_element.id);
+    }
 }
 
 void Algorithm::free_up_level_2() {
@@ -95,7 +102,7 @@ void Algorithm::update_element(ElementLocator& locator) {
 }
 
 Ticket Algorithm::generate_ticket() {
-    Ticket ticket = dist(rng);
+    Ticket ticket = dist(random_state);
     if(aging) {
         ticket += N;
     }
