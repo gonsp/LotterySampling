@@ -74,13 +74,13 @@ bool Algorithm::insert_element(std::string& element_id, ElementLocator& locator)
         level = 1;
     } else {
         if(ticket > (*level_1.begin())->ticket) {
-            free_up_level_1();
             freq = estimate_frequency((*level_1.begin())->ticket);
             level = 1;
+            free_up_level_1();
         } else if(!level_2.empty() && ticket > (*level_2.begin())->ticket) {
-            free_up_level_2();
             freq = estimate_frequency((*level_2.begin())->ticket);
             level = 2;
+            free_up_level_2();
         } else {
             // New element didn't get a good enough ticket to get sampled, so it's discarded
             level = -1;
