@@ -24,10 +24,10 @@ set(SOURCE_FILES
         src/algorithms/lottery_sampling/Algorithm.h
         src/algorithms/lottery_sampling/Algorithm.cpp
         src/algorithms/lottery_sampling/Types.h
+        src/algorithms/lottery_sampling/Types.cpp
         src/algorithms/space_saving/Algorithm.h
         src/algorithms/space_saving/Algorithm.cpp
-        src/algorithms/space_saving/Types.h
-        )
+        src/algorithms/space_saving/Types.h)
 
 
 

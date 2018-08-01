@@ -29,88 +29,101 @@ Algorithm::Algorithm(const InputParser& parameters) {
 }
 
 void Algorithm::frequent_query(float f, std::ostream& stream) {
-    for(auto it = level_1.rbegin(); it != level_1.rend() && it->freq >= f*N; ++it) {
-        stream << it->id << " " << it->freq / (float) N << endl;
+    for(auto it = level_1.rbegin(); it != level_1.rend() && (*it)->freq >= f*N; ++it) {
+        stream << (*it)->id << " " << (*it)->freq / (float) N << endl;
     }
-    for(auto it = level_2.rbegin(); it != level_2.rend() && it->freq >= f*N; ++it) {
-        stream << it->id << " " << it->freq / (float) N << endl;
+    for(auto it = level_2.rbegin(); it != level_2.rend() && (*it)->freq >= f*N; ++it) {
+        stream << (*it)->id << " " << (*it)->freq / (float) N << endl;
     }
 }
 
 void Algorithm::k_top_query(int k, std::ostream& stream) {
     for(auto it = level_1.rbegin(); it != level_1.rend() && k-- > 0; ++it) {
-        stream << it->id << " " << it->freq / (float) N << endl;
+        stream << (*it)->id << " " << (*it)->freq / (float) N << endl;
     }
     for(auto it = level_2.rbegin(); it != level_2.rend() && k-- > 0; ++it) {
-        stream << it->id << " " << it->freq / (float) N << endl;
+        stream << (*it)->id << " " << (*it)->freq / (float) N << endl;
     }
 }
 
 void Algorithm::free_up_level_1() {
-    Element replaced_element = *level_1.begin();
+    ElementLocator replaced_element_locator = *level_1.begin();
     level_1.erase(level_1.begin());
     if(multilevel) {
         // Element is kicked out from level 1 to level 2
-        ElementLocator& replaced_locator = get_locator(replaced_element.id);
-        replaced_locator.element_iterator = level_2.insert(replaced_element);
-        replaced_locator.level = 2;
+        replaced_element_locator->ticket_iterator = level_2.insert(replaced_element_locator);
+        replaced_element_locator->level = 2;
     } else {
         // Element is just removed since multilevel is not being used
-        remove_element(replaced_element.id);
+        frequency_order.erase(replaced_element_locator->frequency_iterator);
+        remove_element(replaced_element_locator->id);
     }
 }
 
 void Algorithm::free_up_level_2() {
     // Element is removed
-    string removed_id = level_2.begin()->id;
+    ElementLocator locator = *level_2.begin();
+    string removed_id = locator->id;
     level_2.erase(level_2.begin());
+    frequency_order.erase(locator->frequency_iterator);
     remove_element(removed_id);
 }
 
-ElementLocator Algorithm::insert_element(std::string& element_id) {
-    ElementLocator locator;
+bool Algorithm::insert_element(std::string& element_id, ElementLocator& locator) {
+
     Ticket ticket = generate_ticket();
+    unsigned int freq;
+    int level;
+
     if(sample_size() < m) {
-        locator.element_iterator = level_1.emplace(element_id, ticket, 1);
-        locator.level = 1;
+        freq = 1;
+        level = 1;
     } else {
-        unsigned int freq;
-        if(ticket > level_1.begin()->ticket) {
+        if(ticket > (*level_1.begin())->ticket) {
             free_up_level_1();
-
-            freq = estimate_frequency(level_1.begin()->ticket);
-            locator.element_iterator = level_1.emplace(element_id, ticket, freq);
-            locator.level = 1;
-        } else if(!level_2.empty() && ticket > level_2.begin()->ticket) {
+            freq = estimate_frequency((*level_1.begin())->ticket);
+            level = 1;
+        } else if(!level_2.empty() && ticket > (*level_2.begin())->ticket) {
             free_up_level_2();
-
-            freq = estimate_frequency(level_2.begin()->ticket);
-            locator.element_iterator = level_2.emplace(element_id, ticket, freq);
-            locator.level = 2;
+            freq = estimate_frequency((*level_2.begin())->ticket);
+            level = 2;
         } else {
             // New element didn't get a good enough ticket to get sampled, so it's discarded
-            locator.level = -1;
+            level = -1;
         }
     }
-    return locator;
+
+    if(level != -1) {
+        locator = make_shared<Element>(element_id, ticket, freq);
+        locator->ticket_iterator = (level == 1 ? level_1 : level_2).insert(locator);
+        locator->level = level;
+        locator->frequency_iterator = frequency_order.insert(locator);
+        return true;
+    }
+    return false;
 }
 
 void Algorithm::update_element(ElementLocator& locator) {
-    const_cast<Element&>(*locator.element_iterator).freq++; // Casting needed because multiset::iterator is const
-    Ticket old_ticket = locator.element_iterator->ticket;
+    // Updating frequency
+    // TODO use hint
+    frequency_order.erase(locator->frequency_iterator); // It's needed to remove and reinsert an element since there isn't an "update" method in multiset
+    locator->freq++;
+    locator->frequency_iterator = frequency_order.insert(locator);
+
+    // Updating ticket
+    Ticket old_ticket = locator->ticket;
     Ticket ticket = generate_ticket();
     if(ticket > old_ticket) { // The new ticket is better than the old one
-        Ticket level_1_threshold = level_1.begin()->ticket;
-        if(locator.level == 2 && level_1_threshold < ticket) {
+        Ticket level_1_threshold = (*level_1.begin())->ticket;
+        if(locator->level == 2 && level_1_threshold < ticket) {
             // element is moving from level_2 to level_1, so we kick out the lowest ticket from level_1 to level_2
             free_up_level_1();
         }
 
-        Element element = *locator.element_iterator;
-        element.ticket = ticket; // Updating (the better) ticket
-        (locator.level == 1 ? level_1 : level_2).erase(locator.element_iterator);
-        locator.element_iterator = (ticket > level_1_threshold ? level_1 : level_2).insert(element);
-        locator.level = (ticket > level_1_threshold ? 1 : 2);
+        (locator->level == 1 ? level_1 : level_2).erase(locator->ticket_iterator);
+        locator->ticket = ticket; // Updating (the better) ticket
+        locator->ticket_iterator = (ticket > level_1_threshold ? level_1 : level_2).insert(locator);
+        locator->level = (ticket > level_1_threshold ? 1 : 2);
     }
 }
 
@@ -127,9 +140,9 @@ inline unsigned int Algorithm::estimate_frequency(Ticket min_ticket) const {
     return static_cast<unsigned int>(1 / (1 - min_ticket / (double) MAX_TICKET));
 }
 
-void print_level(const StreamSummary& level) {
+void print_level(const TicketOrder& level) {
     for(auto it = level.rbegin(); it != level.rend(); ++it) {
-        cout << it->id << ", " << it->ticket << ", " << it->freq << endl;
+        cout << (*it)->id << ", " << (*it)->ticket << ", " << (*it)->freq << endl;
     }
 }
 

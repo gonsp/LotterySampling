@@ -13,8 +13,10 @@ class Algorithm : public GenericAlgorithm<ElementLocator> {
 
 private:
 
-    StreamSummary level_1;
-    StreamSummary level_2;
+    TicketOrder level_1;
+    TicketOrder level_2;
+
+    FrequencyOrder frequency_order;
 
     unsigned int m;
     bool aging;
