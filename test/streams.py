@@ -28,5 +28,6 @@ class Zipf(Stream):
 
     def next_element(self):
         element = np.random.zipf(self.alpha)
+        element = str(element)
         super().next_element(element)
         return element

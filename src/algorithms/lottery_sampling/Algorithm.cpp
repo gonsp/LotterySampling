@@ -29,19 +29,13 @@ Algorithm::Algorithm(const InputParser& parameters) {
 }
 
 void Algorithm::frequent_query(float f, std::ostream& stream) {
-    for(auto it = level_1.rbegin(); it != level_1.rend() && (*it)->freq >= f*N; ++it) {
-        stream << (*it)->id << " " << (*it)->freq / (float) N << endl;
-    }
-    for(auto it = level_2.rbegin(); it != level_2.rend() && (*it)->freq >= f*N; ++it) {
+    for(auto it = frequency_order.rbegin(); it != frequency_order.rend() && (*it)->freq >= f*N; ++it) {
         stream << (*it)->id << " " << (*it)->freq / (float) N << endl;
     }
 }
 
 void Algorithm::k_top_query(int k, std::ostream& stream) {
-    for(auto it = level_1.rbegin(); it != level_1.rend() && k-- > 0; ++it) {
-        stream << (*it)->id << " " << (*it)->freq / (float) N << endl;
-    }
-    for(auto it = level_2.rbegin(); it != level_2.rend() && k-- > 0; ++it) {
+    for(auto it = frequency_order.rbegin(); it != frequency_order.rend() && k-- > 0; ++it) {
         stream << (*it)->id << " " << (*it)->freq / (float) N << endl;
     }
 }
@@ -140,8 +134,9 @@ inline unsigned int Algorithm::estimate_frequency(Ticket min_ticket) const {
     return static_cast<unsigned int>(1 / (1 - min_ticket / (double) MAX_TICKET));
 }
 
-void print_level(const TicketOrder& level) {
-    for(auto it = level.rbegin(); it != level.rend(); ++it) {
+template<typename T>
+void print_container(const T& container) {
+    for(auto it = container.rbegin(); it != container.rend(); ++it) {
         cout << (*it)->id << ", " << (*it)->ticket << ", " << (*it)->freq << endl;
     }
 }
@@ -149,8 +144,13 @@ void print_level(const TicketOrder& level) {
 void Algorithm::print_state() {
     cout << "-----------------------" << endl;
     cout << "%%%%%% level_1 %%%%%%" << endl;
-    print_level(level_1);
+    print_container(level_1);
     cout << "-----------------------" << endl;
     cout << "%%%%%% level_2 %%%%%%" << endl;
-    print_level(level_2);
+    print_container(level_2);
+    cout << "-----------------------" << endl;
+    cout << "%%%%%% frequency_order %%%%%%" << endl;
+    print_container(frequency_order);
+    assert(level_1.size() + level_2.size() == sample_size());
+    assert(frequency_order.size() == sample_size());
 }
