@@ -21,8 +21,8 @@ void GenericAlgorithm<ElementLocator>::process_element(std::string& element_id) 
     ++N;
     typename MonitoredElements::iterator it = monitored_elements.find(element_id);
     if(it == monitored_elements.end()) { // element wasn't being sampled
-        ElementLocator locator = insert_element(element_id);
-        if(locator.is_valid()) {
+        ElementLocator locator;
+        if(insert_element(element_id, locator)) {
             monitored_elements[element_id] = locator;
         }
     } else { // element was being sampled

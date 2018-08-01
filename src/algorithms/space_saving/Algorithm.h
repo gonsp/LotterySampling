@@ -19,7 +19,7 @@ private:
 
     void increment_counter(ElementLocator& locator);
 
-    ElementLocator insert_element(std::string& element_id) override;
+    bool insert_element(std::string& element_id, ElementLocator& locator) override;
 
     void update_element(ElementLocator& locator) override;
 

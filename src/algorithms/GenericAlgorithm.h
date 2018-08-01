@@ -31,7 +31,7 @@ protected:
 
     int N = 0;
 
-    virtual ElementLocator insert_element(std::string& element_id) = 0;
+    virtual bool insert_element(std::string& element_id, ElementLocator& locator) = 0;
 
     virtual void update_element(ElementLocator& locator) = 0;
 

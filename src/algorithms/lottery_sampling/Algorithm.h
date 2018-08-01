@@ -24,7 +24,7 @@ private:
     std::mt19937_64 random_state;
     std::uniform_int_distribution<Ticket> dist;
 
-    ElementLocator insert_element(std::string& element_id) override;
+    bool insert_element(std::string& element_id, ElementLocator& locator) override;
 
     void update_element(ElementLocator& locator) override;
 
