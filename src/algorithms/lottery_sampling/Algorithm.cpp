@@ -29,11 +29,21 @@ Algorithm::Algorithm(const InputParser& parameters) {
 }
 
 void Algorithm::frequent_query(float f, std::ostream& stream) {
-
+    for(auto it = level_1.rbegin(); it != level_1.rend() && it->freq >= f*N; ++it) {
+        stream << it->id << " " << it->freq / (float) N << endl;
+    }
+    for(auto it = level_2.rbegin(); it != level_2.rend() && it->freq >= f*N; ++it) {
+        stream << it->id << " " << it->freq / (float) N << endl;
+    }
 }
 
 void Algorithm::k_top_query(int k, std::ostream& stream) {
-
+    for(auto it = level_1.rbegin(); it != level_1.rend() && k-- > 0; ++it) {
+        stream << it->id << " " << it->freq / (float) N << endl;
+    }
+    for(auto it = level_2.rbegin(); it != level_2.rend() && k-- > 0; ++it) {
+        stream << it->id << " " << it->freq / (float) N << endl;
+    }
 }
 
 void Algorithm::free_up_level_1() {

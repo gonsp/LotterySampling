@@ -27,10 +27,10 @@ int main(int num_args, char* args[]) {
         if(s == ":q") { // It's a query over the sampled elements
             cin >> s;
             if(s == ":f") { // "More frequent than f" query
-                float f;
-                cin >> f;
+                float freq;
+                cin >> freq;
                 stats.start_counting(stats.frequent_query_count);
-                algorithm->frequent_query(f, cout);
+                algorithm->frequent_query(freq, cout);
                 stats.finish_counting(stats.frequent_query_time);
             } else if(s == ":k") { // k-top frequent elements query
                 int k;
