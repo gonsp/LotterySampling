@@ -45,7 +45,7 @@ void Algorithm::free_up_level_1() {
     level_1.erase(level_1.begin());
     if(multilevel) {
         // Element is kicked out from level 1 to level 2
-        replaced_element_locator->ticket_iterator = level_2.insert(replaced_element_locator);
+        replaced_element_locator->ticket_iterator = level_2.emplace_hint(prev(level_2.end()), replaced_element_locator);
         replaced_element_locator->level = 2;
     } else {
         // Element is just removed since multilevel is not being used
@@ -99,10 +99,10 @@ bool Algorithm::insert_element(std::string& element_id, ElementLocator& locator)
 
 void Algorithm::update_element(ElementLocator& locator) {
     // Updating frequency
-    // TODO use hint
+    FrequencyOrder::iterator hint = next(locator->frequency_iterator);
     frequency_order.erase(locator->frequency_iterator); // It's needed to remove and reinsert an element since there isn't an "update" method in multiset
     locator->freq++;
-    locator->frequency_iterator = frequency_order.insert(locator);
+    locator->frequency_iterator = frequency_order.emplace_hint(hint, locator);
 
     // Updating ticket
     Ticket old_ticket = locator->ticket;
@@ -114,9 +114,10 @@ void Algorithm::update_element(ElementLocator& locator) {
             free_up_level_1();
         }
 
+        TicketOrder::iterator hint = next(locator->ticket_iterator);
         (locator->level == 1 ? level_1 : level_2).erase(locator->ticket_iterator);
         locator->ticket = ticket; // Updating (the better) ticket
-        locator->ticket_iterator = (ticket > level_1_threshold ? level_1 : level_2).insert(locator);
+        locator->ticket_iterator = (ticket > level_1_threshold ? level_1 : level_2).emplace_hint(hint, locator);
         locator->level = (ticket > level_1_threshold ? 1 : 2);
     }
 }
