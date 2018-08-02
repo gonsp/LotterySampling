@@ -52,6 +52,8 @@ int main(int num_args, char* args[]) {
         }
     }
 
+    delete algorithm;
+
     return 0;
 }
 
