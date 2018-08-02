@@ -44,6 +44,7 @@ int main(int num_args, char* args[]) {
             stats.report(cout, algorithm);
         } else if(s == ":d") {
             algorithm->print_state();
+            cout << ":end" << endl;
         } else { // It's a new element in the data stream
             stats.start_counting(stats.process_element_count);
             algorithm->process_element(s);

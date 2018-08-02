@@ -46,4 +46,13 @@ class Instance():
         return ast.literal_eval(output)
 
 
+    def print_state(self):
+        self.process.stdin.write(':d\n')
+        while (True):
+            line = self.process.stdout.readline()
+            if line == ':end\n':
+                break
+            else:
+               print(line)
+
 
