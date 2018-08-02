@@ -45,7 +45,8 @@ void Algorithm::free_up_level_1() {
     level_1.erase(level_1.begin());
     if(multilevel) {
         // Element is kicked out from level 1 to level 2
-        replaced_element_locator->ticket_iterator = level_2.emplace_hint(prev(level_2.end()), replaced_element_locator);
+        // TODO profile emplace_hint to see if it improves exec. time
+        replaced_element_locator->ticket_iterator = level_2.emplace_hint(level_2.end(), replaced_element_locator);
         replaced_element_locator->level = 2;
     } else {
         // Element is just removed since multilevel is not being used
@@ -136,6 +137,7 @@ Ticket Algorithm::generate_ticket() {
 
 inline unsigned int Algorithm::estimate_frequency(Ticket min_ticket) const {
     // TODO Protect from infinity
+    // TODO take into account aging
     return static_cast<unsigned int>(1 / (1 - min_ticket / (double) MAX_TICKET));
 }
 
