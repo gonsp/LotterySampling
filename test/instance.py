@@ -3,8 +3,10 @@ import ast
 
 class Instance():
 
-    def __init__(self, exec_path, params):
+    def __init__(self, exec_path, params, profile=False):
         command = [exec_path] + params.split()
+        if profile:
+            command = ['valgrind', '--leak-check=full'] + command
         self.process = subprocess.Popen(command, bufsize=1, universal_newlines=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         self.pid = self.process.pid
 
@@ -56,3 +58,5 @@ class Instance():
                print(line)
 
 
+    def finish(self):
+        self.process.stdin.close()
