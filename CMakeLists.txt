@@ -33,8 +33,8 @@ set(SOURCE_FILES
 
 ###################################################
 # Executable
-add_executable(k-hitting ${SOURCE_FILES})
-target_include_directories(k-hitting PUBLIC src)
+add_executable(heavy_hitters ${SOURCE_FILES})
+target_include_directories(heavy_hitters PUBLIC src)
 
 
 
