@@ -46,3 +46,6 @@ __pycache__/
 
 # MACOS
 .DS_Store
+
+# Valgrind
+massif.out.*
