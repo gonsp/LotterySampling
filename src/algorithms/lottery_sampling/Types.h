@@ -29,13 +29,14 @@ struct Element {
     std::string id;
     Ticket ticket;
     unsigned int freq;
+    unsigned int over_estimation;
 
     TicketOrder::iterator ticket_iterator;
     int level;
 
     FrequencyOrder::iterator frequency_iterator;
 
-    Element(std::string id, Ticket ticket, unsigned int freq);
+    Element(std::string id, Ticket ticket, unsigned int freq, unsigned int over_estimation);
 
     bool operator<(const Element& element) const;
 };

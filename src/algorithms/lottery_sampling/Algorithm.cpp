@@ -67,18 +67,22 @@ bool Algorithm::insert_element(std::string& element_id, ElementLocator& locator)
 
     Ticket ticket = generate_ticket();
     unsigned int freq;
+    unsigned int over_estimation;
     int level;
 
     if(sample_size() < m) {
         freq = 1;
+        over_estimation = 0;
         level = 1;
     } else {
         if(ticket > (*level_1.begin())->ticket) {
             freq = estimate_frequency((*level_1.begin())->ticket);
+            over_estimation = freq - 1;
             level = 1;
             free_up_level_1();
         } else if(!level_2.empty() && ticket > (*level_2.begin())->ticket) {
             freq = estimate_frequency((*level_2.begin())->ticket);
+            over_estimation = freq - 1;
             level = 2;
             free_up_level_2();
         } else {
@@ -88,7 +92,7 @@ bool Algorithm::insert_element(std::string& element_id, ElementLocator& locator)
     }
 
     if(level != -1) {
-        locator = make_shared<Element>(element_id, ticket, freq);
+        locator = make_shared<Element>(element_id, ticket, freq, over_estimation);
         locator->ticket_iterator = (level == 1 ? level_1 : level_2).insert(locator);
         locator->level = level;
         locator->frequency_iterator = frequency_order.insert(locator);
@@ -138,7 +142,7 @@ inline unsigned int Algorithm::estimate_frequency(Ticket min_ticket) const {
 template<typename T>
 void print_container(const T& container) {
     for(auto it = container.rbegin(); it != container.rend(); ++it) {
-        cout << (*it)->id << ", " << (*it)->ticket << ", " << (*it)->freq << endl;
+        cout << (*it)->id << ", " << (*it)->ticket << ", " << (*it)->freq << ", " << (*it)->over_estimation << endl;
     }
 }
 
