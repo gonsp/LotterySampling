@@ -1,14 +1,15 @@
 import subprocess
 import ast
 import time
+import profiler_utils
 
 class Instance():
 
-    def __init__(self, exec_path, params, profile=False):
+    def __init__(self, exec_path, params, profile_memory=False):
         command = [exec_path] + params.split()
-        if profile:
+        if profile_memory:
             command = ['valgrind', '--tool=massif'] + command
-        self.profile = profile
+        self.profile_memory = profile_memory
         self.process = subprocess.Popen(command, bufsize=1, universal_newlines=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         self.pid = self.process.pid
 
@@ -19,7 +20,7 @@ class Instance():
 
     def process_query_output(self):
         elements = []
-        while (True):
+        while True:
             output = self.process.stdout.readline()
             if output == ':end\n':
                 break
@@ -45,6 +46,8 @@ class Instance():
 
 
     def get_stats(self):
+        if self.process.poll() is not None:
+            return self.end_stats
         self.process.stdin.write(':s\n')
         output = self.process.stdout.readline()
         return ast.literal_eval(output)
@@ -52,7 +55,7 @@ class Instance():
 
     def print_state(self):
         self.process.stdin.write(':d\n')
-        while (True):
+        while True:
             line = self.process.stdout.readline()
             if line == ':end\n':
                 break
@@ -61,8 +64,8 @@ class Instance():
 
 
     def finish(self):
+        self.end_stats = self.get_stats()
         self.process.stdin.close()
         time.sleep(1)
-        # if self.profile:
-                # command = ['ms_print', 'massif.out.' + str(self.pid)]
-                # subprocess.Popen(command)
+        if self.profile_memory:
+            self.end_stats['memory_usage_peak_profiler'] = profiler_utils.get_peak_memory(self.pid)
