@@ -1,12 +1,14 @@
 import subprocess
 import ast
+import time
 
 class Instance():
 
     def __init__(self, exec_path, params, profile=False):
         command = [exec_path] + params.split()
         if profile:
-            command = ['valgrind', '--leak-check=full'] + command
+            command = ['valgrind', '--tool=massif'] + command
+        self.profile = profile
         self.process = subprocess.Popen(command, bufsize=1, universal_newlines=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         self.pid = self.process.pid
 
@@ -60,3 +62,7 @@ class Instance():
 
     def finish(self):
         self.process.stdin.close()
+        time.sleep(1)
+        # if self.profile:
+                # command = ['ms_print', 'massif.out.' + str(self.pid)]
+                # subprocess.Popen(command)
