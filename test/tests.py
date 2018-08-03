@@ -49,34 +49,33 @@ class TestMemoryLeak(Test):
 
     def run(self):
 
-        for i in range(3):
-            seed = self.generate_seed()
+        seed = self.generate_seed()
 
-            stream = streams.Zipf(1.05, seed)
+        stream = streams.Zipf(1.05, seed)
 
-            m = 10**(i+2)
+        m = 1000
 
-            instances = [
-                Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile='memory_leak'),
-                Instance(self.exec_path, '-a space_saving -m ' + str(m), profile='memory_leak')
-            ]
+        instances = [
+            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile='memory_leak'),
+            Instance(self.exec_path, '-a space_saving -m ' + str(m), profile='memory_leak')
+        ]
 
-            for j in range(100000):
-                element = stream.next_element()
-                for instance in instances:
-                    instance.process_element(str(element))
-
+        for i in range(100000):
+            element = stream.next_element()
             for instance in instances:
-                instance.k_top_query(m/2)
-                instance.frequent_query(0.05)
+                instance.process_element(str(element))
 
-                instance.finish()
-                stats = instance.get_stats()
-                memory_leak = stats['memory_leak_profiler']
-                if memory_leak > 0:
-                    eprint('Memory leak:', memory_leak, 'bytes')
-                    eprint(instance.command)
-                    eprint('Using seed:', seed)
-                    return False
+        for instance in instances:
+            instance.k_top_query(m/2)
+            instance.frequent_query(0.05)
+
+            instance.finish()
+            stats = instance.get_stats()
+            memory_leak = stats['memory_leak_profiler']
+            if memory_leak > 0:
+                eprint('Memory leak:', memory_leak, 'bytes')
+                eprint(instance.command)
+                eprint('Using seed:', seed)
+                return False
 
         return True

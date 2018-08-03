@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(Lottery_Sampling)
 
+
 ###################################################
 # Compiler settings
 set(CMAKE_CXX_STANDARD 11)
@@ -30,14 +31,20 @@ set(SOURCE_FILES
         src/algorithms/space_saving/Types.h)
 
 
-
 ###################################################
 # Executable
 add_executable(heavy_hitters ${SOURCE_FILES})
 target_include_directories(heavy_hitters PUBLIC src)
 
 
-
-
 ###################################################
 # Tests
+enable_testing()
+
+add_test(
+        NAME
+        MemoryLeak
+        COMMAND
+        python3 main.py TestMemoryLeak
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test)
+

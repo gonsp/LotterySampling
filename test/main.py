@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import sys
-import tests
 
 
 def main():
-    test = tests.TestMemoryLeak(None)
+
+    mod = __import__('tests', fromlist=[sys.argv[1]])
+    test = getattr(mod, sys.argv[1])(None)
 
     if test.run():
         exit(0)
