@@ -17,7 +17,7 @@ Stats::Stats() {
 
 counter Stats::get_interval(time_point from) {
     time_point to = high_resolution_clock::now();
-    return duration_cast<microseconds>(to - from).count();
+    return duration_cast<nanoseconds>(to - from).count();
 }
 
 void Stats::start_counting(counter& counter) {
