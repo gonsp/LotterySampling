@@ -5,12 +5,22 @@ import profiler_utils
 
 class Instance():
 
-    def __init__(self, exec_path, params, profile_memory=False):
+    def __init__(self, exec_path, params, profile=None):
         command = [exec_path] + params.split()
-        if profile_memory:
-            command = ['valgrind', '--tool=massif'] + command
-        self.profile_memory = profile_memory
-        self.process = subprocess.Popen(command, bufsize=1, universal_newlines=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        error_pipe = None
+        if profile is not None:
+            if profile is 'memory_usage':
+                tool = 'massif'
+            elif profile is 'memory_leak':
+                tool = 'memcheck'
+            elif profile is 'exec_time':
+                pass
+            else:
+                exit(1)
+            command = ['valgrind', '--tool=' + tool] + command
+            error_pipe = subprocess.PIPE
+        self.profile = profile
+        self.process = subprocess.Popen(command, bufsize=1, universal_newlines=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=error_pipe)
         self.pid = self.process.pid
 
 
@@ -67,5 +77,7 @@ class Instance():
         self.end_stats = self.get_stats()
         self.process.stdin.close()
         time.sleep(1)
-        if self.profile_memory:
+        if self.profile is 'memory_usage':
             self.end_stats['memory_usage_peak_profiler'] = profiler_utils.get_peak_memory(self.pid)
+        elif self.profile is 'memory_leak':
+            self.end_stats['memory_leak_profiler'] = profiler_utils.get_leak_memory(self.process.stderr)

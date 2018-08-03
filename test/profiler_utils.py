@@ -29,3 +29,15 @@ def get_peak_memory(pid):
     os.remove(massif_file)
 
     return peak
+
+
+def get_leak_memory(pipe):
+    leaked = 0
+    while True:
+        line = pipe.readline()
+        if 'definitely lost:' in line:
+            leaked += int(line.split()[3].replace(',', ''))
+        elif 'indirectly lost:' in line:
+            leaked += int(line.split()[3].replace(',', ''))
+            break
+    return leaked
