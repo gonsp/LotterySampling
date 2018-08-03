@@ -14,7 +14,7 @@ class Instance():
             elif profile is 'memory_leak':
                 tool = 'memcheck'
             elif profile is 'exec_time':
-                pass
+                tool = 'callgrind'
             else:
                 exit(1)
             command = ['valgrind', '--tool=' + tool] + command
@@ -81,3 +81,7 @@ class Instance():
             self.end_stats['memory_usage_peak_profiler'] = profiler_utils.get_peak_memory(self.pid)
         elif self.profile is 'memory_leak':
             self.end_stats['memory_leak_profiler'] = profiler_utils.get_leak_memory(self.process.stderr)
+        elif self.profile is 'exec_time':
+            cost_total, cost_process_element = profiler_utils.get_cost(self.pid)
+            self.end_stats['total_cost_profiler'] = cost_total
+            self.end_stats['process_element_cost_profiler'] = cost_process_element

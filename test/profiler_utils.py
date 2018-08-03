@@ -41,3 +41,49 @@ def get_leak_memory(pipe):
             leaked += int(line.split()[3].replace(',', ''))
             break
     return leaked
+
+
+def get_cost(pid):
+
+    callgrind_file = 'callgrind.out.' + str(pid)
+    id_main = None
+    id_process_element = None
+
+    def line_to_id(line):
+        return line.split(' ')[0].split('=')[1].replace('(', '').replace(')', '')
+
+    with open(callgrind_file) as f:
+        for line in f:
+            if '>::process_element' in line:
+                id_process_element = line_to_id(line)
+            elif 'Main.cpp' in line:
+                line = f.readline()
+                id_main = line_to_id(line)
+
+            if id_main is not None and id_process_element is not None:
+                break
+
+    if id_main is None or id_process_element is None:
+        exit(1)
+
+    cost_main = None
+    cost_process_element = None
+
+    def line_to_cost(line):
+        return int(line.split(' ')[1])
+
+    with open(callgrind_file) as f:
+        for line in f:
+            if 'cfn=(' + id_process_element + ')' in line:
+                f.readline()
+                cost_process_element = line_to_cost(f.readline())
+            elif 'cfn=(' + id_main + ')' in line:
+                f.readline()
+                cost_main = line_to_cost(f.readline())
+
+            if cost_main is not None and cost_process_element is not None:
+                break
+
+    os.remove(callgrind_file)
+
+    return cost_main, cost_process_element
