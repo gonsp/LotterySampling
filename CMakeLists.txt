@@ -6,7 +6,7 @@ project(Lottery_Sampling)
 set(CMAKE_CXX_STANDARD 11)
 
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE ReleaseWithAsserts)
+    set(CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
 
 set(CMAKE_CXX_FLAGS_RELEASEWITHASSERTS "-Wall -O3")

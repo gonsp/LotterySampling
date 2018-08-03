@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import sys
+import os
+import subprocess
 import streams
 from instance import Instance
 import heapq
@@ -31,6 +33,8 @@ def main():
     exec_path = sys.argv[1]
     stream_name = sys.argv[2]
 
+    exec_path = build_executable('debug')
+
     # seed = random.randrange(10000000)
     seed = 100000
     print('Using seed:', seed)
@@ -41,8 +45,8 @@ def main():
 
     m = 10000
     # profiling = None
-    # profiling = 'memory_usage'
-    profiling = 'memory_leak'
+    profiling = 'memory_usage'
+    # profiling = 'memory_leak'
     # profiling = 'exe_time'
 
     instances = [
@@ -55,6 +59,19 @@ def main():
 
     print('Starting test')
     test(stream, instances)
+
+
+def build_executable(configuration='release'):
+    directory = '../' + 'cmake-build-' + configuration
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    command = 'cd ' + directory + ' && cmake -DCMAKE_BUILD_TYPE=' + configuration + ' .. && make'
+    process = subprocess.Popen(command, shell=True)
+    process.communicate()
+    if process.returncode != 0:
+        exit(1)
+
+    return directory + '/heavy_hitters'
 
 
 if __name__ == '__main__':
