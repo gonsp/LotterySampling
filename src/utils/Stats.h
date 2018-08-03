@@ -5,12 +5,17 @@
 #include <ostream>
 #include <algorithms/GenericAlgorithm.h>
 
-typedef unsigned long long int counter;
+typedef long long int counter;
 
 class Stats {
 
 private:
-    std::chrono::high_resolution_clock::time_point start_time;
+
+    typedef std::chrono::high_resolution_clock::time_point time_point;
+    time_point initial_time;
+    time_point start_time;
+
+    counter get_interval(time_point from);
 
 public:
 

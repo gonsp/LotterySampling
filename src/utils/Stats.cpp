@@ -11,6 +11,13 @@ Stats::Stats() {
     k_top_query_count = 0;
     process_element_time = 0;
     process_element_count = 0;
+
+    initial_time = high_resolution_clock::now();
+}
+
+counter Stats::get_interval(time_point from) {
+    time_point to = high_resolution_clock::now();
+    return duration_cast<microseconds>(to - from).count();
 }
 
 void Stats::start_counting(counter& counter) {
@@ -19,9 +26,7 @@ void Stats::start_counting(counter& counter) {
 }
 
 void Stats::finish_counting(counter& counter) {
-    high_resolution_clock::time_point end_time = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(end_time - start_time).count();
-    counter += duration;
+    counter += get_interval(start_time);
 }
 
 void Stats::report(std::ostream& stream, GenericAlgorithmInterface* algorithm) {
@@ -29,12 +34,13 @@ void Stats::report(std::ostream& stream, GenericAlgorithmInterface* algorithm) {
     stream << "{";
     stream << "'sample_size' : " << algorithm->sample_size() << ",";
     stream << "'memory_usage' : " << mstats().bytes_used << ",";
+    stream << "'total_time' : " << get_interval(initial_time) << ",";
+    stream << "'process_element_time' : " << process_element_time << ",";
+    stream << "'process_element_count' : " << process_element_count << ",";
     stream << "'frequent_query_time' : " << frequent_query_time << ",";
     stream << "'frequent_query_count' : " << frequent_query_count << ",";
     stream << "'k_top_query_time' : " << k_top_query_time << ",";
-    stream << "'k_top_query_count' : " << k_top_query_count << ",";
-    stream << "'process_element_time' : " << process_element_time << ",";
-    stream << "'process_element_count' : " << process_element_count;
+    stream << "'k_top_query_count' : " << k_top_query_count;
     stream << "}" << std::endl;
 }
 
