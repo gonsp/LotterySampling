@@ -20,8 +20,10 @@ class Instance():
             command = ['valgrind', '--tool=' + tool] + command
             error_pipe = subprocess.PIPE
         self.profile = profile
+        self.command = ' '.join(command)
         self.process = subprocess.Popen(command, bufsize=1, universal_newlines=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=error_pipe)
         self.pid = self.process.pid
+        self.finished = False
 
 
     def process_element(self, element):
@@ -56,7 +58,7 @@ class Instance():
 
 
     def get_stats(self):
-        if self.process.poll() is not None:
+        if self.process.poll() is not None or self.finished:
             return self.end_stats
         self.process.stdin.write(':s\n')
         output = self.process.stdout.readline()
@@ -76,7 +78,8 @@ class Instance():
     def finish(self):
         self.end_stats = self.get_stats()
         self.process.stdin.close()
-        time.sleep(1)
+        self.finished = True
+        time.sleep(3)
         if self.profile is 'memory_usage':
             self.end_stats['memory_usage_peak_profiler'] = profiler_utils.get_peak_memory(self.pid)
         elif self.profile is 'memory_leak':
