@@ -6,6 +6,7 @@ import profiler_utils
 class Instance():
 
     def __init__(self, exec_path, params, profile=None):
+        self.name = params[1:]
         command = [exec_path] + params.split()
         error_pipe = None
         if profile is not None:
@@ -79,7 +80,7 @@ class Instance():
         self.end_stats = self.get_stats()
         self.process.stdin.close()
         self.finished = True
-        time.sleep(3)
+        time.sleep(2)
         if self.profile is 'memory_usage':
             self.end_stats['memory_usage_peak_profiler'] = profiler_utils.get_peak_memory(self.pid)
         elif self.profile is 'memory_leak':

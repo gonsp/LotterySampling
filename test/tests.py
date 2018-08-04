@@ -1,3 +1,4 @@
+import math
 import sys
 import os
 import random
@@ -127,6 +128,7 @@ class TestMemoryUsage(Test):
                 instance.process_element(str(element))
 
         results = []
+        sizes = []
         for instance in self.instances:
             instance.k_top_query(m/2)
             instance.frequent_query(0.05)
@@ -137,8 +139,9 @@ class TestMemoryUsage(Test):
             if self.print_results:
                 print('Memory peak:', memory_peak, instance.command)
             results.append(memory_peak)
+            sizes.append(stats['sample_size'])
 
-        return results
+        return results, sizes, stream.n
 
 
 class TestMemoryUsageAsymptotic(TestMemoryUsage):
@@ -146,21 +149,48 @@ class TestMemoryUsageAsymptotic(TestMemoryUsage):
     def __init__(self):
         super().__init__()
         self.print_results = False
+        self.params.seed = self.generate_seed()
 
 
     def run(self):
-
         x = []
         y = []
+        z = []
+        expected_size_lottery_multilevel = []
 
         for m in range(int(self.params.m), int(self.params.N)//10, int(self.params.m)):
-            print(m)
             x.append(m)
             self.params.m = m
-            results = super().run()
+            results, sizes, n = super().run()
             y.append(results)
+            z.append(sizes)
+            expected_size_lottery_multilevel.append(m * math.log(n/m))
 
-        plt.plot(x, y)
+        print("Showing results")
+
+        x = np.array(x)  # m
+        y = np.array(y)  # memory
+        z = np.array(z)  # sample size
+
+        _, axes = plt.subplots()
+        axes_right = axes.twinx()
+
+        for i, instance in enumerate(self.instances):
+            axes.plot(x, y[:, i], '-', label='Memory ' + instance.name)
+            axes_right.plot(x, z[:, i], '--', label='Sample size ' + instance.name)
+        axes_right.plot(x, expected_size_lottery_multilevel, 'm--', label='Expected sample size lottery_sampling -multilevel')
+
+        axes.legend(loc='upper left')
+        axes_right.legend(loc='upper right')
+        axes.set_xlabel('m (Initial number of sampled elements)')
+        axes.set_ylabel('Max used memory (bytes)')
+        axes_right.set_ylabel('Sample size')
+
+        if plt.get_backend() == 'TkAgg':
+            mng = plt.get_current_fig_manager()
+            mng.resize(*mng.window.maxsize())
+
+        plt.show()
 
 
 class TestMemoryUsageEvolution(Test):
