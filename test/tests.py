@@ -2,20 +2,21 @@ import sys
 import os
 import random
 import subprocess
+import argparse
 from abc import abstractmethod
 
 import streams
 from instance import Instance
 
 
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
-
-
 class Test:
 
-    def __init__(self, configuration='release'):
+    def __init__(self, configuration='release', args=[]):
         self.exec_path = self.build_executable(configuration)
+        arg_parser = argparse.ArgumentParser()
+        for name, required in args:
+            arg_parser.add_argument('-' + name, required=required)
+        self.params = arg_parser.parse_args()
 
 
     @abstractmethod
@@ -41,19 +42,32 @@ class Test:
         return random.randrange(10000000)
 
 
+    def error(self, *args, seed=None, command=None):
+        print("ERROR", file=sys.stderr)
+        print(*args, file=sys.stderr)
+        if command is not None:
+            print(command, file=sys.stderr)
+        if seed is not None:
+            print('Using seed:', seed, file=sys.stderr)
+        exit(1)
+
+
 class TestMemoryLeak(Test):
 
-    def __init__(self, params):
-        super().__init__('debug')
+    def __init__(self):
+        super().__init__('debug', [('seed', False)])
 
 
     def run(self):
 
-        seed = self.generate_seed()
+        if self.params.seed is not None:
+            seed = int(self.params.seed)
+        else:
+            seed = self.generate_seed()
 
         stream = streams.Zipf(1.05, seed)
 
-        m = 1000
+        m = 10000
 
         instances = [
             Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile='memory_leak'),
@@ -73,9 +87,26 @@ class TestMemoryLeak(Test):
             stats = instance.get_stats()
             memory_leak = stats['memory_leak_profiler']
             if memory_leak > 0:
-                eprint('Memory leak:', memory_leak, 'bytes')
-                eprint(instance.command)
-                eprint('Using seed:', seed)
-                return False
+                self.error('Memory leak:', memory_leak, 'bytes', seed=seed, command=instance.command)
 
-        return True
+
+class TestMemoryUsage(Test):
+
+    def __init__(self):
+        args = [('m', True)]
+        super().__init__('debug', args)
+
+
+    def run(self):
+        pass
+
+
+class TestMemoryUsageEvolution(Test):
+
+    def __init__(self):
+        args = []
+        super().__init__('debug', args)
+
+
+    def run(self):
+        pass

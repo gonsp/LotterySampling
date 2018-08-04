@@ -45,6 +45,6 @@ add_test(
         NAME
         MemoryLeak
         COMMAND
-        python3 main.py TestMemoryLeak
+        python3 main.py MemoryLeak
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test)
 

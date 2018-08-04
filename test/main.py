@@ -4,13 +4,14 @@ import sys
 
 def main():
 
-    mod = __import__('tests', fromlist=[sys.argv[1]])
-    test = getattr(mod, sys.argv[1])(None)
+    test_name = sys.argv.pop(1)
+    test_name = 'Test' + test_name
 
-    if test.run():
-        exit(0)
-    else:
-        exit(1)
+    mod = __import__('tests', fromlist=[test_name])
+    test = getattr(mod, test_name)()
+
+    test.run()
+    exit(0)
 
 if __name__ == '__main__':
     main()
