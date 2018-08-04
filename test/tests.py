@@ -27,6 +27,14 @@ class Test:
         pass
 
 
+    def create_instances(self, m, seed, profile=None):
+        return [
+            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
+            Instance(self.exec_path, '-a space_saving -m ' + str(m), profile=profile)
+        ]
+
+
     def build_executable(self, configuration='release'):
         print('BUILDING EXECUTABLE FOR TEST')
         directory = '../' + 'cmake-build-' + configuration
@@ -72,11 +80,7 @@ class TestMemoryLeak(Test):
 
         m = 10000
 
-        instances = [
-            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile='memory_leak'),
-            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile='memory_leak'),
-            Instance(self.exec_path, '-a space_saving -m ' + str(m), profile='memory_leak')
-        ]
+        instances = create_instances(m, seed, 'memory_leak')
 
         for i in range(100000):
             element = stream.next_element()
@@ -116,11 +120,7 @@ class TestMemoryUsage(Test):
 
         m = int(self.params.m)
 
-        self.instances = [
-            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile='memory_usage'),
-            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile='memory_usage'),
-            Instance(self.exec_path, '-a space_saving -m ' + str(m), profile='memory_usage')
-        ]
+        self.instances = self.create_instances(m, seed, 'memory_usage')
 
         for i in range(int(self.params.N)):
             element = stream.next_element()
