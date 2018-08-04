@@ -6,8 +6,9 @@ import profiler_utils
 class Instance():
 
     def __init__(self, exec_path, params, profile=None):
-        self.name = params[1:]
-        command = [exec_path] + params.split()
+        params = params.split()
+        self.name = ' '.join(params[1:])
+        command = [exec_path] + params
         error_pipe = None
         if profile is not None:
             if profile is 'memory_usage':

@@ -112,7 +112,7 @@ class TestMemoryUsage(Test):
         seed = self.generate_seed()
 
         if self.params.stream == 'zipf':
-            stream = streams.Zipf(1.05, seed)
+            stream = streams.Zipf(1.1, seed)
 
         m = int(self.params.m)
 
@@ -158,7 +158,9 @@ class TestMemoryUsageAsymptotic(TestMemoryUsage):
         z = []
         expected_size_lottery_multilevel = []
 
-        for m in range(int(self.params.m), int(self.params.N)//10, int(self.params.m)):
+        initial_m = self.params.m
+        for i in range(0, 10):
+            m = i * initial_m
             x.append(m)
             self.params.m = m
             results, sizes, n = super().run()
@@ -176,9 +178,9 @@ class TestMemoryUsageAsymptotic(TestMemoryUsage):
         axes_right = axes.twinx()
 
         for i, instance in enumerate(self.instances):
-            axes.plot(x, y[:, i], '-', label='Memory ' + instance.name)
-            axes_right.plot(x, z[:, i], '--', label='Sample size ' + instance.name)
-        axes_right.plot(x, expected_size_lottery_multilevel, 'm--', label='Expected sample size lottery_sampling -multilevel')
+            axes.plot(x, y[:, i], '-o', label='Memory ' + instance.name)
+            axes_right.plot(x, z[:, i], '--x', label='Sample size ' + instance.name)
+        axes_right.plot(x, expected_size_lottery_multilevel, 'm--x', label='Expected sample size lottery_sampling -multilevel')
 
         axes.legend(loc='upper left')
         axes_right.legend(loc='upper right')
