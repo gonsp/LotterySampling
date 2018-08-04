@@ -39,7 +39,10 @@ class Test:
 
 
     def generate_seed(self):
-        return random.randrange(10000000)
+        if self.params.seed is not None:
+            return int(self.params.seed)
+        else:
+            return random.randrange(10000000)
 
 
     def error(self, *args, seed=None, command=None):
@@ -60,10 +63,7 @@ class TestMemoryLeak(Test):
 
     def run(self):
 
-        if self.params.seed is not None:
-            seed = int(self.params.seed)
-        else:
-            seed = self.generate_seed()
+        seed = self.generate_seed()
 
         stream = streams.Zipf(1.05, seed)
 
@@ -71,6 +71,7 @@ class TestMemoryLeak(Test):
 
         instances = [
             Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile='memory_leak'),
+            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile='memory_leak'),
             Instance(self.exec_path, '-a space_saving -m ' + str(m), profile='memory_leak')
         ]
 
@@ -93,12 +94,49 @@ class TestMemoryLeak(Test):
 class TestMemoryUsage(Test):
 
     def __init__(self):
-        args = [('m', True)]
+        args = [
+            ('m', True),
+            ('stream', True),
+            ('N', True),
+            ('seed', False)
+        ]
         super().__init__('debug', args)
+        self.print_results = True
 
 
     def run(self):
-        pass
+
+        seed = self.generate_seed()
+
+        if self.params.stream == 'zipf':
+            stream = streams.Zipf(1.05, seed)
+
+        m = int(self.params.m)
+
+        instances = [
+            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile='memory_usage'),
+            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile='memory_usage'),
+            Instance(self.exec_path, '-a space_saving -m ' + str(m), profile='memory_usage')
+        ]
+
+        for i in range(int(self.params.N)):
+            element = stream.next_element()
+            for instance in instances:
+                instance.process_element(str(element))
+
+        results = []
+        for instance in instances:
+            instance.k_top_query(m/2)
+            instance.frequent_query(0.05)
+
+            instance.finish()
+            stats = instance.get_stats()
+            memory_peak = stats['memory_usage_peak_profiler']
+            if self.print_results:
+                print('Memory peak:', memory_peak, instance.command)
+            results.append(memory_peak)
+
+        return results
 
 
 class TestMemoryUsageEvolution(Test):
