@@ -4,6 +4,8 @@ import random
 import subprocess
 import argparse
 from abc import abstractmethod
+import matplotlib.pyplot as plt
+import numpy as np
 
 import streams
 from instance import Instance
@@ -113,7 +115,7 @@ class TestMemoryUsage(Test):
 
         m = int(self.params.m)
 
-        instances = [
+        self.instances = [
             Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile='memory_usage'),
             Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile='memory_usage'),
             Instance(self.exec_path, '-a space_saving -m ' + str(m), profile='memory_usage')
@@ -121,11 +123,11 @@ class TestMemoryUsage(Test):
 
         for i in range(int(self.params.N)):
             element = stream.next_element()
-            for instance in instances:
+            for instance in self.instances:
                 instance.process_element(str(element))
 
         results = []
-        for instance in instances:
+        for instance in self.instances:
             instance.k_top_query(m/2)
             instance.frequent_query(0.05)
 
@@ -137,6 +139,28 @@ class TestMemoryUsage(Test):
             results.append(memory_peak)
 
         return results
+
+
+class TestMemoryUsageAsymptotic(TestMemoryUsage):
+
+    def __init__(self):
+        super().__init__()
+        self.print_results = False
+
+
+    def run(self):
+
+        x = []
+        y = []
+
+        for m in range(int(self.params.m), int(self.params.N)//10, int(self.params.m)):
+            print(m)
+            x.append(m)
+            self.params.m = m
+            results = super().run()
+            y.append(results)
+
+        plt.plot(x, y)
 
 
 class TestMemoryUsageEvolution(Test):
