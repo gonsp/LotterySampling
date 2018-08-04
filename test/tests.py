@@ -66,6 +66,12 @@ class Test:
         exit(1)
 
 
+    def full_screen_plot(self):
+        if plt.get_backend() == 'TkAgg':
+            mng = plt.get_current_fig_manager()
+            mng.resize(*mng.window.maxsize())
+
+
 class TestMemoryLeak(Test):
 
     def __init__(self):
@@ -188,19 +194,64 @@ class TestMemoryUsageAsymptotic(TestMemoryUsage):
         axes.set_ylabel('Max used memory (bytes)')
         axes_right.set_ylabel('Sample size')
 
-        if plt.get_backend() == 'TkAgg':
-            mng = plt.get_current_fig_manager()
-            mng.resize(*mng.window.maxsize())
-
+        self.full_screen_plot()
         plt.show()
 
 
 class TestMemoryUsageEvolution(Test):
 
     def __init__(self):
-        args = []
-        super().__init__('debug', args)
+        args = [
+            ('m', True),
+            ('stream', True),
+            ('N', True),
+            ('sample_period', True),
+            ('seed', False)
+        ]
+        super().__init__('release', args)
 
 
     def run(self):
-        pass
+
+        seed = self.generate_seed()
+
+        m = int(self.params.m)
+
+        stream = streams.Zipf(1.1, seed)
+
+        instances = self.create_instances(m, seed)
+
+        x = []
+        y = []
+        z = []
+        for i in range(int(self.params.N)):
+            element = stream.next_element()
+
+            for instance in instances:
+                instance.process_element(str(element))
+
+            if i % int(self.params.sample_period) == 0:
+                x.append(i)
+                z.append(stream.n)
+                memory_usage = []
+                for instance in instances:
+                    memory_usage.append(instance.get_stats()['memory_usage'])
+                y.append(memory_usage)
+
+        _, axes = plt.subplots()
+        axes_right = axes.twinx()
+
+        y = np.array(y)
+        z = np.array(z)
+        for i, instance in enumerate(instances):
+            axes.plot(x, y[:, i], '-', label=instance.name)
+        # axes_right.plot(x, z, 'y--', label='n (Cardinality)')
+        axes_right.plot(x, m * np.log(z/m), 'm--', label='m * ln(n/m)')
+
+        axes.legend(loc='upper left')
+        axes_right.legend(loc='upper right')
+        axes.set_xlabel('Number of elements read from the stream')
+        axes.set_ylabel('Used memory (bytes)')
+        axes_right.set_ylabel('Number of elements')
+        self.full_screen_plot()
+        plt.show()
