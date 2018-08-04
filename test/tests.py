@@ -224,6 +224,7 @@ class TestMemoryUsageEvolution(Test):
         x = []
         y = []
         z = []
+        sample_size_lottery_multilevel = []
         for i in range(int(self.params.N)):
             element = stream.next_element()
 
@@ -235,7 +236,10 @@ class TestMemoryUsageEvolution(Test):
                 z.append(stream.n)
                 memory_usage = []
                 for instance in instances:
-                    memory_usage.append(instance.get_stats()['memory_usage'])
+                    stats = instance.get_stats()
+                    memory_usage.append(stats['memory_usage'])
+                    if 'lottery_sampling' in instance.name and 'multilevel' in instance.name:
+                        sample_size_lottery_multilevel.append(stats['sample_size'])
                 y.append(memory_usage)
 
         _, axes = plt.subplots()
@@ -245,7 +249,7 @@ class TestMemoryUsageEvolution(Test):
         z = np.array(z)
         for i, instance in enumerate(instances):
             axes.plot(x, y[:, i], '-', label=instance.name)
-        # axes_right.plot(x, z, 'y--', label='n (Cardinality)')
+        axes_right.plot(x, sample_size_lottery_multilevel, 'y--', label='Sample size Lottery multilevel')
         axes_right.plot(x, m * np.log(z/m), 'm--', label='m * ln(n/m)')
 
         axes.legend(loc='upper left')
