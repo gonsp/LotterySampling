@@ -42,10 +42,13 @@ struct Element {
     unsigned int freq;
     unsigned int over_estimation;
 
-    typename TicketOrder<T>::type::iterator ticket_iterator;
+    typedef typename TicketOrder<T>::type::iterator TicketOrderIterator;
+    typedef typename FrequencyOrder<T>::type::iterator FrequencyOrderIterator;
+
+    TicketOrderIterator ticket_iterator;
     int level;
 
-    typename FrequencyOrder<T>::type::iterator frequency_iterator;
+    FrequencyOrderIterator frequency_iterator;
 
     Element(const T& id, Ticket ticket, unsigned int freq, unsigned int over_estimation) {
         this->id = id;

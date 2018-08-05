@@ -113,7 +113,7 @@ bool Algorithm<T>::insert_element(const T& element_id, Locator& locator) {
 template<class T>
 void Algorithm<T>::update_element(Locator& locator) {
     // Updating frequency
-    typename FrequencyOrder<T>::type::iterator hint = next(locator->frequency_iterator);
+    typename Element<T>::FrequencyOrderIterator hint = next(locator->frequency_iterator);
     frequency_order.erase(locator->frequency_iterator); // It's needed to remove and reinsert an element since there isn't an "update" method in multiset
     locator->freq++;
     locator->frequency_iterator = frequency_order.emplace_hint(hint, locator);
@@ -128,7 +128,7 @@ void Algorithm<T>::update_element(Locator& locator) {
             free_up_level_1();
         }
 
-        typename TicketOrder<T>::type::iterator hint = next(locator->ticket_iterator);
+        typename Element<T>::TicketOrderIterator hint = next(locator->ticket_iterator);
         (locator->level == 1 ? level_1 : level_2).erase(locator->ticket_iterator);
         locator->ticket = ticket; // Updating (the better) ticket
         locator->ticket_iterator = (ticket > level_1_threshold ? level_1 : level_2).emplace_hint(hint, locator);
