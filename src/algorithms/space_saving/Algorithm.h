@@ -38,6 +38,6 @@ public:
 
 }
 
-#include "Algorithm.cpp"
+#include "Algorithm.ipp"
 
 #endif //_SPACESAVING_H_

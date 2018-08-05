@@ -53,7 +53,7 @@ public:
 };
 
 
-#include "GenericAlgorithm.cpp"
+#include "GenericAlgorithm.ipp"
 
 
 #endif //_ALGORITHM_H_

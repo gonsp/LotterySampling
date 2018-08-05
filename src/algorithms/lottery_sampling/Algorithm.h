@@ -54,6 +54,6 @@ public:
 
 }
 
-#include "Algorithm.cpp"
+#include "Algorithm.ipp"
 
 #endif //_LOTTERYSAMPLING_H_
