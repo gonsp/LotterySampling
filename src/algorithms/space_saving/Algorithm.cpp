@@ -1,38 +1,42 @@
-#include "Algorithm.h"
 #include <iostream>
 
-using namespace SpaceSaving;
+namespace SpaceSaving {
+
 using namespace std;
 
-Algorithm::Algorithm(const InputParser& parameters) {
-    m = (unsigned  int) stoul(parameters.get_parameter("-m"));
-    set_monitored_size(m);
+template<class T>
+Algorithm<T>::Algorithm(const InputParser& parameters) {
+    m = (unsigned int) stoul(parameters.get_parameter("-m"));
+    this->set_monitored_size(m);
 }
 
-void Algorithm::frequent_query(float f, ostream& stream) {
-    for(auto i = stream_summary.begin(); i != stream_summary.end() && i->count >= f*N; ++i) {
+template<class T>
+void Algorithm<T>::frequent_query(float f, ostream& stream) {
+    for(auto i = stream_summary.begin(); i != stream_summary.end() && i->count >= f * this->N; ++i) {
         for(auto j = i->elements.begin(); j != i->elements.end(); ++j) {
-            stream << j->id << " " << i->count / (float) N << endl;
+            stream << j->id << " " << i->count / (float) this->N << endl;
         }
     }
 }
 
-void Algorithm::k_top_query(int k, std::ostream& stream) {
+template<class T>
+void Algorithm<T>::k_top_query(int k, std::ostream& stream) {
     for(auto i = stream_summary.begin(); i != stream_summary.end(); ++i) {
         for(auto j = i->elements.begin(); j != i->elements.end(); ++j) {
             if(k-- <= 0) {
                 return;
             }
-            stream << j->id << " " << i->count / (float) N << endl;
+            stream << j->id << " " << i->count / (float) this->N << endl;
         }
     }
 }
 
-bool Algorithm::insert_element(std::string& element_id, ElementLocator& locator) {
-    if(sample_size() < m) {
+template<class T>
+bool Algorithm<T>::insert_element(const T& element_id, ElementLocator<T>& locator) {
+    if(this->sample_size() < m) {
         if(stream_summary.empty() || prev(stream_summary.end())->count != 1) {
             // There are no buckets or the smallest one has count greater than 1
-            stream_summary.push_back(Bucket(1));
+            stream_summary.push_back(Bucket<T>(1));
         }
         locator.bucket_iterator = prev(stream_summary.end());
         locator.bucket_iterator->elements.emplace_back(element_id, 0);
@@ -40,8 +44,8 @@ bool Algorithm::insert_element(std::string& element_id, ElementLocator& locator)
     } else { // Max number of monitored elements is reached. This new one will replace the one with less hits
         locator.bucket_iterator = prev(stream_summary.end());
         locator.element_iterator = locator.bucket_iterator->elements.begin(); // We select the oldest element with less hits
-        string removed_id = locator.element_iterator->id;
-        remove_element(removed_id);
+        T removed_id = locator.element_iterator->id;
+        this->remove_element(removed_id);
 
         // Replacing the old element
         locator.element_iterator->id = element_id;
@@ -52,18 +56,20 @@ bool Algorithm::insert_element(std::string& element_id, ElementLocator& locator)
     return true;
 }
 
-void Algorithm::update_element(ElementLocator& locator) {
+template<class T>
+void Algorithm<T>::update_element(ElementLocator<T>& locator) {
     increment_counter(locator);
 }
 
-void Algorithm::increment_counter(ElementLocator& locator) {
+template<class T>
+void Algorithm<T>::increment_counter(ElementLocator<T>& locator) {
     int new_count = locator.bucket_iterator->count + 1;
-    Element element = *locator.element_iterator;
+    Element<T> element = *locator.element_iterator;
     locator.bucket_iterator->elements.erase(locator.element_iterator);
     if(locator.bucket_iterator == stream_summary.begin() || prev(locator.bucket_iterator)->count != new_count) { // It is the highest bucket or the previous bucket doesn't have the required count
-        stream_summary.insert(locator.bucket_iterator, Bucket(new_count));
+        stream_summary.insert(locator.bucket_iterator, Bucket<T>(new_count));
     }
-    StreamSummary::iterator aux_it = locator.bucket_iterator;
+    typename StreamSummary<T>::type::iterator aux_it = locator.bucket_iterator;
     locator.bucket_iterator--;
     if(aux_it->elements.empty()) {
         stream_summary.erase(aux_it);
@@ -72,17 +78,21 @@ void Algorithm::increment_counter(ElementLocator& locator) {
     locator.element_iterator = prev(locator.bucket_iterator->elements.end());
 }
 
-void Algorithm::print_state() {
+template<class T>
+void Algorithm<T>::print_state() {
     int n_elements = 0;
     for(auto i = stream_summary.begin(); i != stream_summary.end(); ++i) {
         cout << "-----------------------" << endl;
         cout << "%%%%%% " << i->count << " %%%%%%" << endl;
         for(auto j = i->elements.begin(); j != i->elements.end(); ++j) {
             cout << j->id << ", " << j->over_estimation << endl;
-            assert(i == get_locator(j->id).bucket_iterator);
-            assert(j == get_locator(j->id).element_iterator);
+            assert(i == this->get_locator(j->id).bucket_iterator);
+            assert(j == this->get_locator(j->id).element_iterator);
             ++n_elements;
         }
     }
-    assert(n_elements == sample_size());
+    assert(n_elements == this->sample_size());
+}
+
+
 }

@@ -12,11 +12,13 @@ int main(int num_args, char* args[]) {
 
     InputParser params(num_args, args);
 
-    GenericAlgorithmInterface* algorithm;
+    typedef long long int id_t;
+
+    GenericAlgorithmInterface<id_t>* algorithm;
     if(!params.has_parameter("-a") || params.get_parameter("-a") == "lottery_sampling") {
-        algorithm = new LotterySampling::Algorithm(params);
+        algorithm = new LotterySampling::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "space_saving") {
-        algorithm = new SpaceSaving::Algorithm(params);
+        algorithm = new SpaceSaving::Algorithm<id_t>(params);
     } else {
         params.error();
     }
@@ -46,8 +48,9 @@ int main(int num_args, char* args[]) {
             algorithm->print_state();
             cout << ":end" << endl;
         } else { // It's a new element in the data stream
+            id_t element = stoll(s);
             stats.start_counting(stats.process_element_count);
-            algorithm->process_element(s);
+            algorithm->process_element(element);
             stats.finish_counting(stats.process_element_time);
         }
     }

@@ -1,6 +1,5 @@
 #include <algorithms/GenericAlgorithm.h>
 #include "Stats.h"
-#include <malloc/malloc.h>
 
 using namespace std::chrono;
 
@@ -27,20 +26,5 @@ void Stats::start_counting(counter& counter) {
 
 void Stats::finish_counting(counter& counter) {
     counter += get_interval(start_time);
-}
-
-void Stats::report(std::ostream& stream, GenericAlgorithmInterface* algorithm) {
-    // Python string format to build a dictionary
-    stream << "{";
-    stream << "'sample_size' : " << algorithm->sample_size() << ",";
-    stream << "'memory_usage' : " << mstats().bytes_used << ",";
-    stream << "'total_time' : " << get_interval(initial_time) << ",";
-    stream << "'process_element_time' : " << process_element_time << ",";
-    stream << "'process_element_count' : " << process_element_count << ",";
-    stream << "'frequent_query_time' : " << frequent_query_time << ",";
-    stream << "'frequent_query_count' : " << frequent_query_count << ",";
-    stream << "'k_top_query_time' : " << k_top_query_time << ",";
-    stream << "'k_top_query_count' : " << k_top_query_count;
-    stream << "}" << std::endl;
 }
 

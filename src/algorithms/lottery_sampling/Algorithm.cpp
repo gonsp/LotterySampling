@@ -1,15 +1,18 @@
-#include "Algorithm.h"
+#include "utils/InputParser.h"
 #include <iostream>
 
-using namespace LotterySampling;
+namespace LotterySampling {
+
+
 using namespace std;
 
-Algorithm::Algorithm(const InputParser& parameters) {
-    m = (unsigned  int) stoul(parameters.get_parameter("-m"));
+template<class T>
+Algorithm<T>::Algorithm(const InputParser& parameters) {
+    m = (unsigned int) stoul(parameters.get_parameter("-m"));
     aging = parameters.has_parameter("-aging");
     multilevel = parameters.has_parameter("-multilevel");
     if(!multilevel) {
-        set_monitored_size(m);
+        this->set_monitored_size(m);
     }
     int seed;
     if(parameters.has_parameter("-seed")) {
@@ -28,20 +31,23 @@ Algorithm::Algorithm(const InputParser& parameters) {
     }
 }
 
-void Algorithm::frequent_query(float f, std::ostream& stream) {
-    for(auto it = frequency_order.rbegin(); it != frequency_order.rend() && (*it)->freq >= f*N; ++it) {
-        stream << (*it)->id << " " << (*it)->freq / (float) N << endl;
+template<class T>
+void Algorithm<T>::frequent_query(float f, ostream& stream) {
+    for(auto it = frequency_order.rbegin(); it != frequency_order.rend() && (*it)->freq >= f * this->N; ++it) {
+        stream << (*it)->id << " " << (*it)->freq / (float) this->N << endl;
     }
 }
 
-void Algorithm::k_top_query(int k, std::ostream& stream) {
+template<class T>
+void Algorithm<T>::k_top_query(int k, ostream& stream) {
     for(auto it = frequency_order.rbegin(); it != frequency_order.rend() && k-- > 0; ++it) {
-        stream << (*it)->id << " " << (*it)->freq / (float) N << endl;
+        stream << (*it)->id << " " << (*it)->freq / (float) this->N << endl;
     }
 }
 
-void Algorithm::free_up_level_1() {
-    ElementLocator replaced_element_locator = *level_1.begin();
+template<class T>
+void Algorithm<T>::free_up_level_1() {
+    Locator replaced_element_locator = *level_1.begin();
     level_1.erase(level_1.begin());
     if(multilevel) {
         // Element is kicked out from level 1 to level 2
@@ -51,27 +57,29 @@ void Algorithm::free_up_level_1() {
     } else {
         // Element is just removed since multilevel is not being used
         frequency_order.erase(replaced_element_locator->frequency_iterator);
-        remove_element(replaced_element_locator->id);
+        this->remove_element(replaced_element_locator->id);
     }
 }
 
-void Algorithm::free_up_level_2() {
+template<class T>
+void Algorithm<T>::free_up_level_2() {
     // Element is removed
-    ElementLocator locator = *level_2.begin();
-    string removed_id = locator->id;
+    Locator locator = *level_2.begin();
+    T removed_id = locator->id;
     level_2.erase(level_2.begin());
     frequency_order.erase(locator->frequency_iterator);
-    remove_element(removed_id);
+    this->remove_element(removed_id);
 }
 
-bool Algorithm::insert_element(std::string& element_id, ElementLocator& locator) {
+template<class T>
+bool Algorithm<T>::insert_element(const T& element_id, Locator& locator) {
 
     Ticket ticket = generate_ticket();
     unsigned int freq;
     unsigned int over_estimation;
     int level;
 
-    if(sample_size() < m) {
+    if(this->sample_size() < m) {
         freq = 1;
         over_estimation = 0;
         level = 1;
@@ -93,7 +101,7 @@ bool Algorithm::insert_element(std::string& element_id, ElementLocator& locator)
     }
 
     if(level != -1) {
-        locator = make_shared<Element>(element_id, ticket, freq, over_estimation);
+        locator = make_shared<Element<T>>(element_id, ticket, freq, over_estimation);
         locator->ticket_iterator = (level == 1 ? level_1 : level_2).insert(locator);
         locator->level = level;
         locator->frequency_iterator = frequency_order.insert(locator);
@@ -102,9 +110,10 @@ bool Algorithm::insert_element(std::string& element_id, ElementLocator& locator)
     return false;
 }
 
-void Algorithm::update_element(ElementLocator& locator) {
+template<class T>
+void Algorithm<T>::update_element(Locator& locator) {
     // Updating frequency
-    FrequencyOrder::iterator hint = next(locator->frequency_iterator);
+    typename FrequencyOrder<T>::type::iterator hint = next(locator->frequency_iterator);
     frequency_order.erase(locator->frequency_iterator); // It's needed to remove and reinsert an element since there isn't an "update" method in multiset
     locator->freq++;
     locator->frequency_iterator = frequency_order.emplace_hint(hint, locator);
@@ -119,7 +128,7 @@ void Algorithm::update_element(ElementLocator& locator) {
             free_up_level_1();
         }
 
-        TicketOrder::iterator hint = next(locator->ticket_iterator);
+        typename TicketOrder<T>::type::iterator hint = next(locator->ticket_iterator);
         (locator->level == 1 ? level_1 : level_2).erase(locator->ticket_iterator);
         locator->ticket = ticket; // Updating (the better) ticket
         locator->ticket_iterator = (ticket > level_1_threshold ? level_1 : level_2).emplace_hint(hint, locator);
@@ -127,28 +136,31 @@ void Algorithm::update_element(ElementLocator& locator) {
     }
 }
 
-Ticket Algorithm::generate_ticket() {
+template<class T>
+Ticket Algorithm<T>::generate_ticket() {
     Ticket ticket = dist(random_state);
     if(aging) {
-        ticket += N;
+        ticket += this->N;
     }
     return ticket;
 }
 
-inline unsigned int Algorithm::estimate_frequency(Ticket min_ticket) const {
+template<class T>
+inline unsigned int Algorithm<T>::estimate_frequency(Ticket min_ticket) const {
     // TODO Protect from infinity
     // TODO take into account aging
     return static_cast<unsigned int>(1 / (1 - min_ticket / (double) MAX_TICKET));
 }
 
-template<typename T>
+template<class T>
 void print_container(const T& container) {
     for(auto it = container.rbegin(); it != container.rend(); ++it) {
         cout << (*it)->id << ", " << (*it)->ticket << ", " << (*it)->freq << ", " << (*it)->over_estimation << endl;
     }
 }
 
-void Algorithm::print_state() {
+template<class T>
+void Algorithm<T>::print_state() {
     cout << "-----------------------" << endl;
     cout << "%%%%%% level_1 %%%%%%" << endl;
     print_container(level_1);
@@ -158,6 +170,9 @@ void Algorithm::print_state() {
     cout << "-----------------------" << endl;
     cout << "%%%%%% frequency_order %%%%%%" << endl;
     print_container(frequency_order);
-    assert(level_1.size() + level_2.size() == sample_size());
-    assert(frequency_order.size() == sample_size());
+    assert(level_1.size() + level_2.size() == this->sample_size());
+    assert(frequency_order.size() == this->sample_size());
+}
+
+
 }

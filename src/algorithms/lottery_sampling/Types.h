@@ -1,45 +1,73 @@
 #ifndef _Types_LotterySampling_H_
 #define _Types_LotterySampling_H_
 
-#include <string>
 #include <set>
 
 namespace LotterySampling {
 
-
+template <class T>
 struct Element;
 
-typedef std::shared_ptr<Element> ElementLocator;
+template <class T>
+struct ElementLocator {
+    typedef std::shared_ptr<Element<T>> type;
+};
 
+template <class T>
 struct CompareTicket {
-    bool operator()(const ElementLocator& a, const ElementLocator& b) const;
+    bool operator()(const typename ElementLocator<T>::type& a, const typename ElementLocator<T>::type& b) const;
 };
 
+template <class T>
 struct CompareFrequency {
-    bool operator()(const ElementLocator& a, const ElementLocator& b) const;
+    bool operator()(const typename ElementLocator<T>::type& a, const typename ElementLocator<T>::type& b) const;
 };
 
-typedef std::multiset<ElementLocator, CompareTicket> TicketOrder;
+template <class T>
+struct TicketOrder {
+    typedef std::multiset<typename ElementLocator<T>::type, CompareTicket<T>> type;
+};
 
-typedef std::multiset<ElementLocator, CompareFrequency> FrequencyOrder;
+template <class T>
+struct FrequencyOrder {
+    typedef std::multiset<typename ElementLocator<T>::type, CompareFrequency<T>> type;
+};
 
 typedef uint64_t Ticket;
 
+template <class T>
 struct Element {
-    std::string id;
+    T id;
     Ticket ticket;
     unsigned int freq;
     unsigned int over_estimation;
 
-    TicketOrder::iterator ticket_iterator;
+    typename TicketOrder<T>::type::iterator ticket_iterator;
     int level;
 
-    FrequencyOrder::iterator frequency_iterator;
+    typename FrequencyOrder<T>::type::iterator frequency_iterator;
 
-    Element(std::string id, Ticket ticket, unsigned int freq, unsigned int over_estimation);
+    Element(const T& id, Ticket ticket, unsigned int freq, unsigned int over_estimation) {
+        this->id = id;
+        this->ticket = ticket;
+        this->freq = freq;
+        this->over_estimation = over_estimation;
+    }
 
-    bool operator<(const Element& element) const;
+    bool operator<(const Element<T>& element) const {
+        return this->freq < element.freq;
+    }
 };
+
+template <class T>
+bool CompareTicket<T>::operator()(const typename ElementLocator<T>::type& a, const typename ElementLocator<T>::type& b) const {
+    return a->ticket < b->ticket;
+};
+
+template <class T>
+bool CompareFrequency<T>::operator()(const typename ElementLocator<T>::type& a, const typename ElementLocator<T>::type& b) const {
+    return *a < *b;
+}
 
 
 }

@@ -9,19 +9,19 @@
 
 namespace SpaceSaving {
 
-
-class Algorithm : public GenericAlgorithm<ElementLocator> {
+template <class T>
+class Algorithm : public GenericAlgorithm<T, ElementLocator<T>> {
 
 private:
 
-    StreamSummary stream_summary;
+    typename StreamSummary<T>::type stream_summary;
     unsigned int m;
 
-    void increment_counter(ElementLocator& locator);
+    void increment_counter(ElementLocator<T>& locator);
 
-    bool insert_element(std::string& element_id, ElementLocator& locator) override;
+    bool insert_element(const T& element_id, ElementLocator<T>& locator) override;
 
-    void update_element(ElementLocator& locator) override;
+    void update_element(ElementLocator<T>& locator) override;
 
 public:
     Algorithm(const InputParser& parameters);
@@ -35,5 +35,7 @@ public:
 
 
 }
+
+#include "Algorithm.cpp"
 
 #endif //_SPACESAVING_H_

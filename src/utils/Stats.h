@@ -4,6 +4,7 @@
 #include <chrono>
 #include <ostream>
 #include <algorithms/GenericAlgorithm.h>
+#include <malloc/malloc.h>
 
 typedef long long int counter;
 
@@ -32,7 +33,21 @@ public:
 
     void finish_counting(counter& counter);
 
-    void report(std::ostream& stream, GenericAlgorithmInterface* algorithm);
+    template <class T>
+    void report(std::ostream& stream, GenericAlgorithmInterface<T>* algorithm) {
+        // Python string format to build a dictionary
+        stream << "{";
+        stream << "'sample_size' : " << algorithm->sample_size() << ",";
+        stream << "'memory_usage' : " << mstats().bytes_used << ",";
+        stream << "'total_time' : " << get_interval(initial_time) << ",";
+        stream << "'process_element_time' : " << process_element_time << ",";
+        stream << "'process_element_count' : " << process_element_count << ",";
+        stream << "'frequent_query_time' : " << frequent_query_time << ",";
+        stream << "'frequent_query_count' : " << frequent_query_count << ",";
+        stream << "'k_top_query_time' : " << k_top_query_time << ",";
+        stream << "'k_top_query_count' : " << k_top_query_count;
+        stream << "}" << std::endl;
+    }
 };
 
 

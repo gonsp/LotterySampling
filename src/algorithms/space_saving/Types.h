@@ -6,31 +6,36 @@
 
 namespace SpaceSaving {
 
-
+template <class T>
 struct Element {
-    std::string id;
+    T id;
     int over_estimation;
 
-    Element(std::string id, int over_estimation) {
+    Element(const T& id, int over_estimation) {
         this->id = id;
         this->over_estimation = over_estimation;
     }
 };
 
+template <class T>
 struct Bucket {
     int count;
-    std::list<Element> elements;
+    std::list<Element<T>> elements;
 
     Bucket(int count) {
         this->count = count;
     }
 };
 
-typedef std::list<Bucket> StreamSummary;
+template <class T>
+struct StreamSummary {
+    typedef std::list<Bucket<T>> type;
+};
 
+template <class T>
 struct ElementLocator {
-    StreamSummary::iterator bucket_iterator;
-    std::list<Element>::iterator element_iterator;
+    typename StreamSummary<T>::type::iterator bucket_iterator;
+    typename std::list<Element<T>>::iterator element_iterator;
 };
 
 

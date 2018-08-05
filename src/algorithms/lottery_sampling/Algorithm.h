@@ -9,14 +9,17 @@
 namespace LotterySampling {
 
 
-class Algorithm : public GenericAlgorithm<ElementLocator> {
+template <class T>
+class Algorithm : public GenericAlgorithm<T, typename ElementLocator<T>::type> {
 
 private:
 
-    TicketOrder level_1;
-    TicketOrder level_2;
+    typedef typename ElementLocator<T>::type Locator;
 
-    FrequencyOrder frequency_order;
+    typename TicketOrder<T>::type level_1;
+    typename TicketOrder<T>::type level_2;
+
+    typename FrequencyOrder<T>::type frequency_order;
 
     unsigned int m;
     bool aging;
@@ -26,9 +29,9 @@ private:
     std::mt19937_64 random_state;
     std::uniform_int_distribution<Ticket> dist;
 
-    bool insert_element(std::string& element_id, ElementLocator& locator) override;
+    bool insert_element(const T& element_id, Locator& locator) override;
 
-    void update_element(ElementLocator& locator) override;
+    void update_element(Locator& locator) override;
 
     Ticket generate_ticket();
 
@@ -50,5 +53,7 @@ public:
 
 
 }
+
+#include "Algorithm.cpp"
 
 #endif //_LOTTERYSAMPLING_H_
