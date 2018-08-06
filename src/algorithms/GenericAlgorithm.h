@@ -30,6 +30,7 @@ class GenericAlgorithm : public GenericAlgorithmInterface<T> {
 private:
     typedef std::unordered_map<T, Element<T>> MonitoredElements;
     MonitoredElements monitored_elements;
+    bool has_extra_element = false;
 
 protected:
 

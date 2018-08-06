@@ -12,10 +12,12 @@ void GenericAlgorithm<Element, T>::process_element(const T& element_id) {
     ++N;
     typename MonitoredElements::iterator it = monitored_elements.find(element_id);
     if(it == monitored_elements.end()) { // element wasn't being sampled
+        has_extra_element = true;
         it = monitored_elements.emplace(element_id, element_id).first; // Create instance of element
         if(!insert_element((*it).second)) {
             monitored_elements.erase(it); // Since the algorithm has chosen no to keep it in the sample, we remove it
         }
+        has_extra_element = false;
     } else { // element was being sampled
         update_element(it->second);
     }
@@ -33,5 +35,5 @@ void GenericAlgorithm<Element, T>::remove_element(const T& element_id) {
 
 template <template<typename> class Element, class T>
 unsigned int GenericAlgorithm<Element, T>::sample_size() {
-    return (int) (monitored_elements.size());
+    return monitored_elements.size() - (has_extra_element ? 1 : 0);
 }
