@@ -6,13 +6,14 @@
 #include <algorithms/GenericAlgorithm.h>
 #include <malloc/malloc.h>
 
-typedef long long int counter;
 
 class Stats {
 
 private:
 
+    typedef long long int counter;
     typedef std::chrono::high_resolution_clock::time_point time_point;
+
     time_point initial_time;
     time_point start_time;
 

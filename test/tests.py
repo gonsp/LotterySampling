@@ -166,6 +166,7 @@ class TestMemoryUsageAsymptotic(TestMemoryUsage):
 
         initial_m = int(self.params.m)
         for i in range(1, 11):
+            print(i)
             m = i * initial_m
             x.append(m)
             self.params.m = m

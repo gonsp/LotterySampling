@@ -9,21 +9,20 @@
 
 namespace SpaceSaving {
 
+
 template <class T>
-class Algorithm : public GenericAlgorithm<T, typename ElementLocator<T>::type> {
+class Algorithm : public GenericAlgorithm<Element, T> {
 
 private:
 
-    typedef typename ElementLocator<T>::type Locator;
-
-    typename StreamSummary<T>::type stream_summary;
+    typename Element<T>::StreamSummary stream_summary;
     unsigned int m;
 
-    void increment_counter(Locator& locator);
+    void increment_counter(Element<T>& element);
 
-    bool insert_element(const T& element_id, Locator& locator) override;
+    bool insert_element(Element<T>& element) override;
 
-    void update_element(Locator& locator) override;
+    void update_element(Element<T>& element) override;
 
 public:
     Algorithm(const InputParser& parameters);

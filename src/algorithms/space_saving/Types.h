@@ -6,45 +6,36 @@
 
 namespace SpaceSaving {
 
-template <class T>
-struct Element;
-
-template <class T>
-struct ElementLocator {
-    typedef std::shared_ptr<Element<T>> type;
-};
-
-template <class T>
-struct Bucket {
-    int count;
-
-    typedef typename std::list<typename ElementLocator<T>::type> ElementList;
-    ElementList elements;
-
-    Bucket(int count) {
-        this->count = count;
-    }
-};
-
-template <class T>
-struct StreamSummary {
-    typedef std::list<Bucket<T>> type;
-};
 
 template <class T>
 struct Element {
+
+public:
+    struct Bucket {
+    private:
+        typedef std::list<Element<T>*> ElementList;
+
+    public:
+        typedef typename ElementList::iterator iterator;
+
+        int count;
+        ElementList elements;
+
+        Bucket(int count) {
+            this->count = count;
+        }
+    };
+
+    typedef std::list<Bucket> StreamSummary;
+
     T id;
     int over_estimation;
 
-    typedef typename StreamSummary<T>::type::iterator BucketIterator;
-    typedef typename Bucket<T>::ElementList::iterator ElementIterator;
+    typename StreamSummary::iterator bucket_iterator;
+    typename Bucket::iterator element_iterator;
 
-    BucketIterator bucket_iterator;
-    ElementIterator element_iterator;
-
-    Element(const T& id, int over_estimation) {
+    Element(const T& id) {
         this->id = id;
-        this->over_estimation = over_estimation;
     }
 };
 

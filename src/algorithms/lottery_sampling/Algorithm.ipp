@@ -1,3 +1,4 @@
+#include "Algorithm.h"
 #include "utils/InputParser.h"
 #include <iostream>
 
@@ -47,92 +48,82 @@ void Algorithm<T>::k_top_query(int k, ostream& stream) {
 
 template<class T>
 void Algorithm<T>::free_up_level_1() {
-    Locator replaced_element_locator = *level_1.begin();
+    Element<T>* replaced_element = *level_1.begin();
     level_1.erase(level_1.begin());
     if(multilevel) {
         // Element is kicked out from level 1 to level 2
         // TODO profile emplace_hint to see if it improves exec. time
-        replaced_element_locator->ticket_iterator = level_2.emplace_hint(level_2.end(), replaced_element_locator);
-        replaced_element_locator->level = 2;
+        replaced_element->ticket_iterator = level_2.emplace_hint(level_2.end(), replaced_element);
+        replaced_element->level = 2;
     } else {
         // Element is just removed since multilevel is not being used
-        frequency_order.erase(replaced_element_locator->frequency_iterator);
-        this->remove_element(replaced_element_locator->id);
+        frequency_order.erase(replaced_element->frequency_iterator);
+        this->remove_element(replaced_element->id);
     }
 }
 
 template<class T>
 void Algorithm<T>::free_up_level_2() {
     // Element is removed
-    Locator locator = *level_2.begin();
-    T removed_id = locator->id;
+    Element<T>* locator = *level_2.begin();
+    const T& removed_id = locator->id;
     level_2.erase(level_2.begin());
     frequency_order.erase(locator->frequency_iterator);
     this->remove_element(removed_id);
 }
 
 template<class T>
-bool Algorithm<T>::insert_element(const T& element_id, Locator& locator) {
+bool Algorithm<T>::insert_element(Element<T>& element) {
 
-    Ticket ticket = generate_ticket();
-    unsigned int freq;
-    unsigned int over_estimation;
-    int level;
+    element.ticket = generate_ticket();
 
     if(this->sample_size() < m) {
-        freq = 1;
-        over_estimation = 0;
-        level = 1;
+        element.freq = 1;
+        element.over_estimation = 0;
+        element.level = 1;
     } else {
-        if(ticket > (*level_1.begin())->ticket) {
-            freq = estimate_frequency((*level_1.begin())->ticket);
-            over_estimation = freq - 1;
-            level = 1;
+        if(element.ticket > (*level_1.begin())->ticket) {
+            element.freq = estimate_frequency((*level_1.begin())->ticket);
+            element.level = 1;
             free_up_level_1();
-        } else if(!level_2.empty() && ticket > (*level_2.begin())->ticket) {
-            freq = estimate_frequency((*level_2.begin())->ticket);
-            over_estimation = freq - 1;
-            level = 2;
+        } else if(!level_2.empty() && element.ticket > (*level_2.begin())->ticket) {
+            element.freq = estimate_frequency((*level_2.begin())->ticket);
+            element.level = 2;
             free_up_level_2();
         } else {
             // New element didn't get a good enough ticket to get sampled, so it's discarded
-            level = -1;
+            return false;
         }
+        element.over_estimation = element.freq - 1;
     }
 
-    if(level != -1) {
-        locator = make_shared<Element<T>>(element_id, ticket, freq, over_estimation);
-        locator->ticket_iterator = (level == 1 ? level_1 : level_2).insert(locator);
-        locator->level = level;
-        locator->frequency_iterator = frequency_order.insert(locator);
-        return true;
-    }
-    return false;
+    element.ticket_iterator = (element.level == 1 ? level_1 : level_2).insert(&element);
+    element.frequency_iterator = frequency_order.insert(&element);
+    return true;
 }
 
 template<class T>
-void Algorithm<T>::update_element(Locator& locator) {
+void Algorithm<T>::update_element(Element<T>& element) {
     // Updating frequency
-    typename Element<T>::FrequencyOrderIterator hint = next(locator->frequency_iterator);
-    frequency_order.erase(locator->frequency_iterator); // It's needed to remove and reinsert an element since there isn't an "update" method in multiset
-    locator->freq++;
-    locator->frequency_iterator = frequency_order.emplace_hint(hint, locator);
+    typename Element<T>::FrequencyOrder::iterator hint = next(element.frequency_iterator);
+    frequency_order.erase(element.frequency_iterator); // It's needed to remove and reinsert an element since there isn't an "update" method in multiset
+    element.freq++;
+    element.frequency_iterator = frequency_order.emplace_hint(hint, &element);
 
     // Updating ticket
-    Ticket old_ticket = locator->ticket;
     Ticket ticket = generate_ticket();
-    if(ticket > old_ticket) { // The new ticket is better than the old one
+    if(ticket > element.ticket) { // The new ticket is better than the old one
         Ticket level_1_threshold = (*level_1.begin())->ticket;
-        if(locator->level == 2 && level_1_threshold < ticket) {
+        if(element.level == 2 && level_1_threshold < ticket) {
             // element is moving from level_2 to level_1, so we kick out the lowest ticket from level_1 to level_2
             free_up_level_1();
         }
 
-        typename Element<T>::TicketOrderIterator hint = next(locator->ticket_iterator);
-        (locator->level == 1 ? level_1 : level_2).erase(locator->ticket_iterator);
-        locator->ticket = ticket; // Updating (the better) ticket
-        locator->ticket_iterator = (ticket > level_1_threshold ? level_1 : level_2).emplace_hint(hint, locator);
-        locator->level = (ticket > level_1_threshold ? 1 : 2);
+        typename Element<T>::TicketOrder::iterator hint = next(element.ticket_iterator);
+        (element.level == 1 ? level_1 : level_2).erase(element.ticket_iterator);
+        element.ticket = ticket; // Updating (the better) ticket
+        element.ticket_iterator = (ticket > level_1_threshold ? level_1 : level_2).emplace_hint(hint, &element);
+        element.level = (ticket > level_1_threshold ? 1 : 2);
     }
 }
 

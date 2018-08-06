@@ -1,35 +1,37 @@
-template <class T, class ElementLocator>
-void GenericAlgorithm<T, ElementLocator>::remove_element(const T& element_id) {
-    monitored_elements.erase(element_id);
-}
+#include <algorithms/GenericAlgorithm.h>
 
-template <class T, class ElementLocator>
-ElementLocator& GenericAlgorithm<T, ElementLocator>::get_locator(const T& element_id) {
-    return monitored_elements[element_id];
-}
-
-template <class T, class ElementLocator>
-void GenericAlgorithm<T, ElementLocator>::set_monitored_size(unsigned int m) {
+template <template<typename> class Element, class T>
+void GenericAlgorithm<Element, T>::set_monitored_size(unsigned int m) {
     // TODO experiment with different max_load_factor
     monitored_elements.max_load_factor(1);
     monitored_elements.reserve(m);
 }
 
-template <class T, class ElementLocator>
-void GenericAlgorithm<T, ElementLocator>::process_element(const T& element_id) {
+template <template<typename> class Element, class T>
+void GenericAlgorithm<Element, T>::process_element(const T& element_id) {
     ++N;
     typename MonitoredElements::iterator it = monitored_elements.find(element_id);
     if(it == monitored_elements.end()) { // element wasn't being sampled
-        ElementLocator locator;
-        if(insert_element(element_id, locator)) {
-            monitored_elements[element_id] = locator;
+        it = monitored_elements.emplace(element_id, element_id).first; // Create instance of element
+        if(!insert_element((*it).second)) {
+            monitored_elements.erase(it); // Since the algorithm has chosen no to keep it in the sample, we remove it
         }
     } else { // element was being sampled
         update_element(it->second);
     }
 }
 
-template <class T, class ElementLocator>
-unsigned int GenericAlgorithm<T, ElementLocator>::sample_size() {
+template <template<typename> class Element, class T>
+Element<T>& GenericAlgorithm<Element, T>::get_element_reference(const T& element_id) {
+    return monitored_elements.find(element_id)->second;
+}
+
+template <template<typename> class Element, class T>
+void GenericAlgorithm<Element, T>::remove_element(const T& element_id) {
+    monitored_elements.erase(element_id);
+}
+
+template <template<typename> class Element, class T>
+unsigned int GenericAlgorithm<Element, T>::sample_size() {
     return (int) (monitored_elements.size());
 }

@@ -6,7 +6,7 @@
 
 // This interface is needed so it's possible to create a pointer
 // to a GenericAlgorithm, since GenericAlgorithm is a template class
-// and the type of ElementLocator is not known in compile time
+// and the type of Element is not known in compile time
 template <class T>
 class GenericAlgorithmInterface {
 public:
@@ -24,24 +24,24 @@ public:
 };
 
 
-template <class T, class ElementLocator>
+template <template<typename> class Element, class T>
 class GenericAlgorithm : public GenericAlgorithmInterface<T> {
 
 private:
-    typedef std::unordered_map<T, ElementLocator> MonitoredElements;
+    typedef std::unordered_map<T, Element<T>> MonitoredElements;
     MonitoredElements monitored_elements;
 
 protected:
 
     int N = 0;
 
-    virtual bool insert_element(const T& element_id, ElementLocator& locator) = 0;
+    virtual bool insert_element(Element<T>& element) = 0;
 
-    virtual void update_element(ElementLocator& locator) = 0;
+    virtual void update_element(Element<T>& element) = 0;
 
     void remove_element(const T& element_id);
 
-    ElementLocator& get_locator(const T& element_id);
+    Element<T>& get_element_reference(const T& element_id);
 
     void set_monitored_size(unsigned int m);
 

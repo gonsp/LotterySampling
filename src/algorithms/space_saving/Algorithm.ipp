@@ -2,6 +2,7 @@
 
 namespace SpaceSaving {
 
+
 using namespace std;
 
 template<class T>
@@ -32,51 +33,51 @@ void Algorithm<T>::k_top_query(int k, std::ostream& stream) {
 }
 
 template<class T>
-bool Algorithm<T>::insert_element(const T& element_id, Locator& locator) {
-    locator = make_shared<Element<T>>(element_id, 0);
+bool Algorithm<T>::insert_element(Element<T>& element) {
 
     if(this->sample_size() < m) {
         if(stream_summary.empty() || prev(stream_summary.end())->count != 1) {
             // There are no buckets or the smallest one has count greater than 1
-            stream_summary.push_back(Bucket<T>(1));
+            stream_summary.push_back(typename Element<T>::Bucket(1));
         }
-        locator->bucket_iterator = prev(stream_summary.end());
-        locator->bucket_iterator->elements.emplace_back(locator);
-        locator->element_iterator = prev(locator->bucket_iterator->elements.end());
+        element.bucket_iterator = prev(stream_summary.end());
+        element.bucket_iterator->elements.emplace_back(&element);
+        element.element_iterator = prev(element.bucket_iterator->elements.end());
+        element.over_estimation = 0;
     } else { // Max number of monitored elements is reached. This new one will replace the one with less hits
-        locator->bucket_iterator = prev(stream_summary.end());
-        locator->element_iterator = locator->bucket_iterator->elements.begin(); // We select the oldest element with less hits
-        T removed_id = (*locator->element_iterator)->id;
+        element.bucket_iterator = prev(stream_summary.end());
+        element.element_iterator = element.bucket_iterator->elements.begin(); // We select the oldest element with less hits
+        T removed_id = (*element.element_iterator)->id;
         this->remove_element(removed_id);
 
         // Replacing the old element
-        *locator->element_iterator = locator;
-        locator->over_estimation = locator->bucket_iterator->count - 1;
+        *element.element_iterator = &element;
+        element.over_estimation = element.bucket_iterator->count;
 
-        increment_counter(locator);
+        increment_counter(element);
     }
     return true;
 }
 
 template<class T>
-void Algorithm<T>::update_element(Locator& locator) {
-    increment_counter(locator);
+void Algorithm<T>::update_element(Element<T>& element) {
+    increment_counter(element);
 }
 
 template<class T>
-void Algorithm<T>::increment_counter(Locator& locator) {
-    int new_count = locator->bucket_iterator->count + 1;
-    locator->bucket_iterator->elements.erase(locator->element_iterator);
-    if(locator->bucket_iterator == stream_summary.begin() || prev(locator->bucket_iterator)->count != new_count) { // It is the highest bucket or the previous bucket doesn't have the required count
-        stream_summary.insert(locator->bucket_iterator, Bucket<T>(new_count));
+void Algorithm<T>::increment_counter(Element<T>& element) {
+    int new_count = element.bucket_iterator->count + 1;
+    element.bucket_iterator->elements.erase(element.element_iterator);
+    if(element.bucket_iterator == stream_summary.begin() || prev(element.bucket_iterator)->count != new_count) { // It is the highest bucket or the previous bucket doesn't have the required count
+        stream_summary.insert(element.bucket_iterator, typename Element<T>::Bucket(new_count));
     }
-    typename Element<T>::BucketIterator old_bucket = locator->bucket_iterator;
-    locator->bucket_iterator--;
+    typename Element<T>::StreamSummary::iterator old_bucket = element.bucket_iterator;
+    element.bucket_iterator--;
     if(old_bucket->elements.empty()) {
         stream_summary.erase(old_bucket);
     }
-    locator->bucket_iterator->elements.push_back(locator);
-    locator->element_iterator = prev(locator->bucket_iterator->elements.end());
+    element.bucket_iterator->elements.push_back(&element);
+    element.element_iterator = prev(element.bucket_iterator->elements.end());
 }
 
 template<class T>
@@ -87,8 +88,8 @@ void Algorithm<T>::print_state() {
         cout << "%%%%%% " << i->count << " %%%%%%" << endl;
         for(auto j = i->elements.begin(); j != i->elements.end(); ++j) {
             cout << (*j)->id << ", " << (*j)->over_estimation << endl;
-            assert(i == this->get_locator((*j)->id).bucket_iterator);
-            assert(j == this->get_locator((*j)->id).element_iterator);
+            assert(i == this->get_element_reference((*j)->id).bucket_iterator);
+            assert(j == this->get_element_reference((*j)->id).element_iterator);
             ++n_elements;
         }
     }
