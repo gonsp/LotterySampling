@@ -38,10 +38,12 @@ class Instance():
             output = self.process.stdout.readline()
             if output == ':end\n':
                 break
-            else:
+            elif len(output) > 0:
                 output = output.split()
                 element = (output[0], float(output[1]))
                 elements.append(element)
+            else:
+                exit(1)
         return elements
 
 
@@ -53,7 +55,7 @@ class Instance():
 
 
     def k_top_query(self, k):
-        command = ':q' + '\n' + ':k' + '\n' + str(k) + '\n'
+        command = ':q' + '\n' + ':k' + '\n' + str(int(k)) + '\n'
         self.process.stdin.write(command)
 
         return self.process_query_output()

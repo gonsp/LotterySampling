@@ -164,8 +164,8 @@ class TestMemoryUsageAsymptotic(TestMemoryUsage):
         z = []
         expected_size_lottery_multilevel = []
 
-        initial_m = self.params.m
-        for i in range(0, 10):
+        initial_m = int(self.params.m)
+        for i in range(1, 11):
             m = i * initial_m
             x.append(m)
             self.params.m = m
