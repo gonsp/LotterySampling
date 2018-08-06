@@ -65,10 +65,10 @@ void Algorithm<T>::free_up_level_1() {
 template<class T>
 void Algorithm<T>::free_up_level_2() {
     // Element is removed
-    Element<T>* locator = *level_2.begin();
-    const T& removed_id = locator->id;
+    Element<T>* removed_element = *level_2.begin();
+    const T& removed_id = removed_element->id;
     level_2.erase(level_2.begin());
-    frequency_order.erase(locator->frequency_iterator);
+    frequency_order.erase(removed_element->frequency_iterator);
     this->remove_element(removed_id);
 }
 
