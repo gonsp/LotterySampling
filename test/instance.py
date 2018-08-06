@@ -3,11 +3,12 @@ import ast
 import time
 import profiler_utils
 
-class Instance():
+
+class Instance:
 
     def __init__(self, exec_path, params, profile=None):
         params = params.split()
-        self.name = ' '.join(params[1:])
+        self.name = exec_path.split('/')[-1] + ' ' + ' '.join(params[1:])
         command = [exec_path] + params
         error_pipe = None
         if profile is not None:
@@ -76,7 +77,7 @@ class Instance():
             if line == ':end\n':
                 break
             else:
-               print(line)
+                print(line)
 
 
     def finish(self):

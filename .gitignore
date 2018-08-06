@@ -37,6 +37,7 @@ cmake-build-*
 build
 CMakeFiles
 CMakeCache.txt
+bin
 
 # IDE
 .idea

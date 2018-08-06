@@ -28,7 +28,17 @@ class Test:
 
 
     def create_instances(self, m, seed, profile=None):
+        configuration = 'debug'
         return [
+            Instance('../bin/optimization-0-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            Instance('../bin/optimization-0-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
+            Instance('../bin/optimization-0-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
+            Instance('../bin/optimization-1-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            Instance('../bin/optimization-1-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
+            Instance('../bin/optimization-1-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
+            Instance('../bin/optimization-2-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            Instance('../bin/optimization-2-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
+            Instance('../bin/optimization-2-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
             Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
             Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
             Instance(self.exec_path, '-a space_saving -m ' + str(m), profile=profile)
@@ -86,7 +96,7 @@ class TestMemoryLeak(Test):
 
         m = 10000
 
-        instances = create_instances(m, seed, 'memory_leak')
+        instances = self.create_instances(m, seed, 'memory_leak')
 
         for i in range(100000):
             element = stream.next_element()
@@ -136,7 +146,7 @@ class TestMemoryUsage(Test):
         results = []
         sizes = []
         for instance in self.instances:
-            instance.k_top_query(m/2)
+            instance.k_top_query(m)
             instance.frequent_query(0.05)
 
             instance.finish()
@@ -186,7 +196,7 @@ class TestMemoryUsageAsymptotic(TestMemoryUsage):
 
         for i, instance in enumerate(self.instances):
             axes.plot(x, y[:, i], '-o', label='Memory ' + instance.name)
-            axes_right.plot(x, z[:, i], '--x', label='Sample size ' + instance.name)
+            axes_right.plot(x, z[:, i], '--x', label='Sample size')
         axes_right.plot(x, expected_size_lottery_multilevel, 'm--x', label='Expected sample size lottery_sampling -multilevel')
 
         axes.legend(loc='upper left')
