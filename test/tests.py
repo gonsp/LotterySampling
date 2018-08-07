@@ -4,7 +4,7 @@ import os
 import random
 import subprocess
 import argparse
-from abc import abstractmethod
+from abc import abstractmethod, ABCMeta
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -28,7 +28,7 @@ class Test:
 
 
     def create_instances(self, m, seed, profile=None):
-        configuration = 'debug'
+        configuration = 'release' if profile is None else 'debug'
         return [
             Instance('../bin/optimization-0-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
             Instance('../bin/optimization-0-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
@@ -114,102 +114,139 @@ class TestMemoryLeak(Test):
                 self.error('Memory leak:', memory_leak, 'bytes', seed=seed, command=instance.command)
 
 
-class TestMemoryUsage(Test):
+class TestAsymptotic(Test):
+    # To test asymptotic behaviour of memory or exec time with respect to the intial sample size
 
-    def __init__(self):
+    def __init__(self, testing='memory', profiler=False, ylabel=''):
         args = [
-            ('m', True),
-            ('stream', True),
+            ('initial_m', True),
             ('N', True),
+            ('iterations', False),
+            ('stream', True),
             ('seed', False)
         ]
-        super().__init__('debug', args)
-        self.print_results = True
+        self.testing = testing
+        self.ylabel = ylabel
+        if profiler:
+            if testing == 'memory':
+                self.profile = 'memory_usage'
+                self.stats_name = 'memory_usage_peak_profiler'
+            elif testing == 'time':
+                self.profile = 'exec_time'
+                self.stats_name = 'process_element_cost_profiler'
+        else:
+            self.profile = None
+            if testing == 'memory':
+                self.stats_name = 'memory_usage'
+            else:
+                self.stats_name = 'process_element_time'
+        super().__init__(configuration='debug' if profiler else 'release', args=args)
 
 
     def run(self):
+
+        N = int(self.params.N)
 
         seed = self.generate_seed()
 
-        if self.params.stream == 'zipf':
-            stream = streams.Zipf(1.1, seed)
+        if self.params.iterations is None:
+            self.params.iterations = 10
+        else:
+            self.params.iterations = int(self.params.iterations)
 
-        m = int(self.params.m)
+        m_history = []
+        value_history = []
+        sample_size_history = []
+        n_history = []
 
-        self.instances = self.create_instances(m, seed, 'memory_usage')
+        for iteration in range(1, self.params.iterations + 1):
+            print('Iteration:', i , '/', self.params.iterations)
 
-        for i in range(int(self.params.N)):
-            element = stream.next_element()
-            for instance in self.instances:
-                instance.process_element(str(element))
+            m = iteration * int(self.params.initial_m)
 
-        results = []
-        sizes = []
-        for instance in self.instances:
-            instance.k_top_query(m)
-            instance.frequent_query(0.05)
+            if self.params.stream == 'zipf':
+                stream = streams.Zipf(1.1, seed)
+            elif self.params.stream == 'uniform':
+                # stream = streams.Uniform(int(N/2), seed, False)   # To test the "insert_element" operation (with a few updates)
+                # stream = streams.Uniform(int(1.1*m), seed, False) # To test the "update_element" operation (with a few inserts)
+                stream = streams.Uniform(2*m, seed, False)          # In expectation there will be N/2 inserts and N/2 updates.
 
-            instance.finish()
-            stats = instance.get_stats()
-            memory_peak = stats['memory_usage_peak_profiler']
-            if self.print_results:
-                print('Memory peak:', memory_peak, instance.command)
-            results.append(memory_peak)
-            sizes.append(stats['sample_size'])
+            instances = self.create_instances(m, seed, self.profile)
 
-        return results, sizes, stream.n
+            for i in range(N):
+                element = stream.next_element()
+                for instance in instances:
+                    instance.process_element(str(element))
 
+            results = []
+            sizes = []
+            for instance in instances:
+                instance.k_top_query(m)
+                instance.frequent_query(0.05)
 
-class TestMemoryUsageAsymptotic(TestMemoryUsage):
+                instance.finish()
+                stats = instance.get_stats()
+                value = stats[self.stats_name]
+                if self.testing == 'time':
+                    value = value / N
+                results.append(value)
+                sizes.append(stats['sample_size'])
 
-    def __init__(self):
-        super().__init__()
-        self.print_results = False
-        self.params.seed = self.generate_seed()
+            m_history.append(m)
+            value_history.append(results)
+            sample_size_history.append(sizes)
+            n_history.append(stream.n)
 
+        m_history = np.array(m_history)
+        value_history = np.array(value_history)
+        sample_size_history = np.array(sample_size_history)
+        n_history = np.array(n_history)
 
-    def run(self):
-        x = []
-        y = []
-        z = []
-        expected_size_lottery_multilevel = []
-
-        initial_m = int(self.params.m)
-        for i in range(1, 11):
-            print(i)
-            m = i * initial_m
-            x.append(m)
-            self.params.m = m
-            results, sizes, n = super().run()
-            y.append(results)
-            z.append(sizes)
-            expected_size_lottery_multilevel.append(m * math.log(n/m))
-
-        print("Showing results")
-
-        x = np.array(x)  # m
-        y = np.array(y)  # memory
-        z = np.array(z)  # sample size
-
+        print('Showing results')
         _, axes = plt.subplots()
         axes_right = axes.twinx()
 
-        for i, instance in enumerate(self.instances):
-            axes.plot(x, y[:, i], '-o', label='Memory ' + instance.name)
-            axes_right.plot(x, z[:, i], '--x', label='Sample size')
-        axes_right.plot(x, expected_size_lottery_multilevel, 'm--x', label='Expected sample size lottery_sampling -multilevel')
+        for i, instance in enumerate(instances):
+            axes.plot(m_history, value_history[:, i], '-o', label=self.testing + ' ' + instance.name)
+            axes_right.plot(m_history, sample_size_history[:, i], '--x', label='Sample size')
+        axes_right.plot(m_history, m_history * np.log(n_history/m_history), 'm:.', label='m * ln(n/m)')
 
         axes.legend(loc='upper left')
         axes_right.legend(loc='upper right')
-        axes.set_xlabel('m (Initial number of sampled elements)')
-        axes.set_ylabel('Max used memory (bytes)')
+        axes.set_xlabel('m (Parameter for number of sampled elements)')
+        axes.set_ylabel(self.ylabel)
         axes_right.set_ylabel('Sample size')
 
         self.full_screen_plot()
         plt.show()
 
 
+class TestAsymptoticMemoryProfiler(TestAsymptotic):
+
+    def __init__(self):
+        super().__init__(testing='memory', profiler=True, ylabel='Max used memory (bytes)')
+
+
+class TestAsymptoticMemory(TestAsymptotic):
+
+    def __init__(self):
+        super().__init__(testing='memory', profiler=False, ylabel='Used memory (bytes)')
+
+
+class TestAsymptoticTimeProfiler(TestAsymptotic):
+
+    def __init__(self):
+        super().__init__(testing='time', profiler=True, ylabel='Cost (Valgrind output)')
+
+
+class TestAsymptoticTime(TestAsymptotic):
+
+    def __init__(self):
+        super().__init__(testing='time', profiler=False, ylabel='Mean exec time for element in the stream (microseconds)')
+
+
 class TestMemoryUsageEvolution(Test):
+    # Test to see the evolution of memory usage through the entire stream
 
     def __init__(self):
         args = [
@@ -232,10 +269,11 @@ class TestMemoryUsageEvolution(Test):
 
         instances = self.create_instances(m, seed)
 
-        x = []
-        y = []
-        z = []
-        sample_size_lottery_multilevel = []
+        iterations = []
+        memory = []
+        sample_size = []
+        n = []
+
         for i in range(int(self.params.N)):
             element = stream.next_element()
 
@@ -243,25 +281,29 @@ class TestMemoryUsageEvolution(Test):
                 instance.process_element(str(element))
 
             if i % int(self.params.sample_period) == 0:
-                x.append(i)
-                z.append(stream.n)
+                iterations.append(i)
+                n.append(stream.n)
                 memory_usage = []
+                size = []
                 for instance in instances:
                     stats = instance.get_stats()
                     memory_usage.append(stats['memory_usage'])
-                    if 'lottery_sampling' in instance.name and 'multilevel' in instance.name:
-                        sample_size_lottery_multilevel.append(stats['sample_size'])
-                y.append(memory_usage)
+                    size.append(stats['sample_size'])
+                memory.append(memory_usage)
+                sample_size.append(size)
+
+        iterations = np.array(iterations)
+        memory = np.array(memory)
+        sample_size = np.array(sample_size)
+        n = np.array(n)
 
         _, axes = plt.subplots()
         axes_right = axes.twinx()
 
-        y = np.array(y)
-        z = np.array(z)
         for i, instance in enumerate(instances):
-            axes.plot(x, y[:, i], '-', label=instance.name)
-        axes_right.plot(x, sample_size_lottery_multilevel, 'y--', label='Sample size Lottery multilevel')
-        axes_right.plot(x, m * np.log(z/m), 'm--', label='m * ln(n/m)')
+            axes.plot(iterations, memory[:, i], '-', label=instance.name)
+            axes_right.plot(iterations, sample_size[:, i], 'y--', label='Sample size')
+        axes_right.plot(iterations, m * np.log(n/m), 'm:.', label='m * ln(n/m)')
 
         axes.legend(loc='upper left')
         axes_right.legend(loc='upper right')
@@ -270,3 +312,4 @@ class TestMemoryUsageEvolution(Test):
         axes_right.set_ylabel('Number of elements')
         self.full_screen_plot()
         plt.show()
+
