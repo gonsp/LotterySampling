@@ -3,7 +3,7 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "utils/InputParser.h"
-#include "Types.h"
+#include "DataStructures.h"
 #include <string>
 
 

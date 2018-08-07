@@ -160,7 +160,7 @@ class TestAsymptotic(Test):
         n_history = []
 
         for iteration in range(1, self.params.iterations + 1):
-            print('Iteration:', i , '/', self.params.iterations)
+            print('Iteration:', iteration, '/', self.params.iterations)
 
             m = iteration * int(self.params.initial_m)
 

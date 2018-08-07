@@ -25,10 +25,10 @@ set(SOURCE_FILES
         src/algorithms/GenericAlgorithm.ipp
         src/algorithms/lottery_sampling/Algorithm.h
         src/algorithms/lottery_sampling/Algorithm.ipp
-        src/algorithms/lottery_sampling/Types.h
+        src/algorithms/lottery_sampling/DataStructures.h
         src/algorithms/space_saving/Algorithm.h
         src/algorithms/space_saving/Algorithm.ipp
-        src/algorithms/space_saving/Types.h)
+        src/algorithms/space_saving/DataStructures.h)
 
 
 ###################################################
