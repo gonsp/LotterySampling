@@ -14,8 +14,8 @@ class Algorithm : public GenericAlgorithm<Element, T> {
 
 private:
 
-    typename Element<T>::TicketOrder level_1;
-    typename Element<T>::TicketOrder level_2;
+    TicketOrder<Element<T>> level_1;
+    TicketOrder<Element<T>> level_2;
 
     typename Element<T>::FrequencyOrder frequency_order;
 
@@ -35,9 +35,9 @@ private:
 
     unsigned int estimate_frequency(Ticket min_ticket) const;
 
-    void free_up_level_1();
+    void insert_level_1(Element<T>& element);
 
-    void free_up_level_2();
+    void insert_level_2(Element<T>& element);
 
 public:
     Algorithm(const InputParser& parameters);
