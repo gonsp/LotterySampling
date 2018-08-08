@@ -10,7 +10,6 @@ class Stream():
         self.n = 0
         self.save = save
         self.elements = {}
-        # TODO consider AVL tree implementation for dict for O(k) queries https://pypi.org/project/bintrees/
 
 
     @abstractmethod
@@ -56,7 +55,7 @@ class Zipf(Stream):
 
     def next_element(self):
         element = np.random.zipf(self.alpha)
-        # element = str(element)
+        element = str(element)
         super()._next_element(element)
         return element
 
@@ -71,6 +70,6 @@ class Uniform(Stream):
 
     def next_element(self):
         element = int(np.random.uniform(0, self.max))
-        # element = str(element)
+        element = str(element)
         super()._next_element(element)
         return element

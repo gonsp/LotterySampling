@@ -81,6 +81,8 @@ class Instance:
 
 
     def finish(self):
+        if self.finished:
+            return
         self.end_stats = self.get_stats()
         self.process.stdin.close()
         self.finished = True

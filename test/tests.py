@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import streams
+import metrics
 from instance import Instance
 
 
@@ -115,31 +116,31 @@ class TestMemoryLeak(Test):
 
 
 class TestAsymptotic(Test):
-    # To test asymptotic behaviour of memory or exec time with respect to the intial sample size
+    # To test asymptotic behaviour of memory, exec time or accuracy (and sample size) with respect to the initial sample size
 
-    def __init__(self, testing='memory', profiler=False, ylabel=''):
+    def __init__(self, metric_1='memory', metric_2='', profiler=False, y_label='', y_right_label=None):
         args = [
             ('initial_m', True),
             ('N', True),
-            ('iterations', False),
-            ('stream', True),
-            ('seed', False)
+            ('iterations', True),
+            ('seed', False),
+            ('k', False),
+            ('freq', False)
         ]
-        self.testing = testing
-        self.ylabel = ylabel
+        self.y_label = y_label
+        self.y_right_label = y_right_label
+        self.metric_1 = metric_1
+        self.metric_2 = metric_2
         if profiler:
-            if testing == 'memory':
+            if metric_1 == 'memory':
                 self.profile = 'memory_usage'
-                self.stats_name = 'memory_usage_peak_profiler'
-            elif testing == 'time':
+            elif metric_1 == 'time':
                 self.profile = 'exec_time'
-                self.stats_name = 'process_element_cost_profiler'
+            else:
+                exit(1)
         else:
             self.profile = None
-            if testing == 'memory':
-                self.stats_name = 'memory_usage'
-            else:
-                self.stats_name = 'process_element_time'
+
         super().__init__(configuration='debug' if profiler else 'release', args=args)
 
 
@@ -155,7 +156,8 @@ class TestAsymptotic(Test):
             self.params.iterations = int(self.params.iterations)
 
         m_history = []
-        value_history = []
+        metric_1_history = []
+        metric_2_history = []
         sample_size_history = []
         n_history = []
 
@@ -164,12 +166,7 @@ class TestAsymptotic(Test):
 
             m = iteration * int(self.params.initial_m)
 
-            if self.params.stream == 'zipf':
-                stream = streams.Zipf(1.1, seed)
-            elif self.params.stream == 'uniform':
-                # stream = streams.Uniform(int(N/2), seed, False)   # To test the "insert_element" operation (with a few updates)
-                # stream = streams.Uniform(int(1.1*m), seed, False) # To test the "update_element" operation (with a few inserts)
-                stream = streams.Uniform(2*m, seed, False)          # In expectation there will be N/2 inserts and N/2 updates.
+            stream = self.get_stream(iteration, m, N)
 
             instances = self.create_instances(m, seed, self.profile)
 
@@ -178,27 +175,28 @@ class TestAsymptotic(Test):
                 for instance in instances:
                     instance.process_element(str(element))
 
-            results = []
+            results_metric_1 = []
+            results_metric_2 = []
             sizes = []
             for instance in instances:
-                instance.k_top_query(m)
-                instance.frequent_query(0.05)
-
+                if self.profile is not None:
+                    instance.finish()
+                metric_1 = self.get_metric_1(instance, stream)
+                metric_2 = self.get_metric_2(instance, stream)
                 instance.finish()
-                stats = instance.get_stats()
-                value = stats[self.stats_name]
-                if self.testing == 'time':
-                    value = value / N
-                results.append(value)
-                sizes.append(stats['sample_size'])
+                results_metric_1.append(metric_1)
+                results_metric_2.append(metric_2)
+                sizes.append(instance.get_stats()['sample_size'])
 
             m_history.append(m)
-            value_history.append(results)
+            metric_1_history.append(results_metric_1)
+            metric_2_history.append(results_metric_2)
             sample_size_history.append(sizes)
             n_history.append(stream.n)
 
         m_history = np.array(m_history)
-        value_history = np.array(value_history)
+        metric_1_history = np.array(metric_1_history)
+        metric_2_history = np.array(metric_2_history)
         sample_size_history = np.array(sample_size_history)
         n_history = np.array(n_history)
 
@@ -207,42 +205,156 @@ class TestAsymptotic(Test):
         axes_right = axes.twinx()
 
         for i, instance in enumerate(instances):
-            axes.plot(m_history, value_history[:, i], '-o', label=self.testing + ' ' + instance.name)
-            axes_right.plot(m_history, sample_size_history[:, i], '--x', label='Sample size')
-        axes_right.plot(m_history, m_history * np.log(n_history/m_history), 'm:.', label='m * ln(n/m)')
+            axes.plot(m_history, metric_1_history[:, i], '-*', label=self.metric_1 + ' ' + instance.name)
+            if self.y_right_label is None:
+                axes_right.plot(m_history, sample_size_history[:, i], '--', label='Sample size')
+
+        if self.y_right_label is None:
+            axes_right.plot(m_history, m_history * np.log(n_history/m_history), 'm:', label='m * ln(n/m)')
+
+        if all([value is not None for value in metric_2_history.flatten()]):
+            axes.set_prop_cycle(None)
+            for i, instance in enumerate(instances):
+                metric_2_axes = axes if self.y_right_label is None or self.y_right_label == '' else axes_right
+                metric_2_axes.plot(m_history, metric_2_history[:, i], '-.x', label=self.metric_2 + ' ' + instance.name)
 
         axes.legend(loc='upper left')
         axes_right.legend(loc='upper right')
         axes.set_xlabel('m (Parameter for number of sampled elements)')
-        axes.set_ylabel(self.ylabel)
-        axes_right.set_ylabel('Sample size')
+        axes.set_ylabel(self.y_label)
+        axes_right.set_ylabel('Sample size' if self.y_right_label is None else self.y_right_label)
 
         self.full_screen_plot()
         plt.show()
 
+    @abstractmethod
+    def get_stream(self, iteration, m, N):
+        pass
+
+
+    @abstractmethod
+    def get_metric_1(self, instance, stream):
+        pass
+
+
+    def get_metric_2(self, instance, stream):
+        return None
+
 
 class TestAsymptoticMemoryProfiler(TestAsymptotic):
+    # Tests the total memory allocated ONLY by the algorithm. It gets very accurate results, although maybe the
+    # other version suffices to get good enough results.
 
     def __init__(self):
-        super().__init__(testing='memory', profiler=True, ylabel='Max used memory (bytes)')
+        super().__init__(metric_1='memory', profiler=True, y_label='Max used memory (bytes)')
+
+
+    def get_stream(self, iteration, m, N):
+        return streams.Zipf(1.1, self.generate_seed(), save=False)
+
+
+    def get_metric_1(self, instance, stream):
+        return instance.get_stats()['memory_usage_peak_profiler']
 
 
 class TestAsymptoticMemory(TestAsymptotic):
+    # Faster than the profiler version but the memory reported is the TOTAL memory allocated by the program.
+    # So not only allocated by the algorithm. However, they are pretty accurate with high values of m.
 
     def __init__(self):
-        super().__init__(testing='memory', profiler=False, ylabel='Used memory (bytes)')
+        super().__init__(metric_1='memory', profiler=False, y_label='Used memory (bytes)')
+
+
+    def get_stream(self, iteration, m, N):
+        return streams.Zipf(1.1, self.generate_seed(), save=False)
+
+
+    def get_metric_1(self, instance, stream):
+        return instance.get_stats()['memory_usage']
 
 
 class TestAsymptoticTimeProfiler(TestAsymptotic):
+    # Computes the "cost" of the algorithm. Using valgrind, it runs in a virtual machine, and only computes the cost
+    # of the algorithm, so the rest of the program (I/O mainly) doesn't affect. However, the cost reported is not exactly time,
+    # it's the Valgrind's output which is a sum of instructions + cache fails, etc. It's pretty good to compare algorithms but
+    # is really slow because of the virtualization.
 
     def __init__(self):
-        super().__init__(testing='time', profiler=True, ylabel='Cost (Valgrind output)')
+        super().__init__(metric_1='time', profiler=True, y_label='Cost (Valgrind output)')
+
+
+    def get_stream(self, iteration, m, N):
+        # return streams.Uniform(int(N/2), seed, False)                 # To test the "insert_element" operation (with a few updates)
+        # return streams.Uniform(int(1.1*m), seed, False)               # To test the "update_element" operation (with a few inserts)
+        return streams.Uniform(2*m, self.generate_seed(), save=False)   # In expectation there will be N/2 inserts and N/2 updates.
+
+
+    def get_metric_1(self, instance, stream):
+        return instance.get_stats()['process_element_cost_profiler'] / stream.N
 
 
 class TestAsymptoticTime(TestAsymptotic):
+    # It's much faster than the profiler version, but with much less accurate results, and it's greatly influenced by more than one executable
+    # being executed at the same time. It's better the profiler version.
 
     def __init__(self):
-        super().__init__(testing='time', profiler=False, ylabel='Mean exec time for element in the stream (microseconds)')
+        super().__init__(metric_1='time', profiler=False, y_label='Mean exec time per element (microseconds)')
+
+
+    def get_stream(self, iteration, m, N):
+        return streams.Uniform(2*m, self.generate_seed(), save=False)
+
+
+    def get_metric_1(self, instance, stream):
+        return instance.get_stats()['process_element_time'] / stream.N
+
+
+class TestAsymptoticTimeMemory(TestAsymptotic):
+    # Fusion of exec time and memory tests in one
+
+    def __init__(self):
+        super().__init__(metric_1='time', metric_2='memory', profiler=True, y_label='Cost (Valgrind output)', y_right_label='Used memory (bytes)')
+
+
+    def get_stream(self, iteration, m, N):
+        return streams.Uniform(2*m, self.generate_seed(), save=False)
+
+
+    def get_metric_1(self, instance, stream):
+        return instance.get_stats()['process_element_cost_profiler'] / stream.N
+
+
+    def get_metric_2(self, instance, stream):
+        return instance.get_stats()['memory_usage']
+
+
+class TestAsymptoticAccuracy(TestAsymptotic):
+    # Test to inspect how the precision and recall metrics variate when increasing the m
+
+    def __init__(self):
+        super().__init__(metric_1='recall', metric_2='precision', profiler=False, y_label='Accuracy', y_right_label='')
+        if self.params.k is not None:
+            self.query_param = int(self.params.k)
+            self.query_name = 'k_top_query'
+        elif self.params.freq is not None:
+            self.query_param = int(self.params.freq)
+            self.query_name = 'frequent_query'
+        else:
+            exit(1)
+
+
+    def get_stream(self, iteration, m, N):
+        self.iteration = iteration
+        return streams.Zipf(1.001, self.generate_seed(), save=True)
+
+
+    def get_metric_1(self, instance, stream):
+        return metrics.get_recall(instance, stream, self.query_name, self.query_param)
+
+
+    def get_metric_2(self, instance, stream):
+        return metrics.get_precision(instance, stream, self.query_name, self.query_param)
+
 
 
 class TestMemoryUsageEvolution(Test):
