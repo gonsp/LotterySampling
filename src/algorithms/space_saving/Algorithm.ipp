@@ -81,15 +81,13 @@ void Algorithm<T>::increment_counter(Element<T>& element) {
 }
 
 template<class T>
-void Algorithm<T>::print_state() {
+void Algorithm<T>::print_state() const {
     int n_elements = 0;
     for(auto i = stream_summary.begin(); i != stream_summary.end(); ++i) {
         cout << "-----------------------" << endl;
         cout << "%%%%%% " << i->count << " %%%%%%" << endl;
         for(auto j = i->elements.begin(); j != i->elements.end(); ++j) {
             cout << (*j)->id << ", " << (*j)->over_estimation << endl;
-            assert(i == this->get_element_reference((*j)->id).bucket_iterator);
-            assert(j == this->get_element_reference((*j)->id).element_iterator);
             ++n_elements;
         }
     }

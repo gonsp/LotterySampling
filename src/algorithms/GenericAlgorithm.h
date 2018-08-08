@@ -7,7 +7,7 @@
 // This interface is needed so it's possible to create a pointer
 // to a GenericAlgorithm, since GenericAlgorithm is a template class
 // and the type of Element is not known in compile time
-template <class T>
+template<class T>
 class GenericAlgorithmInterface {
 public:
     virtual void frequent_query(float f, std::ostream& stream) = 0;
@@ -16,15 +16,15 @@ public:
 
     virtual void process_element(const T& element_id) = 0;
 
-    virtual unsigned int sample_size() = 0;
+    virtual unsigned int sample_size() const = 0;
 
-    virtual void print_state() = 0; // For debugging purposes
+    virtual void print_state() const = 0; // For debugging purposes
 
     virtual ~GenericAlgorithmInterface() {};
 };
 
 
-template <template<typename> class Element, class T>
+template<template<typename> class Element, class T>
 class GenericAlgorithm : public GenericAlgorithmInterface<T> {
 
 private:
@@ -42,15 +42,13 @@ protected:
 
     void remove_element(const T& element_id);
 
-    Element<T>& get_element_reference(const T& element_id);
-
     void set_monitored_size(unsigned int m);
 
 public:
 
     void process_element(const T& element_id) override;
 
-    unsigned int sample_size() override;
+    unsigned int sample_size() const override;
 };
 
 

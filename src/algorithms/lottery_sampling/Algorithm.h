@@ -9,7 +9,7 @@
 namespace LotterySampling {
 
 
-template <class T>
+template<class T>
 class Algorithm : public GenericAlgorithm<Element, T> {
 
 private:
@@ -46,7 +46,9 @@ public:
 
     void k_top_query(int k, std::ostream& stream) override;
 
-    void print_state() override;
+    void print_state() const override;
+
+    void print_level(const TicketOrder<Element<T>>& level) const;
 };
 
 

@@ -7,7 +7,7 @@
 namespace SpaceSaving {
 
 
-template <class T>
+template<class T>
 struct Element {
 
 public:

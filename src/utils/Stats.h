@@ -34,7 +34,7 @@ public:
 
     void finish_counting(counter& counter);
 
-    template <class T>
+    template<class T>
     void report(std::ostream& stream, GenericAlgorithmInterface<T>* algorithm);
 };
 
