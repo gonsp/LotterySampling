@@ -13,6 +13,8 @@ typedef uint64_t Ticket;
 
 template<class Element>
 class TicketOrder { // Implementation of a min binary heap to represent the order by ticket value of sampled elements
+public:
+    typedef int iterator;
 
 private:
     struct CompareTicket {
@@ -23,12 +25,14 @@ private:
 
     vector<Element*> v;
 
+    iterator get_father_iterator(iterator it) const;
+
+    iterator get_min_child_iterator(iterator it) const;
+
 public:
     TicketOrder() {}
 
     TicketOrder(unsigned int m);
-
-    typedef int iterator;
 
     Element* top() const;
 

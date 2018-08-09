@@ -1,6 +1,7 @@
 #include "Algorithm.h"
 #include "utils/InputParser.h"
 #include <iostream>
+#include <stack>
 
 namespace LotterySampling {
 
@@ -143,8 +144,14 @@ inline unsigned int Algorithm<T>::estimate_frequency(Ticket min_ticket) const {
 template<class T>
 void Algorithm<T>::print_level(const TicketOrder<Element<T>>& level) const {
     TicketOrder<Element<T>> aux = level;
+    stack<Element<T>*> s;
     while(!aux.empty()) {
         Element<T>* element = aux.pop();
+        s.push(element);
+    }
+    while(!s.empty()) {
+        Element<T>* element = s.top();
+        s.pop();
         cout << element->id << ", " << element->ticket << ", " << element->freq << ", " << element->over_estimation << endl;
     }
 }
