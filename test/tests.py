@@ -31,17 +31,17 @@ class Test:
     def create_instances(self, m, seed, profile=None):
         configuration = 'release' if profile is None else 'debug'
         return [
-            Instance('../bin/optimization-0-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
-            Instance('../bin/optimization-0-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
-            Instance('../bin/optimization-0-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
-            Instance('../bin/optimization-1-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
-            Instance('../bin/optimization-1-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
-            Instance('../bin/optimization-1-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
-            Instance('../bin/optimization-2-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
-            Instance('../bin/optimization-2-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
-            Instance('../bin/optimization-2-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
+            # Instance('../bin/optimization-1-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            # Instance('../bin/optimization-1-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
+            # Instance('../bin/optimization-1-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
+            # Instance('../bin/optimization-2-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            # Instance('../bin/optimization-2-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
+            # Instance('../bin/optimization-2-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
+            Instance('../bin/optimization-3-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            # Instance('../bin/optimization-3-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
+            # Instance('../bin/optimization-3-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
             Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
-            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
+            # Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
             Instance(self.exec_path, '-a space_saving -m ' + str(m), profile=profile)
         ]
 
@@ -187,6 +187,9 @@ class TestAsymptotic(Test):
                 results_metric_1.append(metric_1)
                 results_metric_2.append(metric_2)
                 sizes.append(instance.get_stats()['sample_size'])
+
+            print(results_metric_1)
+            print(results_metric_2)
 
             m_history.append(m)
             metric_1_history.append(results_metric_1)
@@ -349,11 +352,11 @@ class TestAsymptoticAccuracy(TestAsymptotic):
 
 
     def get_metric_1(self, instance, stream):
-        return metrics.get_recall(instance, stream, self.query_name, self.query_param)
+        return metrics.get_weighted_recall(instance, stream, self.query_name, self.query_param)
 
 
     def get_metric_2(self, instance, stream):
-        return metrics.get_precision(instance, stream, self.query_name, self.query_param)
+        return metrics.get__weighted_precision(instance, stream, self.query_name, self.query_param)
 
 
 

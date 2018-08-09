@@ -38,6 +38,7 @@ def get_leak_memory(pipe):
             return int(line.split()[3].replace(',', ''))
     exit(1)
 
+
 def get_cost(pid):
 
     callgrind_file = 'callgrind.out.' + str(pid)

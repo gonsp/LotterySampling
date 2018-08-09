@@ -17,12 +17,6 @@ public:
     typedef int iterator;
 
 private:
-    struct CompareTicket {
-        inline bool operator()(const Element* a, const Element* b) const {
-            return a->ticket < b->ticket;
-        }
-    };
-
     vector<Element*> v;
 
     iterator get_father_iterator(iterator it) const;

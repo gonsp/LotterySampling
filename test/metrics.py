@@ -1,13 +1,13 @@
 import streams
 import instance
 
-def get_recall(instance, stream, query_name, parameter):
+def get_weighted_recall(instance, stream, query_name, parameter):
     reported_elements, real_elements = execute_query(instance, stream, query_name, parameter)
     return get_common_elements(reported_elements, real_elements) / sum(freq for _, freq in real_elements)
     return recall
 
 
-def get_precision(instance, stream, query_name, parameter):
+def get__weighted_precision(instance, stream, query_name, parameter):
     reported_elements, real_elements = execute_query(instance, stream, query_name, parameter)
     real_freq_sum_reported_elements = sum([stream.elements[element]/stream.N for element in stream.elements.keys() & list(zip(*reported_elements))[0]])
     return get_common_elements(reported_elements, real_elements) / real_freq_sum_reported_elements
