@@ -67,10 +67,15 @@ void Algorithm<T>::update_element(Element<T>& element) {
 template<class T>
 void Algorithm<T>::increment_counter(Element<T>& element) {
     int new_count = element.bucket_iterator->count + 1;
-    element.bucket_iterator->elements.erase(element.element_iterator);
-    if(element.bucket_iterator == stream_summary.begin() || prev(element.bucket_iterator)->count != new_count) { // It is the highest bucket or the previous bucket doesn't have the required count
-        stream_summary.insert(element.bucket_iterator, typename Element<T>::Bucket(new_count));
+    if(element.bucket_iterator == stream_summary.begin() || prev(element.bucket_iterator)->count != new_count) { // It is the highest bucket or the next bucket doesn't have the required count
+        if(element.bucket_iterator->elements.size() == 1) { // We can reuse the current bucket
+            element.bucket_iterator->count++;
+            return;
+        } else { // A new bucket needs to be created since there are other elements in the current bucket
+            stream_summary.insert(element.bucket_iterator, typename Element<T>::Bucket(new_count));
+        }
     }
+    element.bucket_iterator->elements.erase(element.element_iterator);
     typename Element<T>::StreamSummary::iterator old_bucket = element.bucket_iterator;
     element.bucket_iterator--;
     if(old_bucket->elements.empty()) {
