@@ -117,7 +117,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
         element.ticket = ticket; // Updating (the better) ticket
         if(element.level == 2 && level_1.top()->ticket < ticket) {
             // element is moving from level_2 to level_1, so we kick out the lowest ticket from level_1 to level_2
-            level_2.remove_element(element.ticket_iterator);
+            level_2.pop(element.ticket_iterator);
             insert_level_1(element);
         } else {
             (element.level == 1 ? level_1 : level_2).ticket_updated(element.ticket_iterator);

@@ -18,12 +18,19 @@ Element* TicketOrder<Element>::top() const {
 
 template<class Element>
 Element* TicketOrder<Element>::pop() {
-    assert(!empty());
+    return pop(0);
+}
+
+template<class Element>
+Element* TicketOrder<Element>::pop(iterator it) {
+    assert(it >= 0 and it < v.size());
     Element* element = top();
-    v[0] = v.back();
-    v.pop_back();
-    if(!empty()) {
-        ticket_updated(0); // To regain the heap property
+    if(it == v.size() - 1) {
+        v.pop_back();
+    } else {
+        v[it] = v.back();
+        v.pop_back();
+        ticket_updated(it); // To regain the heap property
     }
     return element;
 }
@@ -59,17 +66,6 @@ void TicketOrder<Element>::ticket_updated(iterator it) {
         ticket_updated(new_it);
     }
     v[it]->ticket_iterator = it;
-}
-
-template<class Element>
-void TicketOrder<Element>::remove_element(iterator it) {
-    assert(it >= 0 and it < v.size());
-    if(size() == 1) {
-        pop();
-    } else {
-        v[it] = v.back();
-        ticket_updated(it);
-    }
 }
 
 template<class Element>

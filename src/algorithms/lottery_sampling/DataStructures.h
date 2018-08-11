@@ -12,7 +12,7 @@ using namespace std;
 typedef uint64_t Ticket;
 
 template<class Element>
-class TicketOrder { // Implementation of a min binary heap to represent the order by ticket value of sampled elements
+class TicketOrder { // Implementation of a min binary heap to represent the order by ticket value of sampled elements, allowing the update of the ticktet
 public:
     typedef int iterator;
 
@@ -32,19 +32,18 @@ public:
 
     Element* pop();
 
+    Element* pop(iterator it);
+
     void push(Element* element);
 
     Element* pop_and_push(Element* element);
 
     void ticket_updated(iterator it);
 
-    void remove_element(iterator it);
-
     bool empty() const;
 
     unsigned int size() const;
 };
-
 
 template<class T>
 struct Element {
