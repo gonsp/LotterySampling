@@ -1,5 +1,5 @@
-#ifndef _Types_SpaceSaving_H_
-#define _Types_SpaceSaving_H_
+#ifndef _Element_SpaceSaving_H_
+#define _Element_SpaceSaving_H_
 
 #include <list>
 #include <string>
@@ -42,4 +42,4 @@ public:
 
 }
 
-#endif //_Types_SpaceSaving_H_
+#endif //_Element_SpaceSaving_H_

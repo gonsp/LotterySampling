@@ -3,7 +3,7 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "utils/InputParser.h"
-#include "DataStructures.h"
+#include "Types.h"
 #include <random>
 
 namespace LotterySampling {
@@ -17,7 +17,7 @@ private:
     TicketOrder<Element<T>> level_1;
     TicketOrder<Element<T>> level_2;
 
-    typename Element<T>::FrequencyOrder frequency_order;
+    FrequencyOrder<Element<T>> frequency_order;
 
     unsigned int m;
     bool aging;

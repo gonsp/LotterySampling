@@ -21,15 +21,19 @@ set(SOURCE_FILES
         src/utils/InputParser.cpp
         src/utils/Stats.h
         src/utils/Stats.ipp
+        src/utils/Misc.h
         src/algorithms/GenericAlgorithm.h
         src/algorithms/GenericAlgorithm.ipp
         src/algorithms/lottery_sampling/Algorithm.h
         src/algorithms/lottery_sampling/Algorithm.ipp
-        src/algorithms/lottery_sampling/DataStructures.h
-        src/algorithms/lottery_sampling/DataStructures.ipp
+        src/algorithms/lottery_sampling/Types.h
         src/algorithms/space_saving/Algorithm.h
         src/algorithms/space_saving/Algorithm.ipp
-        src/algorithms/space_saving/DataStructures.h)
+        src/algorithms/space_saving/Types.h
+        src/data_structures/TicketOrder.h
+        src/data_structures/TicketOrder.ipp
+        src/data_structures/FrequencyOrder.h
+        src/data_structures/FrequencyOrder.ipp)
 
 
 ###################################################

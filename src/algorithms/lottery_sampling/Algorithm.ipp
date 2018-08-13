@@ -61,7 +61,7 @@ void Algorithm<T>::insert_level_1(Element <T>& element) {
             replaced_element->level = 2;
         } else {
             // Smallest ticket's element is just removed since multilevel is not being used
-            frequency_order.erase(replaced_element->frequency_iterator);
+            frequency_order.remove_element(replaced_element);
             this->remove_element(replaced_element->id);
         }
     }
@@ -72,7 +72,7 @@ void Algorithm<T>::insert_level_2(Element<T>& element) {
     // Smallest ticket's element is removed
     element.level = 2;
     Element<T>* removed_element = level_2.pop_and_push(&element);
-    frequency_order.erase(removed_element->frequency_iterator);
+    frequency_order.remove_element(removed_element);
     this->remove_element(removed_element->id);
 }
 
@@ -99,17 +99,14 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         element.over_estimation = element.freq - 1;
     }
 
-    element.frequency_iterator = frequency_order.insert(&element);
+    frequency_order.insert_element(&element);
     return true;
 }
 
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     // Updating frequency
-    typename Element<T>::FrequencyOrder::iterator hint = next(element.frequency_iterator);
-    frequency_order.erase(element.frequency_iterator); // It's needed to remove and reinsert an element since there isn't an "update" method in multiset
-    element.freq++;
-    element.frequency_iterator = frequency_order.emplace_hint(hint, &element);
+    frequency_order.increment_frequency(&element);
 
     // Updating ticket
     Ticket ticket = generate_ticket();
@@ -117,10 +114,10 @@ void Algorithm<T>::update_element(Element<T>& element) {
         element.ticket = ticket; // Updating (the better) ticket
         if(element.level == 2 && level_1.top()->ticket < ticket) {
             // element is moving from level_2 to level_1, so we kick out the lowest ticket from level_1 to level_2
-            level_2.pop(element.ticket_iterator);
+            level_2.remove_element(&element);
             insert_level_1(element);
         } else {
-            (element.level == 1 ? level_1 : level_2).ticket_updated(element.ticket_iterator);
+            (element.level == 1 ? level_1 : level_2).ticket_updated(&element);
         }
     }
 }
