@@ -139,7 +139,7 @@ inline unsigned int Algorithm<T>::estimate_frequency(Ticket min_ticket) const {
 }
 
 template<class T>
-void Algorithm<T>::print_level(const TicketOrder<Element<T>>& level) const {
+void Algorithm<T>::print_level(TicketOrder<Element<T>>& level) {
     TicketOrder<Element<T>> aux = level;
     stack<Element<T>*> s;
     while(!aux.empty()) {
@@ -154,7 +154,7 @@ void Algorithm<T>::print_level(const TicketOrder<Element<T>>& level) const {
 }
 
 template<class T>
-void Algorithm<T>::print_state() const {
+void Algorithm<T>::print_state() {
     cout << "-----------------------" << endl;
     cout << "%%%%%% level_1 %%%%%%" << endl;
     print_level(level_1);

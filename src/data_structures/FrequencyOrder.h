@@ -20,8 +20,6 @@ public:
 
     void increment_frequency(Element* element);
 
-    void modify_frequency(Element* element, unsigned int freq);
-
     using typename std::multiset<Element*, FrequencyComparator>::iterator;
 
     using std::multiset<Element*, FrequencyComparator>::size;

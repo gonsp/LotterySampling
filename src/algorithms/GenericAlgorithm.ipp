@@ -14,7 +14,7 @@ void GenericAlgorithm<Element, T>::process_element(const T& element_id) {
     if(it == monitored_elements.end()) { // element wasn't being sampled
         has_extra_element = true;
         it = monitored_elements.emplace(element_id, element_id).first; // Create instance of element
-        if(!insert_element((*it).second)) {
+        if(!insert_element(it->second)) {
             monitored_elements.erase(it); // Since the algorithm has chosen no to keep it in the sample, we remove it
         }
         has_extra_element = false;

@@ -46,9 +46,9 @@ public:
 
     void k_top_query(int k, std::ostream& stream) override;
 
-    void print_state() const override;
+    void print_state() override;
 
-    void print_level(const TicketOrder<Element<T>>& level) const;
+    void print_level(TicketOrder<Element<T>>& level);
 };
 
 

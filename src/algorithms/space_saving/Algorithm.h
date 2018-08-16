@@ -15,10 +15,8 @@ class Algorithm : public GenericAlgorithm<Element, T> {
 
 private:
 
-    typename Element<T>::StreamSummary stream_summary;
+    SortedList<Element<T>> frequency_order;
     unsigned int m;
-
-    void increment_counter(Element<T>& element);
 
     bool insert_element(Element<T>& element) override;
 
@@ -31,7 +29,7 @@ public:
 
     void k_top_query(int k, std::ostream& stream) override;
 
-    void print_state() const override;
+    void print_state() override;
 };
 
 

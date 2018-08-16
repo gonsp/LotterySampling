@@ -18,7 +18,7 @@ public:
 
     virtual unsigned int sample_size() const = 0;
 
-    virtual void print_state() const = 0; // For debugging purposes
+    virtual void print_state() = 0; // For debugging purposes
 
     virtual ~GenericAlgorithmInterface() {};
 };
