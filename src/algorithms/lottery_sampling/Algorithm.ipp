@@ -106,7 +106,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     // Updating frequency
-    frequency_order.increment_frequency(&element);
+    frequency_order.update_key(&element, &Element<T>::freq, element.freq + 1);
 
     // Updating ticket
     Ticket ticket = generate_ticket();

@@ -66,7 +66,6 @@ public:
 
 };
 
-
 #include "SortedList.ipp"
 
 #endif //_SortedList_H_

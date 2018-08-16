@@ -7,8 +7,11 @@ void SortedList<Element>::insert_element(Element* element) {
         // There are no buckets or the smallest one has count greater than 1
         bucket_list.emplace_back(1);
     }
-    std::prev(bucket_list.end())->elements.emplace_back(element);
-    element->frequency_order_iterator = std::prev(end());
+    Iterator iterator = Iterator(this);
+    iterator.bucket_iterator = std::prev(bucket_list.end());
+    iterator.bucket_iterator->elements.emplace_back(element);
+    iterator.element_iterator = std::prev(iterator.bucket_iterator->elements.end());
+    element->frequency_order_iterator = iterator;
 }
 
 template<class Element>

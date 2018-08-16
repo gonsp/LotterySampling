@@ -32,8 +32,8 @@ set(SOURCE_FILES
         src/algorithms/space_saving/Types.h
         src/data_structures/TicketOrder.h
         src/data_structures/TicketOrder.ipp
-        src/data_structures/FrequencyOrder.h
-        src/data_structures/FrequencyOrder.ipp
+        src/data_structures/SortedTree.h
+        src/data_structures/SortedTree.ipp
         src/data_structures/SortedList.h
         src/data_structures/SortedList.ipp)
 
