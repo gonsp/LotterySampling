@@ -10,10 +10,10 @@ namespace LotterySampling {
 using namespace std;
 
 template<class Element>
-using FrequencyOrder = SortedTree<Element, &Element::compare_freq, &Element::frequency_order_iterator>;
+using FrequencyOrder = SortedTree::SortedTree<Element, &Element::compare_freq, &Element::frequency_order_iterator>;
 
 template<class Element>
-using FrequencyOrderIterator = SortedTreeIterator<Element, &Element::compare_freq>;
+using FrequencyOrderIterator = SortedTree::Iterator<Element, &Element::compare_freq>;
 
 typedef uint64_t Ticket;
 
