@@ -3,68 +3,90 @@
 
 #include <list>
 
+
+namespace SortedList {
+
+// Internal types
+
+typedef unsigned int KeyType;
+
 template<class Element>
-class SortedList {
+using ElementList = std::list<Element*>;
+
+template<class Element>
+struct Bucket {
+    KeyType key;
+    ElementList<Element> elements;
+
+    Bucket(KeyType key) {
+        this->key = key;
+    }
+};
+
+template<class Element>
+using BucketList = std::list<Bucket<Element>>;
+
+
+
+
+template<class Element>
+struct Iterator {
 
 private:
-
-    typedef std::list<Element*> ElementList;
-
-    struct Bucket {
-        unsigned int freq;
-        ElementList elements;
-
-        Bucket(unsigned int freq) {
-            this->freq = freq;
-        }
-    };
-
-    typedef std::list<Bucket> BucketList;
-    BucketList bucket_list;
+    BucketList<Element>* bucket_list;
 
 public:
+    typename BucketList<Element>::iterator bucket_iterator;
+    typename ElementList<Element>::iterator element_iterator;
 
-    struct Iterator {
+    Iterator() {
+        this->bucket_list = nullptr;
+    }
 
-    private:
-        SortedList<Element>* sorted_list;
+    Iterator(BucketList<Element>* bucket_list) {
+        this->bucket_list = bucket_list;
+    }
 
-    public:
-        typename BucketList::iterator bucket_iterator;
-        typename ElementList::iterator element_iterator;
+    Element*& operator*() const;
 
-        Iterator() {
-            this->sorted_list = nullptr;
-        }
+    Iterator operator++();
 
-        Iterator(SortedList<Element>* sorted_list) {
-            this->sorted_list = sorted_list;
-        }
+    Iterator operator--();
 
-        Element*& operator*() const;
+    bool operator==(const Iterator& iterator);
 
-        Iterator operator++();
+    bool operator!=(const Iterator& iterator);
+};
 
-        Iterator operator--();
 
-        bool operator==(const Iterator& iterator);
+template<class Element, ClassField<Element, Iterator<Element>> iterator_field>
+class SortedList {
+// - Constant time insertion element with lowest key already in the container.
+// - Constant time deletion arbitrary element.
+// - Constant time key increment (1 unit).
+// - Linear time arbitrary key modification (not implemented nor used).
+// - Linear time ordered traversal through iterators.
 
-        bool operator!=(const Iterator& iterator);
-    };
+private:
+    BucketList<Element> bucket_list;
+
+public:
 
     void insert_element(Element* element);
 
     Element* pop_and_push(Element* element);
 
-    void increment_frequency(Element* element);
+    void increment_key(Element* element);
 
-    unsigned int get_frequency(Element* element) const;
+    KeyType get_key(Element* element) const;
 
-    Iterator begin();
+    Iterator<Element> begin();
 
-    Iterator end();
-
+    Iterator<Element> end();
 };
+
+
+}
 
 #include "SortedList.ipp"
 

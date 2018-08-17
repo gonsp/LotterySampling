@@ -15,7 +15,7 @@ class Algorithm : public GenericAlgorithm<Element, T> {
 
 private:
 
-    SortedList<Element<T>> frequency_order;
+    FrequencyOrder<Element<T>> frequency_order;
     unsigned int m;
 
     bool insert_element(Element<T>& element) override;

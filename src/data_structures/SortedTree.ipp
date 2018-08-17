@@ -21,7 +21,7 @@ template<class Element, ComparatorFunction<Element> comparator_func, ClassField<
 template<class KeyType, class Field>
 void SortedTree<Element, comparator_func, iterator_field>::update_key(Element* element, Field key_field, KeyType new_key) {
     // It's needed to remove and reinsert an element since there isn't an "update" method in multiset.
-    SortedTreeIterator<Element, comparator_func> hint = next(element->*iterator_field);
+    Iterator<Element, comparator_func> hint = next(element->*iterator_field);
     this->erase(element->*iterator_field);
     element->*key_field = new_key;
     element->*iterator_field = this->emplace_hint(hint, element);

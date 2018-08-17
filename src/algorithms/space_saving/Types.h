@@ -6,6 +6,12 @@
 namespace SpaceSaving {
 
 
+template<class Element>
+using FrequencyOrder = SortedList::SortedList<Element, &Element::frequency_order_iterator>;
+
+template<class Element>
+using FrequencyOrderIterator = SortedList::Iterator<Element>;
+
 template<class T>
 struct Element {
 
@@ -14,7 +20,7 @@ public:
     T id;
     unsigned int over_estimation;
 
-    typename SortedList<Element<T>>::Iterator frequency_order_iterator;
+    FrequencyOrderIterator<Element<T>> frequency_order_iterator;
 
     Element(const T& id) {
         this->id = id;
