@@ -12,9 +12,9 @@ typedef int Iterator;
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Iterator> iterator_field>
 class BinaryHeap {
-// - Logarithmic insertions and deletions of arbitrary elements and ticket values.
-// - Logarithmic ticket modification.
-// - Traversal not allowed. Only access to the smallest ticket's element.
+// - Logarithmic insertions and deletions of arbitrary elements and key values.
+// - Logarithmic key modification.
+// - Traversal not allowed. Only access to the smallest key's element.
 
 private:
     std::vector<Element*> v;
