@@ -53,7 +53,6 @@ public:
 
 }
 
-
 #include "BinaryHeap.ipp"
 
 #endif //_BinaryHeap_LotterySampling_H_

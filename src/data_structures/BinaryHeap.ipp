@@ -91,7 +91,7 @@ template<class Element, ComparatorFunction<Element> comparator_func, ClassField<
 Iterator BinaryHeap<Element, comparator_func, iterator_field>::get_min_child_iterator(Iterator it) const {
     Iterator child_left = it * 2 + 1;
     if(child_left < this->size()) {
-        Iterator child_right = it * 2 + 2;
+        Iterator child_right = child_left + 1;
         if(child_right < this->size() && comparator(v[child_right], v[child_left])) {
             return child_right;
         }
