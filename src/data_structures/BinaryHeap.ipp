@@ -66,9 +66,9 @@ void BinaryHeap<Element, comparator_func, iterator_field>::key_updated(Iterator 
     Iterator new_it = -1;
     Iterator father = get_father_iterator(it);
     Iterator min_child = get_min_child_iterator(it);
-    if(father != -1 && v[it]->ticket < v[father]->ticket) {
+    if(father != -1 && comparator(v[it], v[father])) {
         new_it = father;
-    } else if(min_child != -1 && v[min_child]->ticket < v[it]->ticket) {
+    } else if(min_child != -1 && comparator(v[min_child], v[it])) {
         new_it = min_child;
     }
     if(new_it != -1) {
@@ -76,7 +76,7 @@ void BinaryHeap<Element, comparator_func, iterator_field>::key_updated(Iterator 
         v[new_it] = element;
         key_updated(new_it);
     }
-    v[it]->ticket_order_iterator = it;
+    v[it]->*iterator_field = it;
 }
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Iterator> iterator_field>
@@ -92,7 +92,7 @@ Iterator BinaryHeap<Element, comparator_func, iterator_field>::get_min_child_ite
     Iterator child_left = it * 2 + 1;
     if(child_left < this->size()) {
         Iterator child_right = it * 2 + 2;
-        if(child_right < this->size() && v[child_right]->ticket < v[child_left]->ticket) {
+        if(child_right < this->size() && comparator(v[child_right], v[child_left])) {
             return child_right;
         }
         return child_left;

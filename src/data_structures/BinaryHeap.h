@@ -18,7 +18,6 @@ class BinaryHeap {
 
 private:
     std::vector<Element*> v;
-
     PointerComparator<Element, comparator_func> comparator;
 
     Element* pop(Iterator it);
