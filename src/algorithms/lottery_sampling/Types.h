@@ -1,7 +1,7 @@
 #ifndef _Element_LotterySampling_H_
 #define _Element_LotterySampling_H_
 
-#include "data_structures/TicketOrder.h"
+#include "data_structures/BinaryHeap.h"
 #include "data_structures/SortedTree.h"
 
 namespace LotterySampling {
@@ -13,7 +13,12 @@ template<class Element>
 using FrequencyOrder = SortedTree::SortedTree<Element, &Element::compare_freq, &Element::frequency_order_iterator>;
 
 template<class Element>
+using TicketOrder = BinaryHeap::BinaryHeap<Element, &Element::compare_ticket, &Element::ticket_order_iterator>;
+
+template<class Element>
 using FrequencyOrderIterator = SortedTree::Iterator<Element, &Element::compare_freq>;
+
+using TicketOrderIterator = BinaryHeap::Iterator;
 
 typedef uint64_t Ticket;
 
@@ -43,7 +48,7 @@ public:
         return this->ticket < element.ticket;
     }
 
-    typename TicketOrder<Element<T>>::iterator ticket_order_iterator;
+    TicketOrderIterator ticket_order_iterator;
     int level;
 
     FrequencyOrderIterator<Element<T>> frequency_order_iterator;

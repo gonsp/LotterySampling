@@ -117,7 +117,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
             level_2.remove_element(&element);
             insert_level_1(element);
         } else {
-            (element.level == 1 ? level_1 : level_2).ticket_updated(&element);
+            (element.level == 1 ? level_1 : level_2).key_updated(&element);
         }
     }
 }

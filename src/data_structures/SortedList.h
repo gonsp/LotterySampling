@@ -2,6 +2,7 @@
 #define _SortedList_H_
 
 #include <list>
+#include "utils/Misc.h"
 
 
 namespace SortedList {

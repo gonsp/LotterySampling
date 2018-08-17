@@ -30,8 +30,8 @@ set(SOURCE_FILES
         src/algorithms/space_saving/Algorithm.h
         src/algorithms/space_saving/Algorithm.ipp
         src/algorithms/space_saving/Types.h
-        src/data_structures/TicketOrder.h
-        src/data_structures/TicketOrder.ipp
+        src/data_structures/BinaryHeap.h
+        src/data_structures/BinaryHeap.ipp
         src/data_structures/SortedTree.h
         src/data_structures/SortedTree.ipp
         src/data_structures/SortedList.h
