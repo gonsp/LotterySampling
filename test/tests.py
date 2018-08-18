@@ -37,12 +37,15 @@ class Test:
             # Instance('../bin/optimization-2-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
             # Instance('../bin/optimization-2-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
             # Instance('../bin/optimization-2-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
-            Instance('../bin/optimization-3-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            # Instance('../bin/optimization-3-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
             # Instance('../bin/optimization-3-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
             # Instance('../bin/optimization-3-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
+            Instance('../bin/optimization-4-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            # Instance('../bin/optimization-4-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
+            # Instance('../bin/optimization-4-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
             Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
             # Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
-            Instance(self.exec_path, '-a space_saving -m ' + str(m), profile=profile)
+            # Instance(self.exec_path, '-a space_saving -m ' + str(m), profile=profile)
         ]
 
 
@@ -54,8 +57,7 @@ class Test:
         command = 'cd ' + directory + ' && cmake -DCMAKE_BUILD_TYPE=' + configuration + ' .. && make'
         process = subprocess.Popen(command, shell=True)
         process.communicate()
-        if process.returncode != 0:
-            exit(1)
+        assert(process.returncode == 0)
 
         return directory + '/heavy_hitters'
 
@@ -137,7 +139,7 @@ class TestAsymptotic(Test):
             elif metric_1 == 'time':
                 self.profile = 'exec_time'
             else:
-                exit(1)
+                assert False
         else:
             self.profile = None
 
@@ -333,9 +335,9 @@ class TestAsymptoticTimeMemory(TestAsymptotic):
 
 class TestAsymptoticAccuracy(TestAsymptotic):
     # Test to inspect how the precision and recall metrics variate when increasing the m
-
+    
     def __init__(self):
-        super().__init__(metric_1='recall', metric_2='precision', profiler=False, y_label='Accuracy', y_right_label='')
+        super().__init__(metric_1='recall', metric_2='precision', profiler=False, y_label='Accuracy', y_right_label='Squared error')
         if self.params.k is not None:
             self.query_param = int(self.params.k)
             self.query_name = 'k_top_query'
@@ -343,20 +345,20 @@ class TestAsymptoticAccuracy(TestAsymptotic):
             self.query_param = int(self.params.freq)
             self.query_name = 'frequent_query'
         else:
-            exit(1)
+            assert False
 
 
     def get_stream(self, iteration, m, N):
-        self.iteration = iteration
-        return streams.Zipf(1.001, self.generate_seed(), save=True)
+        return streams.Zipf(1.01, self.generate_seed(), save=True)
 
 
     def get_metric_1(self, instance, stream):
+        # return metrics.get_squared_error(instance, stream, self.query_name, self.query_param)
         return metrics.get_weighted_recall(instance, stream, self.query_name, self.query_param)
 
 
     def get_metric_2(self, instance, stream):
-        return metrics.get__weighted_precision(instance, stream, self.query_name, self.query_param)
+        return metrics.get_weighted_precision(instance, stream, self.query_name, self.query_param)
 
 
 
@@ -380,7 +382,7 @@ class TestMemoryUsageEvolution(Test):
 
         m = int(self.params.m)
 
-        stream = streams.Zipf(1.1, seed)
+        stream = streams.Zipf(1.01, seed)
 
         instances = self.create_instances(m, seed)
 
