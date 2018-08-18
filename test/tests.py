@@ -93,15 +93,12 @@ class TestMemoryLeak(Test):
 
     def run(self):
 
-        seed = self.generate_seed()
-
-        stream = streams.Zipf(1.05, seed)
-
         m = 10000
-
+        seed = self.generate_seed()
+        stream = streams.Uniform(3*m, seed, save=False)
         instances = self.create_instances(m, seed, 'memory_leak')
 
-        for i in range(100000):
+        for i in range(1000000):
             element = stream.next_element()
             for instance in instances:
                 instance.process_element(str(element))
@@ -111,8 +108,7 @@ class TestMemoryLeak(Test):
             instance.frequent_query(0.05)
 
             instance.finish()
-            stats = instance.get_stats()
-            memory_leak = stats['memory_leak_profiler']
+            memory_leak = instance.get_stats()['memory_leak_profiler']
             if memory_leak > 0:
                 self.error('Memory leak:', memory_leak, 'bytes', seed=seed, command=instance.command)
 
@@ -120,7 +116,7 @@ class TestMemoryLeak(Test):
 class TestAsymptotic(Test):
     # To test asymptotic behaviour of memory, exec time or accuracy (and sample size) with respect to the initial sample size
 
-    def __init__(self, metric_1='memory', metric_2='', profiler=False, y_label='', y_right_label=None):
+    def __init__(self, profile=None, metrics_left=[], metrics_right=['sample size'], x_label='m', y_left_label='', y_right_label='Num elements'):
         args = [
             ('initial_m', True),
             ('N', True),
@@ -129,137 +125,125 @@ class TestAsymptotic(Test):
             ('k', False),
             ('freq', False)
         ]
-        self.y_label = y_label
+        self.x_label = x_label
+        self.y_left_label = y_left_label
         self.y_right_label = y_right_label
-        self.metric_1 = metric_1
-        self.metric_2 = metric_2
-        if profiler:
-            if metric_1 == 'memory':
-                self.profile = 'memory_usage'
-            elif metric_1 == 'time':
-                self.profile = 'exec_time'
-            else:
-                assert False
-        else:
-            self.profile = None
+        self.metrics_left = metrics_left
+        self.metrics_right = metrics_right
+        self.profile = profile
 
-        super().__init__(configuration='debug' if profiler else 'release', args=args)
+        super().__init__(configuration='release' if profile is None else 'debug', args=args)
 
 
     def run(self):
 
-        N = int(self.params.N)
-
-        seed = self.generate_seed()
+        self.seed = self.generate_seed()
 
         if self.params.iterations is None:
             self.params.iterations = 10
         else:
             self.params.iterations = int(self.params.iterations)
 
-        m_history = []
-        metric_1_history = []
-        metric_2_history = []
-        sample_size_history = []
-        n_history = []
+        X = []
+        Y_left = []
+        Y_right = []
+        m_hist = []
+        n_hist = []
 
         for iteration in range(1, self.params.iterations + 1):
             print('Iteration:', iteration, '/', self.params.iterations)
 
-            m = iteration * int(self.params.initial_m)
+            self.new_iteration(iteration)
 
-            stream = self.get_stream(iteration, m, N)
+            instances = self.create_instances(self.m, self.seed, self.profile)
 
-            instances = self.create_instances(m, seed, self.profile)
-
-            for i in range(N):
-                element = stream.next_element()
+            for i in range(self.N):
+                element = self.stream.next_element()
                 for instance in instances:
                     instance.process_element(str(element))
 
-            results_metric_1 = []
-            results_metric_2 = []
-            sizes = []
+            Y_left_results = []
+            Y_right_results = []
             for instance in instances:
                 if self.profile is not None:
                     instance.finish()
-                metric_1 = self.get_metric_1(instance, stream)
-                metric_2 = self.get_metric_2(instance, stream)
+                Y_left_results.append(self.get_metrics_left(iteration, instance))
+                Y_right_results.append(self.get_metrics_right(iteration, instance))
                 instance.finish()
-                results_metric_1.append(metric_1)
-                results_metric_2.append(metric_2)
-                sizes.append(instance.get_stats()['sample_size'])
 
-            print(results_metric_1)
-            print(results_metric_2)
+            print(Y_left_results)
+            print(Y_right_results)
 
-            m_history.append(m)
-            metric_1_history.append(results_metric_1)
-            metric_2_history.append(results_metric_2)
-            sample_size_history.append(sizes)
-            n_history.append(stream.n)
+            X.append(self.get_X_value(iteration))
+            Y_left.append(Y_left_results)
+            Y_right.append(Y_right_results)
+            m_hist.append(self.m)
+            n_hist.append(self.stream.n)
 
-        m_history = np.array(m_history)
-        metric_1_history = np.array(metric_1_history)
-        metric_2_history = np.array(metric_2_history)
-        sample_size_history = np.array(sample_size_history)
-        n_history = np.array(n_history)
+        X = np.array(X)
+        Y_left = np.array(Y_left)
+        Y_right = np.array(Y_right)
+        m_hist = np.array(m_hist)
+        n_hist = np.array(n_hist)
 
         print('Showing results')
-        _, axes = plt.subplots()
-        axes_right = axes.twinx()
+        _, axes_left = plt.subplots()
+        axes_right = axes_left.twinx()
 
-        for i, instance in enumerate(instances):
-            axes.plot(m_history, metric_1_history[:, i], '-*', label=self.metric_1 + ' ' + instance.name)
-            if self.y_right_label is None:
-                axes_right.plot(m_history, sample_size_history[:, i], '--', label='Sample size')
+        for Y, metrics, axes in [(Y_left, self.metrics_left, axes_left), (Y_right, self.metrics_right, axes_right)]:
+            for metric_index in range(0, Y.shape[2]):
+                axes.set_prop_cycle(None)
+                for i, instance in enumerate(instances):
+                    line_format = '-*' if metric_index == 0 else '-.x'
+                    line_format = line_format if axes == axes_left else '--'
+                    axes.plot(X, Y[:, i, metric_index], line_format, label=metrics[metric_index] + ' ' + instance.name)
 
-        if self.y_right_label is None:
-            axes_right.plot(m_history, m_history * np.log(n_history/m_history), 'm:', label='m * ln(n/m)')
+        if self.metrics_right == ['sample size']:
+            axes_right.plot(X, m_hist * np.log(n_hist/m_hist), 'm:', label='m * ln(n/m)')
 
-        if all([value is not None for value in metric_2_history.flatten()]):
-            axes.set_prop_cycle(None)
-            for i, instance in enumerate(instances):
-                metric_2_axes = axes if self.y_right_label is None or self.y_right_label == '' else axes_right
-                metric_2_axes.plot(m_history, metric_2_history[:, i], '-.x', label=self.metric_2 + ' ' + instance.name)
-
-        axes.legend(loc='upper left')
+        axes_left.legend(loc='upper left')
         axes_right.legend(loc='upper right')
-        axes.set_xlabel('m (Parameter for number of sampled elements)')
-        axes.set_ylabel(self.y_label)
-        axes_right.set_ylabel('Sample size' if self.y_right_label is None else self.y_right_label)
+
+        axes_left.set_xlabel(self.x_label)
+        axes_left.set_ylabel(self.y_left_label)
+        axes_right.set_ylabel(self.y_right_label)
 
         self.full_screen_plot()
         plt.show()
 
+
     @abstractmethod
-    def get_stream(self, iteration, m, N):
+    def new_iteration(self, iteration):
         pass
 
 
+    def get_X_value(self, iteration):
+        return self.m
+
+
     @abstractmethod
-    def get_metric_1(self, instance, stream):
+    def get_metrics_left(self, iteration, instance):
         pass
 
 
-    def get_metric_2(self, instance, stream):
-        return None
+    def get_metrics_right(self, iteration, instance):
+        return [instance.get_stats()['sample_size']]
 
 
 class TestAsymptoticMemoryProfiler(TestAsymptotic):
     # Tests the total memory allocated ONLY by the algorithm. It gets very accurate results, although maybe the
-    # other version suffices to get good enough results.
+    # other version suffices to get good enough results since this one is a bit slower.
 
     def __init__(self):
-        super().__init__(metric_1='memory', profiler=True, y_label='Max used memory (bytes)')
+        super().__init__(profile='memory_usage', metrics_left=['memory'], y_left_label='Max used memory (bytes)')
 
+    def new_iteration(self, iteration):
+        self.N = int(self.params.N)
+        self.m = iteration * int(self.params.initial_m)
+        self.stream = streams.Zipf(1.1, self.generate_seed(), save=True)
 
-    def get_stream(self, iteration, m, N):
-        return streams.Zipf(1.1, self.generate_seed(), save=False)
-
-
-    def get_metric_1(self, instance, stream):
-        return instance.get_stats()['memory_usage_peak_profiler']
+    def get_metrics_left(self, iteration, instance):
+        return [instance.get_stats()['memory_usage_peak_profiler']]
 
 
 class TestAsymptoticMemory(TestAsymptotic):
@@ -267,15 +251,17 @@ class TestAsymptoticMemory(TestAsymptotic):
     # So not only allocated by the algorithm. However, they are pretty accurate with high values of m.
 
     def __init__(self):
-        super().__init__(metric_1='memory', profiler=False, y_label='Used memory (bytes)')
+        super().__init__(metrics_left=['memory'], y_left_label='Used memory (bytes)')
 
 
-    def get_stream(self, iteration, m, N):
-        return streams.Zipf(1.1, self.generate_seed(), save=False)
+    def new_iteration(self, iteration):
+        self.N = int(self.params.N)
+        self.m = iteration * int(self.params.initial_m)
+        self.stream = streams.Zipf(1.1, self.generate_seed(), save=True)
 
-
-    def get_metric_1(self, instance, stream):
-        return instance.get_stats()['memory_usage']
+ 
+    def get_metrics_left(self, iteration, instance):
+        return [instance.get_stats()['memory_usage']]
 
 
 class TestAsymptoticTimeProfiler(TestAsymptotic):
@@ -285,17 +271,19 @@ class TestAsymptoticTimeProfiler(TestAsymptotic):
     # is really slow because of the virtualization.
 
     def __init__(self):
-        super().__init__(metric_1='time', profiler=True, y_label='Cost (Valgrind output)')
+        super().__init__(profile='exec_time', metrics_left=['time'], y_left_label='Cost (Valgrind output)')
 
 
-    def get_stream(self, iteration, m, N):
-        # return streams.Uniform(int(N/2), seed, False)                 # To test the "insert_element" operation (with a few updates)
-        # return streams.Uniform(int(1.1*m), seed, False)               # To test the "update_element" operation (with a few inserts)
-        return streams.Uniform(2*m, self.generate_seed(), save=False)   # In expectation there will be N/2 inserts and N/2 updates.
+    def new_iteration(self, iteration):
+        self.N = int(self.params.N)
+        self.m = iteration * int(self.params.initial_m)
+        # self.stream = streams.Uniform(int(N / 2))                                 # To test the "insert_element" operation (with a few updates)
+        # self.stream = streams.Uniform(int(1.1 * self.m))                          # To test the "update_element" operation (with a few inserts)
+        self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
 
 
-    def get_metric_1(self, instance, stream):
-        return instance.get_stats()['process_element_cost_profiler'] / stream.N
+    def get_metrics_left(self, iteration, instance):
+        return [instance.get_stats()['process_element_cost_profiler'] / self.N]
 
 
 class TestAsymptoticTime(TestAsymptotic):
@@ -303,41 +291,45 @@ class TestAsymptoticTime(TestAsymptotic):
     # being executed at the same time. It's better the profiler version.
 
     def __init__(self):
-        super().__init__(metric_1='time', profiler=False, y_label='Mean exec time per element (microseconds)')
+        super().__init__(metrics_left=['time'], y_left_label='Mean exec time per element (microseconds)')
 
 
-    def get_stream(self, iteration, m, N):
-        return streams.Uniform(2*m, self.generate_seed(), save=False)
+    def new_iteration(self, iteration):
+        self.N = int(self.params.N)
+        self.m = iteration * int(self.params.initial_m)
+        self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
 
 
-    def get_metric_1(self, instance, stream):
-        return instance.get_stats()['process_element_time'] / stream.N
+    def get_metrics_left(self, iteration, instance):
+        return [instance.get_stats()['process_element_time'] / self.N]
 
 
 class TestAsymptoticTimeMemory(TestAsymptotic):
     # Fusion of exec time and memory tests in one
 
     def __init__(self):
-        super().__init__(metric_1='time', metric_2='memory', profiler=True, y_label='Cost (Valgrind output)', y_right_label='Used memory (bytes)')
+        super().__init__(profile='exec_time', metrics_left=['time'], metrics_right=['memory'], y_left_label='Cost (Valgrind output)', y_right_label='Used memory (bytes)')
 
 
-    def get_stream(self, iteration, m, N):
-        return streams.Uniform(2*m, self.generate_seed(), save=False)
+    def new_iteration(self, iteration):
+        self.N = int(self.params.N)
+        self.m = iteration * int(self.params.initial_m)
+        self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=False) # In expectation there will be N/2 inserts and N/2 updates.
 
 
-    def get_metric_1(self, instance, stream):
-        return instance.get_stats()['process_element_cost_profiler'] / stream.N
+    def get_metrics_left(self, iteration, instance):
+        return [instance.get_stats()['process_element_cost_profiler'] / self.N]
 
 
-    def get_metric_2(self, instance, stream):
-        return instance.get_stats()['memory_usage']
+    def get_metrics_right(self, iteration, instance):
+        return [instance.get_stats()['memory_usage']]
 
 
 class TestAsymptoticAccuracy(TestAsymptotic):
     # Test to inspect how the precision and recall metrics variate when increasing the m
     
     def __init__(self):
-        super().__init__(metric_1='recall', metric_2='precision', profiler=False, y_label='Accuracy', y_right_label='Squared error')
+        super().__init__(metrics_left=['recall', 'precision'], metrics_right=['squared_error'], y_left_label='Accuracy', y_right_label='Squared error')
         if self.params.k is not None:
             self.query_param = int(self.params.k)
             self.query_name = 'k_top_query'
@@ -348,85 +340,16 @@ class TestAsymptoticAccuracy(TestAsymptotic):
             assert False
 
 
-    def get_stream(self, iteration, m, N):
-        return streams.Zipf(1.01, self.generate_seed(), save=True)
+    def new_iteration(self, iteration):
+        self.N = int(self.params.N)
+        self.m = iteration * int(self.params.initial_m)
+        self.stream = streams.Zipf(1.01, self.generate_seed(), save=True)
 
 
-    def get_metric_1(self, instance, stream):
-        # return metrics.get_squared_error(instance, stream, self.query_name, self.query_param)
-        return metrics.get_weighted_recall(instance, stream, self.query_name, self.query_param)
+    def get_metrics_left(self, iteration, instance):
+        return [metrics.get_weighted_recall(instance, self.stream, self.query_name, self.query_param),
+                metrics.get_weighted_precision(instance, self.stream, self.query_name, self.query_param)]
 
 
-    def get_metric_2(self, instance, stream):
-        return metrics.get_weighted_precision(instance, stream, self.query_name, self.query_param)
-
-
-
-class TestMemoryUsageEvolution(Test):
-    # Test to see the evolution of memory usage through the entire stream
-
-    def __init__(self):
-        args = [
-            ('m', True),
-            ('stream', True),
-            ('N', True),
-            ('sample_period', True),
-            ('seed', False)
-        ]
-        super().__init__('release', args)
-
-
-    def run(self):
-
-        seed = self.generate_seed()
-
-        m = int(self.params.m)
-
-        stream = streams.Zipf(1.01, seed)
-
-        instances = self.create_instances(m, seed)
-
-        iterations = []
-        memory = []
-        sample_size = []
-        n = []
-
-        for i in range(int(self.params.N)):
-            element = stream.next_element()
-
-            for instance in instances:
-                instance.process_element(str(element))
-
-            if i % int(self.params.sample_period) == 0:
-                iterations.append(i)
-                n.append(stream.n)
-                memory_usage = []
-                size = []
-                for instance in instances:
-                    stats = instance.get_stats()
-                    memory_usage.append(stats['memory_usage'])
-                    size.append(stats['sample_size'])
-                memory.append(memory_usage)
-                sample_size.append(size)
-
-        iterations = np.array(iterations)
-        memory = np.array(memory)
-        sample_size = np.array(sample_size)
-        n = np.array(n)
-
-        _, axes = plt.subplots()
-        axes_right = axes.twinx()
-
-        for i, instance in enumerate(instances):
-            axes.plot(iterations, memory[:, i], '-', label=instance.name)
-            axes_right.plot(iterations, sample_size[:, i], 'y--', label='Sample size')
-        axes_right.plot(iterations, m * np.log(n/m), 'm:.', label='m * ln(n/m)')
-
-        axes.legend(loc='upper left')
-        axes_right.legend(loc='upper right')
-        axes.set_xlabel('Number of elements read from the stream')
-        axes.set_ylabel('Used memory (bytes)')
-        axes_right.set_ylabel('Number of elements')
-        self.full_screen_plot()
-        plt.show()
-
+    def get_metrics_right(self, iteration, instance):
+        return [metrics.get_squared_error(instance, self.stream, self.query_name, self.query_param)]

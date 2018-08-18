@@ -55,24 +55,3 @@ add_test(
         python3 main.py MemoryLeak
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test)
 
-#add_test(
-#        NAME
-#        MemoryUsage
-#        COMMAND
-#        python3 main.py MemoryUsage -m 1000 -N 100000 -stream zipf
-#        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test)
-
-add_test(
-        NAME
-        MemoryUsageAsymptotic
-        COMMAND
-        python3 main.py MemoryUsageAsymptotic -m 1000 -N 100000 -stream zipf
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test)
-
-add_test(
-        NAME
-        MemoryUsageEvolution
-        COMMAND
-        python3 main.py MemoryUsageEvolution -m 1000 -N 1000000 -stream zipf -sample_period 1000
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test)
-
