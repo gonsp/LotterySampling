@@ -7,10 +7,10 @@ namespace SpaceSaving {
 
 
 template<class Element>
-using FrequencyOrder = SortedList::SortedList<Element, &Element::frequency_order_iterator>;
+using FrequencyOrder = SortedList::SortedList<Element, &Element::frequency_order_locator>;
 
 template<class Element>
-using FrequencyOrderIterator = SortedList::Iterator<Element>;
+using FrequencyOrderLocator = SortedList::Locator<Element>;
 
 template<class T>
 struct Element {
@@ -20,7 +20,7 @@ public:
     T id;
     unsigned int over_estimation;
 
-    FrequencyOrderIterator<Element<T>> frequency_order_iterator;
+    FrequencyOrderLocator<Element<T>> frequency_order_locator;
 
     Element(const T& id) {
         this->id = id;

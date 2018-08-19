@@ -59,8 +59,12 @@ public:
     bool operator!=(const Iterator& iterator);
 };
 
+template<class Element>
+using Locator = Iterator<Element>;
 
-template<class Element, ClassField<Element, Iterator<Element>> iterator_field>
+
+
+template<class Element, ClassField<Element, Locator<Element>> locator_field>
 class SortedList {
 // - Constant time insertion element with lowest key already in the container.
 // - Constant time deletion arbitrary element.

@@ -6,8 +6,8 @@ namespace SortedList {
 
 using namespace std;
 
-template<class Element, ClassField<Element, Iterator<Element>> iterator_field>
-void SortedList<Element, iterator_field>::insert_element(Element* element) {
+template<class Element, ClassField<Element, Locator<Element>> locator_field>
+void SortedList<Element, locator_field>::insert_element(Element* element) {
     if(bucket_list.empty() || prev(bucket_list.end())->key != 1) {
         // There are no buckets or the smallest one has count greater than 1
         bucket_list.emplace_back(1);
@@ -16,13 +16,13 @@ void SortedList<Element, iterator_field>::insert_element(Element* element) {
     iterator.bucket_iterator = prev(bucket_list.end());
     iterator.bucket_iterator->elements.emplace_back(element);
     iterator.element_iterator = prev(iterator.bucket_iterator->elements.end());
-    element->frequency_order_iterator = iterator;
+    element->*locator_field = iterator;
 }
 
-template<class Element, ClassField<Element, Iterator<Element>> iterator_field>
-Element* SortedList<Element, iterator_field>::pop_and_push(Element* element) {
+template<class Element, ClassField<Element, Locator<Element>> locator_field>
+Element* SortedList<Element, locator_field>::pop_and_push(Element* element) {
     assert(!bucket_list.empty());
-    Iterator<Element>& iterator = element->frequency_order_iterator;
+    Iterator<Element>& iterator = element->*locator_field;
     iterator.bucket_iterator = prev(bucket_list.end());
     iterator.element_iterator = iterator.bucket_iterator->elements.begin(); // We select the oldest element with less hits
     Element* removed_element = *iterator.element_iterator;
@@ -33,9 +33,9 @@ Element* SortedList<Element, iterator_field>::pop_and_push(Element* element) {
     return removed_element;
 }
 
-template<class Element, ClassField<Element, Iterator<Element>> iterator_field>
-void SortedList<Element, iterator_field>::increment_key(Element* element) {
-    Iterator<Element>& iterator = element->frequency_order_iterator;
+template<class Element, ClassField<Element, Locator<Element>> locator_field>
+void SortedList<Element, locator_field>::increment_key(Element* element) {
+    Iterator<Element>& iterator = element->*locator_field;
     int new_key = iterator.bucket_iterator->key + 1;
     if(iterator.bucket_iterator == bucket_list.begin() || prev(iterator.bucket_iterator)->key != new_key) { // It is the highest bucket or the next bucket doesn't have the required count
         if(iterator.bucket_iterator->elements.size() == 1) { // We can reuse the current bucket
@@ -55,13 +55,13 @@ void SortedList<Element, iterator_field>::increment_key(Element* element) {
     iterator.element_iterator = prev(iterator.bucket_iterator->elements.end());
 }
 
-template<class Element, ClassField<Element, Iterator<Element>> iterator_field>
-KeyType SortedList<Element, iterator_field>::get_key(Element* element) const {
-    return element->frequency_order_iterator.bucket_iterator->key;
+template<class Element, ClassField<Element, Locator<Element>> locator_field>
+KeyType SortedList<Element, locator_field>::get_key(Element* element) const {
+    return (element->*locator_field).bucket_iterator->key;
 }
 
-template<class Element, ClassField<Element, Iterator<Element>> iterator_field>
-Iterator<Element> SortedList<Element, iterator_field>::begin() {
+template<class Element, ClassField<Element, Locator<Element>> locator_field>
+Iterator<Element> SortedList<Element, locator_field>::begin() {
     Iterator<Element> iterator(&bucket_list);
     iterator.bucket_iterator = bucket_list.begin();
     if(!bucket_list.empty()) {
@@ -70,8 +70,8 @@ Iterator<Element> SortedList<Element, iterator_field>::begin() {
     return iterator;
 }
 
-template<class Element, ClassField<Element, Iterator<Element>> iterator_field>
-Iterator<Element> SortedList<Element, iterator_field>::end() {
+template<class Element, ClassField<Element, Locator<Element>> locator_field>
+Iterator<Element> SortedList<Element, locator_field>::end() {
     Iterator<Element> iterator(&bucket_list);
     iterator.bucket_iterator = bucket_list.end();
     return iterator;

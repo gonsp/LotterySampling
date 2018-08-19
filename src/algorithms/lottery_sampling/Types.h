@@ -10,15 +10,15 @@ namespace LotterySampling {
 using namespace std;
 
 template<class Element>
-using FrequencyOrder = SortedTree::SortedTree<Element, &Element::compare_freq, &Element::frequency_order_iterator>;
+using FrequencyOrder = SortedTree::SortedTree<Element, &Element::compare_freq, &Element::frequency_order_locator>;
 
 template<class Element>
-using TicketOrder = BinaryHeap::BinaryHeap<Element, &Element::compare_ticket, &Element::ticket_order_iterator>;
+using TicketOrder = BinaryHeap::BinaryHeap<Element, &Element::compare_ticket, &Element::ticket_order_locator>;
 
 template<class Element>
-using FrequencyOrderIterator = SortedTree::Iterator<Element, &Element::compare_freq>;
+using FrequencyOrderLocator = SortedTree::Locator<Element, &Element::compare_freq>;
 
-using TicketOrderIterator = BinaryHeap::Iterator;
+using TicketOrderLocator = BinaryHeap::Locator;
 
 typedef uint64_t Ticket;
 
@@ -48,10 +48,10 @@ public:
         return this->ticket < element.ticket;
     }
 
-    TicketOrderIterator ticket_order_iterator;
+    TicketOrderLocator ticket_order_locator;
     int level;
 
-    FrequencyOrderIterator<Element<T>> frequency_order_iterator;
+    FrequencyOrderLocator<Element<T>> frequency_order_locator;
 };
 
 

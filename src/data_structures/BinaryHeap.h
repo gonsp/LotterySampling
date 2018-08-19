@@ -8,9 +8,9 @@
 namespace BinaryHeap {
 
 
-typedef int Iterator;
+typedef int Locator;
 
-template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Iterator> iterator_field>
+template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator> locator_field>
 class BinaryHeap {
 // - Logarithmic insertions and deletions of arbitrary elements and key values.
 // - Logarithmic key modification.
@@ -20,13 +20,13 @@ private:
     std::vector<Element*> v;
     PointerComparator<Element, comparator_func> comparator;
 
-    Element* pop(Iterator it);
+    Element* pop(Locator locator);
 
-    void key_updated(Iterator it);
+    void key_updated(Locator locator);
 
-    Iterator get_father_iterator(Iterator it) const;
+    Locator get_father_locator(Locator locator) const;
 
-    Iterator get_min_child_iterator(Iterator it) const;
+    Locator get_min_child_locator(Locator locator) const;
 
 public:
     BinaryHeap() {}
