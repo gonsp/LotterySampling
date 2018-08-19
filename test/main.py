@@ -4,7 +4,7 @@ import sys
 
 def main():
 
-    test_name = sys.argv.pop(1)
+    test_name = sys.argv[1]
     test_name = 'Test' + test_name
 
     mod = __import__('tests', fromlist=[test_name])

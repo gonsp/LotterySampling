@@ -16,8 +16,10 @@ from instance import Instance
 class Test:
 
     def __init__(self, configuration='release', args=[]):
+        self.test_command = ' '.join(sys.argv[1:])
         self.exec_path = self.build_executable(configuration)
         arg_parser = argparse.ArgumentParser()
+        arg_parser.add_argument('test_name')
         for name, required in args:
             arg_parser.add_argument('-' + name, required=required)
         self.params = arg_parser.parse_args()
@@ -209,6 +211,7 @@ class TestAsymptotic(Test):
         axes_right.set_ylabel(self.y_right_label)
 
         self.full_screen_plot()
+        plt.title(self.test_command)
         plt.show()
 
 
