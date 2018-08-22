@@ -50,12 +50,11 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
 template<class T>
 void Algorithm<T>::print_state() {
-    int n_elements = 0;
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         Element<T>* element = *it;
         cout << element->id << ", " << frequency_order.get_key(element) << ", " << element->over_estimation << endl;
     }
-    assert(n_elements == this->sample_size());
+    assert(frequency_order.size() == this->sample_size());
 }
 
 

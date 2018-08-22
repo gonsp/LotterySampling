@@ -35,7 +35,9 @@ set(SOURCE_FILES
         src/data_structures/SortedTree.h
         src/data_structures/SortedTree.ipp
         src/data_structures/SortedList.h
-        src/data_structures/SortedList.ipp)
+        src/data_structures/SortedList.ipp
+        src/data_structures/SortedVector.h
+        src/data_structures/SortedVector.ipp)
 
 
 ###################################################

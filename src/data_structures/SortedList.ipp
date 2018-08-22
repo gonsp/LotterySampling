@@ -9,7 +9,7 @@ using namespace std;
 template<class Element, ClassField<Element, Locator<Element>> locator_field>
 void SortedList<Element, locator_field>::insert_element(Element* element) {
     if(bucket_list.empty() || prev(bucket_list.end())->key != 1) {
-        // There are no buckets or the smallest one has count greater than 1
+        // There are no buckets or the smallest one has key greater than 1
         bucket_list.emplace_back(1);
     }
     Iterator<Element> iterator = Iterator<Element>(&bucket_list);
@@ -37,7 +37,7 @@ template<class Element, ClassField<Element, Locator<Element>> locator_field>
 void SortedList<Element, locator_field>::increment_key(Element* element) {
     Iterator<Element>& iterator = element->*locator_field;
     int new_key = iterator.bucket_iterator->key + 1;
-    if(iterator.bucket_iterator == bucket_list.begin() || prev(iterator.bucket_iterator)->key != new_key) { // It is the highest bucket or the next bucket doesn't have the required count
+    if(iterator.bucket_iterator == bucket_list.begin() || prev(iterator.bucket_iterator)->key != new_key) { // It is the highest bucket or the next bucket doesn't have the required key
         if(iterator.bucket_iterator->elements.size() == 1) { // We can reuse the current bucket
             iterator.bucket_iterator->key = new_key;
             return;

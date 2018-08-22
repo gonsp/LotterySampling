@@ -1,5 +1,5 @@
-#ifndef _Element_LotterySampling_H_
-#define _Element_LotterySampling_H_
+#ifndef _Types_LotterySampling_H_
+#define _Types_LotterySampling_H_
 
 #include "data_structures/BinaryHeap.h"
 #include "data_structures/SortedTree.h"
@@ -57,4 +57,4 @@ public:
 
 }
 
-#endif //_Element_LotterySampling_H_
+#endif //_Types_LotterySampling_H_
