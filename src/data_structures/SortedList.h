@@ -82,6 +82,10 @@ public:
 
     void insert_element(Element* element);
 
+    void remove_element(Element* element);
+
+    void pop_back();
+
     Element* pop_and_push(Element* element);
 
     void increment_key(Element* element);

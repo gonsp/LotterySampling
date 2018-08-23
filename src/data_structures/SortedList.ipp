@@ -20,6 +20,21 @@ void SortedList<Element, locator_field>::insert_element(Element* element) {
 }
 
 template<class Element, ClassField<Element, Locator<Element>> locator_field>
+void SortedList<Element, locator_field>::remove_element(Element* element) {
+    Iterator<Element> iterator = element->*locator_field;
+    iterator.bucket_iterator->element.erase(iterator.element_iterator);
+    if(iterator.bucket_iterator->elements.empty()) {
+        bucket_list.erase(iterator.bucket_iterator);
+    }
+};
+
+template<class Element, ClassField<Element, Locator<Element>> locator_field>
+void SortedList<Element, locator_field>::pop_back() {
+    assert(!bucket_list.empty());
+    remove_element(prev(end()));
+};
+
+template<class Element, ClassField<Element, Locator<Element>> locator_field>
 Element* SortedList<Element, locator_field>::pop_and_push(Element* element) {
     assert(!bucket_list.empty());
     Iterator<Element>& iterator = element->*locator_field;
