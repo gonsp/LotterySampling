@@ -23,6 +23,7 @@ private:
     void update_element(Element<T>& element) override;
 
 public:
+
     Algorithm(const InputParser& parameters);
 
     void frequent_query(float f, std::ostream& stream) override;

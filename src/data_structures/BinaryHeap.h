@@ -17,6 +17,7 @@ class BinaryHeap {
 // - Traversal not allowed. Only access to the smallest key's element.
 
 private:
+
     std::vector<Element*> v;
     PointerComparator<Element, comparator_func> comparator;
 
@@ -29,6 +30,7 @@ private:
     Locator get_min_child_locator(Locator locator) const;
 
 public:
+
     BinaryHeap() {}
 
     BinaryHeap(unsigned int m);

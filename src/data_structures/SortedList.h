@@ -34,9 +34,11 @@ template<class Element>
 struct Iterator {
 
 private:
+
     BucketList<Element>* bucket_list;
 
 public:
+
     typename BucketList<Element>::iterator bucket_iterator;
     typename ElementList<Element>::iterator element_iterator;
 
@@ -73,6 +75,7 @@ class SortedList {
 // - Linear time ordered traversal through iterators.
 
 private:
+
     BucketList<Element> bucket_list;
 
 public:

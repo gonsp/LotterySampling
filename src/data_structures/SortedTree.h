@@ -22,6 +22,7 @@ class SortedTree : private std::multiset<Element*, PointerComparator<Element, co
 // - Linear time ordered traversal through iterators.
 
 public:
+
     void insert_element(Element* element);
 
     void remove_element(Element* element);

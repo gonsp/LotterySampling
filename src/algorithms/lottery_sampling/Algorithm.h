@@ -40,6 +40,7 @@ private:
     void insert_level_2(Element<T>& element);
 
 public:
+
     Algorithm(const InputParser& parameters);
 
     void frequent_query(float f, std::ostream& stream) override;

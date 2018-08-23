@@ -44,11 +44,14 @@ class SortedVector {
 // - Linear time ordered traversal through iterators.
 
 private:
+
     std::vector<Element*> v;
     BucketList bucket_list;
 
     bool is_bucket_size_one(const Bucket& bucket) const;
+
 public:
+
     SortedVector() {}
 
     SortedVector(unsigned int m);
