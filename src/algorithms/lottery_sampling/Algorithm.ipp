@@ -36,14 +36,14 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
 
 template<class T>
 void Algorithm<T>::frequent_query(float f, ostream& stream) {
-    for(auto it = frequency_order.rbegin(); it != frequency_order.rend() && (*it)->freq >= f * this->N; ++it) {
+    for(auto it = frequency_order.begin(); it != frequency_order.end() && (*it)->freq >= f * this->N; ++it) {
         stream << (*it)->id << " " << (*it)->freq / (float) this->N << endl;
     }
 }
 
 template<class T>
 void Algorithm<T>::k_top_query(int k, ostream& stream) {
-    for(auto it = frequency_order.rbegin(); it != frequency_order.rend() && k-- > 0; ++it) {
+    for(auto it = frequency_order.begin(); it != frequency_order.end() && k-- > 0; ++it) {
         stream << (*it)->id << " " << (*it)->freq / (float) this->N << endl;
     }
 }
@@ -163,7 +163,7 @@ void Algorithm<T>::print_state() {
     print_level(level_2);
     cout << "-----------------------" << endl;
     cout << "%%%%%% frequency_order %%%%%%" << endl;
-    for(auto it = frequency_order.rbegin(); it != frequency_order.rend(); ++it) {
+    for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         cout << (*it)->id << ", " << (*it)->ticket << ", " << (*it)->freq << ", " << (*it)->over_estimation << endl;
     }
     assert(level_1.size() + level_2.size() == this->sample_size());

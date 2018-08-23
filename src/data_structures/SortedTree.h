@@ -8,18 +8,22 @@ namespace SortedTree {
 
 
 template<class Element, ComparatorFunction<Element> comparator_func>
-using Iterator = typename std::multiset<Element*, PointerComparator<Element, comparator_func>>::iterator;
+using Iterator = typename std::multiset<Element*, PointerComparator<Element, comparator_func>>::reverse_iterator;
 
 template<class Element, ComparatorFunction<Element> comparator_func>
-using Locator = Iterator<Element, comparator_func>;
+using Locator = typename std::multiset<Element*, PointerComparator<Element, comparator_func>>::iterator;
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator<Element, comparator_func>> locator_field>
-class SortedTree : private std::multiset<Element*, PointerComparator<Element, comparator_func>> {
+class SortedTree {
 // - Logarithmic insertions of arbitrary keys.
 // - Constant time deletion of arbitrary elements (through its locator).
 // - Constant time key increment (1 unit).
 // - Logarithmic time arbitrary key modification.
 // - Linear time ordered traversal through iterators.
+
+private:
+
+    std::multiset<Element*, PointerComparator<Element, comparator_func>> s;
 
 public:
 
@@ -30,15 +34,11 @@ public:
     template<class KeyType, class Field>
     void update_key(Element* element, Field key_field, KeyType new_key);
 
-    using std::multiset<Element*, PointerComparator<Element, comparator_func>>::size;
+    unsigned long size() const;
 
-    using std::multiset<Element*, PointerComparator<Element, comparator_func>>::begin;
+    Iterator<Element, comparator_func> begin();
 
-    using std::multiset<Element*, PointerComparator<Element, comparator_func>>::end;
-
-    using std::multiset<Element*, PointerComparator<Element, comparator_func>>::rbegin;
-
-    using std::multiset<Element*, PointerComparator<Element, comparator_func>>::rend;
+    Iterator<Element, comparator_func> end();
 };
 
 

@@ -27,6 +27,9 @@ set(SOURCE_FILES
         src/algorithms/lottery_sampling/Algorithm.h
         src/algorithms/lottery_sampling/Algorithm.ipp
         src/algorithms/lottery_sampling/Types.h
+        src/algorithms/lottery_cache_sampling/Algorithm.h
+        src/algorithms/lottery_cache_sampling/Algorithm.ipp
+        src/algorithms/lottery_cache_sampling/Types.h
         src/algorithms/space_saving/Algorithm.h
         src/algorithms/space_saving/Algorithm.ipp
         src/algorithms/space_saving/Types.h
@@ -37,7 +40,9 @@ set(SOURCE_FILES
         src/data_structures/SortedList.h
         src/data_structures/SortedList.ipp
         src/data_structures/SortedVector.h
-        src/data_structures/SortedVector.ipp)
+        src/data_structures/SortedVector.ipp
+        src/data_structures/List.h
+        src/data_structures/List.ipp)
 
 
 ###################################################
