@@ -1,5 +1,5 @@
-#ifndef _SortedTree_LotterySampling_H_
-#define _SortedTree_LotterySampling_H_
+#ifndef _SortedTree_H_
+#define _SortedTree_H_
 
 #include <set>
 #include "utils/Misc.h"
@@ -46,4 +46,4 @@ public:
 
 #include "SortedTree.ipp"
 
-#endif //_SortedTree_LotterySampling_H_
+#endif //_SortedTree_H_

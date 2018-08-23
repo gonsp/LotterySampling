@@ -1,5 +1,5 @@
-#ifndef _ALGORITHM_H_
-#define _ALGORITHM_H_
+#ifndef _GenericAlgorithm_H_
+#define _GenericAlgorithm_H_
 
 #include <ostream>
 #include <unordered_map>
@@ -56,4 +56,4 @@ public:
 #include "GenericAlgorithm.ipp"
 
 
-#endif //_ALGORITHM_H_
+#endif //_GenericAlgorithm_H_

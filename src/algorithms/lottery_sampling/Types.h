@@ -1,5 +1,5 @@
-#ifndef _Types_LotterySampling_H_
-#define _Types_LotterySampling_H_
+#ifndef _LotterySampling_Types_H_
+#define _LotterySampling_Types_H_
 
 #include "data_structures/BinaryHeap.h"
 #include "data_structures/SortedTree.h"
@@ -24,8 +24,6 @@ typedef uint64_t Ticket;
 
 template<class T>
 struct Element {
-
-public:
 
     T id;
     Ticket ticket;
@@ -57,4 +55,4 @@ public:
 
 }
 
-#endif //_Types_LotterySampling_H_
+#endif //_LotterySampling_Types_H_

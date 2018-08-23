@@ -1,5 +1,5 @@
-#ifndef _SPACESAVING_H_
-#define _SPACESAVING_H_
+#ifndef _SpaceSaving_Algorithm_H_
+#define _SpaceSaving_Algorithm_H_
 
 #include "algorithms/GenericAlgorithm.h"
 #include "utils/InputParser.h"
@@ -38,4 +38,4 @@ public:
 
 #include "Algorithm.ipp"
 
-#endif //_SPACESAVING_H_
+#endif //_SpaceSaving_Algorithm_H_

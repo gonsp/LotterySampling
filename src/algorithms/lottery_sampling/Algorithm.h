@@ -1,5 +1,5 @@
-#ifndef _LOTTERYSAMPLING_H_
-#define _LOTTERYSAMPLING_H_
+#ifndef _LotterySampling_Algorithm_H_
+#define _LotterySampling_Algorithm_H_
 
 #include "algorithms/GenericAlgorithm.h"
 #include "utils/InputParser.h"
@@ -57,4 +57,4 @@ public:
 
 #include "Algorithm.ipp"
 
-#endif //_LOTTERYSAMPLING_H_
+#endif //_LotterySampling_Algorithm_H_

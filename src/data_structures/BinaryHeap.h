@@ -1,5 +1,5 @@
-#ifndef _BinaryHeap_LotterySampling_H_
-#define _BinaryHeap_LotterySampling_H_
+#ifndef _BinaryHeap_H_
+#define _BinaryHeap_H_
 
 #include <vector>
 #include "utils/Misc.h"
@@ -57,4 +57,4 @@ public:
 
 #include "BinaryHeap.ipp"
 
-#endif //_BinaryHeap_LotterySampling_H_
+#endif //_BinaryHeap_H_

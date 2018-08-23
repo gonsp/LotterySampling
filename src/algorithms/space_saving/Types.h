@@ -1,5 +1,5 @@
-#ifndef _Types_SpaceSaving_H_
-#define _Types_SpaceSaving_H_
+#ifndef _SpaceSaving_Types_H_
+#define _SpaceSaving_Types_H_
 
 #include "data_structures/SortedList.h"
 #include "data_structures/SortedVector.h"
@@ -18,8 +18,6 @@ using FrequencyOrderLocator = SortedVector::Locator;
 template<class T>
 struct Element {
 
-public:
-
     T id;
     unsigned int over_estimation;
 
@@ -33,4 +31,4 @@ public:
 
 }
 
-#endif //_Types_SpaceSaving_H_
+#endif //_SpaceSaving_Types_H_
