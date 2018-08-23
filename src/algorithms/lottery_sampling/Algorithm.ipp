@@ -11,7 +11,7 @@ using namespace std;
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
-    aging = parameters.has_parameter("-aging");
+    bool aging = parameters.has_parameter("-aging");
     multilevel = parameters.has_parameter("-multilevel");
     level_1 = TicketOrder<Element<T>>(m);
     if(!multilevel) {
@@ -21,17 +21,9 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     if(parameters.has_parameter("-seed")) {
         seed = stoi(parameters.get_parameter("-seed"));
     } else {
-        seed = random_device()();
+        seed = -1;
     }
-    random_state = mt19937_64(seed);
-    if(aging) {
-        // If aging is used, then the range of the tickets is decreased
-        // in half to avoid overflows.
-        MAX_TICKET = static_cast<unsigned long long int>(numeric_limits<int64_t>::max() - 1);
-        dist = uniform_int_distribution<Ticket>(0, MAX_TICKET);
-    } else {
-        MAX_TICKET = numeric_limits<uint64_t>::max();
-    }
+    ticket_generator = TicketGenerator(aging, seed);
 }
 
 template<class T>
@@ -79,7 +71,7 @@ void Algorithm<T>::insert_level_2(Element<T>& element) {
 template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
 
-    element.ticket = generate_ticket();
+    element.ticket = ticket_generator.generate_ticket(this->N);
 
     if(this->sample_size() < m) {
         element.freq = 1;
@@ -87,10 +79,10 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         insert_level_1(element);
     } else {
         if(element.ticket > level_1.top()->ticket) {
-            element.freq = estimate_frequency(level_1.top()->ticket);
+            element.freq = ticket_generator.estimate_frequency(level_1.top()->ticket);
             insert_level_1(element);
         } else if(!level_2.empty() && element.ticket > level_2.top()->ticket) {
-            element.freq = estimate_frequency(level_2.top()->ticket);
+            element.freq = ticket_generator.estimate_frequency(level_2.top()->ticket);
             insert_level_2(element);
         } else {
             // New element didn't get a good enough ticket to get sampled, so it's discarded
@@ -109,7 +101,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.update_key(&element, &Element<T>::freq, element.freq + 1);
 
     // Updating ticket
-    Ticket ticket = generate_ticket();
+    Ticket ticket = ticket_generator.generate_ticket(this->N);
     if(ticket > element.ticket) { // The new ticket is better than the old one
         element.ticket = ticket; // Updating (the better) ticket
         if(element.level == 2 && level_1.top()->ticket < ticket) {
@@ -120,22 +112,6 @@ void Algorithm<T>::update_element(Element<T>& element) {
             (element.level == 1 ? level_1 : level_2).key_updated(&element);
         }
     }
-}
-
-template<class T>
-Ticket Algorithm<T>::generate_ticket() {
-    Ticket ticket = dist(random_state);
-    if(aging) {
-        ticket += this->N;
-    }
-    return ticket;
-}
-
-template<class T>
-inline unsigned int Algorithm<T>::estimate_frequency(Ticket min_ticket) const {
-    // TODO Protect from infinity
-    // TODO take into account aging
-    return static_cast<unsigned int>(1 / (1 - min_ticket / (double) MAX_TICKET));
 }
 
 template<class T>

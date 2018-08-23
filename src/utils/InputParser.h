@@ -7,9 +7,11 @@
 class InputParser {
 
 private:
+
     std::map<std::string, std::string> parameters;
 
 public:
+
     InputParser(int num_args, char* args[]);
 
     bool has_parameter(const std::string& parameter_name) const;

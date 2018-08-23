@@ -4,7 +4,7 @@
 #include "algorithms/GenericAlgorithm.h"
 #include "utils/InputParser.h"
 #include "Types.h"
-#include <random>
+#include "utils/Misc.h"
 
 namespace LotterySampling {
 
@@ -20,20 +20,13 @@ private:
     FrequencyOrder<Element<T>> frequency_order;
 
     unsigned int m;
-    bool aging;
     bool multilevel;
 
-    Ticket MAX_TICKET;
-    std::mt19937_64 random_state;
-    std::uniform_int_distribution<Ticket> dist;
+    TicketGenerator ticket_generator;
 
     bool insert_element(Element<T>& element) override;
 
     void update_element(Element<T>& element) override;
-
-    Ticket generate_ticket();
-
-    unsigned int estimate_frequency(Ticket min_ticket) const;
 
     void insert_level_1(Element<T>& element);
 
