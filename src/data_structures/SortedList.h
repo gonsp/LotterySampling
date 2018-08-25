@@ -77,6 +77,7 @@ class SortedList {
 private:
 
     BucketList<Element> bucket_list;
+    unsigned long element_count = 0;
 
 public:
 
@@ -95,6 +96,8 @@ public:
     Iterator<Element> begin();
 
     Iterator<Element> end();
+
+    unsigned long size() const;
 };
 
 
