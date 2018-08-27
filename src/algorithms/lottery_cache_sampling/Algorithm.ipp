@@ -45,12 +45,15 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 
     if(this->sample_size() < m) {
         cache_order.insert_element(&element);
+        element.initial_estimated_freq = 0;
     } else {
         Element<T>* older_hit = cache_order.get_older();
         if(element.ticket >= older_hit->ticket || element.ticket >= mean_ticket) {
             cache_order.pop_and_push(&element);
             ticket_generator.decremental_averaging(mean_ticket, older_hit->ticket, this->sample_size());
             frequency_order.remove_element(older_hit);
+            // TODO fill this
+            element.initial_estimated_freq = 0;
             this->remove_element(older_hit->id);
         } else {
             return false;
@@ -78,11 +81,11 @@ template<class T>
 void Algorithm<T>::print_state() {
     cout << "Cache order:" << endl;
     Ticket real_mean_ticket = 0;
-    unsigned int i;
+    unsigned int i = 0;
     for(auto it = cache_order.begin(); it != cache_order.end(); ++it) {
         Element<T>* element = *it;
         cout << element->id << ", " << element->ticket << endl;
-        ticket_generator.incremental_averaging(real_mean_ticket, element->ticket, i);
+        ticket_generator.incremental_averaging(real_mean_ticket, element->ticket, ++i);
     }
     cout << "Frequency order: " << endl;
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {

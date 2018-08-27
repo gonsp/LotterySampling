@@ -22,8 +22,9 @@ template<class Element, ClassField<Element, Locator<Element>> locator_field>
 Element* List<Element, locator_field>::pop_and_push(Element* element) {
     assert(!empty());
     Element* removed_element = get_older();
-    *prev(l.end()) = element;
     move_to_front(removed_element);
+    *(removed_element->*locator_field) = element;
+    element->*locator_field = removed_element->*locator_field;
     return removed_element;
 };
 
