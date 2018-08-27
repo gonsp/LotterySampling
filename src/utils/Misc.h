@@ -38,9 +38,9 @@ public:
 
     unsigned int estimate_frequency(const Ticket& min_ticket) const;
 
-    Ticket incremental_averaging(const Ticket& old_mean, const Ticket& ticket, unsigned int n) const;
+    void incremental_averaging(Ticket& old_mean, const Ticket& ticket, unsigned int n) const;
 
-    Ticket decremenetal_averaging(const Ticket& old_mean, const Ticket& ticket, unsigned int n) const;
+    void decremental_averaging(Ticket& old_mean, const Ticket& ticket, unsigned int n) const;
 };
 
 

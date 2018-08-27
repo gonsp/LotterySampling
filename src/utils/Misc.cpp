@@ -32,20 +32,19 @@ unsigned int TicketGenerator::estimate_frequency(const Ticket& min_ticket) const
     return static_cast<unsigned int>(1 / (1 - min_ticket / double(MAX_TICKET)));
 }
 
-Ticket TicketGenerator::incremental_averaging(const Ticket& old_mean, const Ticket& ticket, unsigned int n) const {
+void TicketGenerator::incremental_averaging(Ticket& mean, const Ticket& ticket, unsigned int n) const {
     // To avoid overflows
-    if(ticket > old_mean) {
-        return old_mean + (ticket - old_mean) / n;
+    if(ticket > mean) {
+        mean = mean + (ticket - mean) / n;
     } else {
-        return old_mean - (old_mean - ticket) / n;
+        mean = mean - (mean - ticket) / n;
     }
 }
 
-Ticket TicketGenerator::decremenetal_averaging(const Ticket& old_mean, const Ticket& ticket, unsigned int n) const {
-    // To avoid overflows
-    if(ticket > old_mean) {
-        return old_mean - (ticket - old_mean) / n;
+void TicketGenerator::decremental_averaging(Ticket& mean, const Ticket& ticket, unsigned int n) const {
+    if(n == 1) {
+        mean = 0;
     } else {
-        return old_mean + (old_mean - ticket) / n;
+        mean = ((mean - ticket / n) / (n - 1)) * n;
     }
 }
