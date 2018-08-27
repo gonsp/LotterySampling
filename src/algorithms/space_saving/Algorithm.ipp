@@ -15,7 +15,7 @@ template<class T>
 void Algorithm<T>::frequent_query(float f, ostream& stream) {
     for(auto it = frequency_order.begin(); it != frequency_order.end() && frequency_order.get_key(*it) >= f * this->N; ++it) {
         Element<T>* element = *it;
-        stream << element->id << " " << frequency_order.get_key(element) / (float) this->N << endl;
+        stream << element->id << " " << frequency_order.get_key(element) / float(this->N) << endl;
     }
 }
 
@@ -23,7 +23,7 @@ template<class T>
 void Algorithm<T>::k_top_query(int k, std::ostream& stream) {
     for(auto it = frequency_order.begin(); it != frequency_order.end() && k-- > 0; ++it) {
         Element<T>* element = *it;
-        stream << element->id << " " << frequency_order.get_key(element) / (float) this->N << endl;
+        stream << element->id << " " << frequency_order.get_key(element) / float(this->N) << endl;
     }
 }
 

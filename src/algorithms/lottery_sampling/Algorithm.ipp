@@ -29,14 +29,14 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
 template<class T>
 void Algorithm<T>::frequent_query(float f, ostream& stream) {
     for(auto it = frequency_order.begin(); it != frequency_order.end() && (*it)->freq >= f * this->N; ++it) {
-        stream << (*it)->id << " " << (*it)->freq / (float) this->N << endl;
+        stream << (*it)->id << " " << (*it)->freq / float(this->N) << endl;
     }
 }
 
 template<class T>
 void Algorithm<T>::k_top_query(int k, ostream& stream) {
     for(auto it = frequency_order.begin(); it != frequency_order.end() && k-- > 0; ++it) {
-        stream << (*it)->id << " " << (*it)->freq / (float) this->N << endl;
+        stream << (*it)->id << " " << (*it)->freq / float(this->N) << endl;
     }
 }
 
