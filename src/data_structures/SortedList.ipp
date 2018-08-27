@@ -23,7 +23,7 @@ void SortedList<Element, locator_field>::insert_element(Element* element) {
 template<class Element, ClassField<Element, Locator<Element>> locator_field>
 void SortedList<Element, locator_field>::remove_element(Element* element) {
     Iterator<Element> iterator = element->*locator_field;
-    iterator.bucket_iterator->element.erase(iterator.element_iterator);
+    iterator.bucket_iterator->elements.erase(iterator.element_iterator);
     if(iterator.bucket_iterator->elements.empty()) {
         bucket_list.erase(iterator.bucket_iterator);
     }
