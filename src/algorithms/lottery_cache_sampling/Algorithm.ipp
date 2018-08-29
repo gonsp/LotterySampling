@@ -9,6 +9,7 @@ using namespace std;
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
+    this->set_monitored_size(m);
     bool aging = parameters.has_parameter("-aging");
     int seed;
     if(parameters.has_parameter("-seed")) {
