@@ -11,7 +11,7 @@ namespace LotterySpaceSaving {
 
 
 template<class T>
-class Algorithm : public GenericAlgorithm<Element, T> {
+class Algorithm : public GenericAlgorithm<Element, T, FrequencyOrderIterator<Element<T>>> {
 
 private:
 
@@ -28,9 +28,9 @@ public:
 
     Algorithm(const InputParser& parameters);
 
-    void frequent_query(float f, std::ostream& stream) override;
+    FrequencyOrderIterator<Element<T>> frequency_order_begin() override;
 
-    void k_top_query(int k, std::ostream& stream) override;
+    FrequencyOrderIterator<Element<T>> frequency_order_end() override;
 
     void print_state() override;
 };

@@ -24,7 +24,7 @@ public:
 };
 
 
-template<template<typename> class Element, class T>
+template<template<typename> class Element, class T, class FrequencyOrderIterator>
 class GenericAlgorithm : public GenericAlgorithmInterface<T> {
 
 private:
@@ -41,6 +41,10 @@ protected:
 
     virtual void update_element(Element<T>& element) = 0;
 
+    virtual FrequencyOrderIterator frequency_order_begin() = 0;
+
+    virtual FrequencyOrderIterator frequency_order_end() = 0;
+
     void remove_element(const T& element_id);
 
     void set_monitored_size(unsigned int m);
@@ -50,6 +54,10 @@ public:
     void process_element(const T& element_id) override;
 
     unsigned int sample_size() const override;
+
+    void frequent_query(float f, std::ostream& stream) override;
+
+    void k_top_query(int k, std::ostream& stream) override;
 };
 
 

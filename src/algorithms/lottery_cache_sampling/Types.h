@@ -23,6 +23,9 @@ using FrequencyOrderLocator = SortedList::Locator<Element>;
 template<class Element>
 using CacheOrderLocator = List::Locator<Element>;
 
+template<class Element>
+using FrequencyOrderIterator = SortedList::Iterator<Element>;
+
 template<class T>
 struct Element {
 

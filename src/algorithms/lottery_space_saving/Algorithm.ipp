@@ -21,19 +21,13 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
 }
 
 template<class T>
-void Algorithm<T>::frequent_query(float f, ostream& stream) {
-    for(auto it = frequency_order.begin(); it != frequency_order.end() && (*it)->get_freq() >= f * this->N; ++it) {
-        Element<T>* element = *it;
-        stream << element->id << " " << (*it)->get_freq() / float(this->N) << endl;
-    }
+FrequencyOrderIterator<Element<T>> Algorithm<T>::frequency_order_begin() {
+    return frequency_order.begin();
 }
 
 template<class T>
-void Algorithm<T>::k_top_query(int k, std::ostream& stream) {
-    for(auto it = frequency_order.begin(); it != frequency_order.end() && k-- > 0; ++it) {
-        Element<T>* element = *it;
-        stream << element->id << " " << (*it)->get_freq() / float(this->N) << endl;
-    }
+FrequencyOrderIterator<Element<T>> Algorithm<T>::frequency_order_end() {
+    return frequency_order.end();
 }
 
 template<class T>
