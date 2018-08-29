@@ -86,7 +86,8 @@ class Instance:
         self.end_stats = self.get_stats()
         self.process.stdin.close()
         self.finished = True
-        time.sleep(2)
+        if self.profile is not None:
+            time.sleep(2)
         if self.profile is 'memory_usage':
             self.end_stats['memory_usage_peak_profiler'] = profiler_utils.get_peak_memory(self.pid)
         elif self.profile is 'memory_leak':
