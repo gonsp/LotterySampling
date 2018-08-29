@@ -36,11 +36,11 @@ class Stream():
 
 
     def show(self, threshold=100):
+        elements = [(int(element), freq) for element, freq in self.elements.items()]
         if threshold is not None:
-            items = filter(lambda item: item[0] < threshold, self.elements.items())
-        else:
-            items = self.elements.items()
-        keys, counters = list(zip(*items))
+            elements = filter(lambda element: element[0] < threshold, elements)
+        keys, counters = list(zip(*elements))
+        print("Plotted freq sum:", sum(counters) / self.N)
         plt.bar(keys, counters)
         plt.show()
 
