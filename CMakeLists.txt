@@ -31,6 +31,9 @@ set(SOURCE_FILES
         src/algorithms/lottery_cache_sampling/Algorithm.h
         src/algorithms/lottery_cache_sampling/Algorithm.ipp
         src/algorithms/lottery_cache_sampling/Types.h
+        src/algorithms/lottery_space_saving/Algorithm.h
+        src/algorithms/lottery_space_saving/Algorithm.ipp
+        src/algorithms/lottery_space_saving/Types.h
         src/algorithms/space_saving/Algorithm.h
         src/algorithms/space_saving/Algorithm.ipp
         src/algorithms/space_saving/Types.h
