@@ -70,21 +70,21 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     element.ticket = ticket_generator.generate_ticket(this->N);
 
     if(this->sample_size() < m) {
-        element.freq = 1;
+        element.count = 1;
         element.over_estimation = 0;
         insert_level_1(element);
     } else {
         if(element.ticket > level_1.top()->ticket) {
-            element.freq = ticket_generator.estimate_frequency(level_1.top()->ticket);
+            element.count = ticket_generator.estimate_frequency(level_1.top()->ticket);
             insert_level_1(element);
         } else if(!level_2.empty() && element.ticket > level_2.top()->ticket) {
-            element.freq = ticket_generator.estimate_frequency(level_2.top()->ticket);
+            element.count = ticket_generator.estimate_frequency(level_2.top()->ticket);
             insert_level_2(element);
         } else {
             // New element didn't get a good enough ticket to get sampled, so it's discarded
             return false;
         }
-        element.over_estimation = element.freq - 1;
+        element.over_estimation = element.count - 1;
     }
 
     frequency_order.insert_element(&element);
@@ -94,7 +94,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     // Updating frequency
-    frequency_order.update_key(&element, &Element<T>::freq, element.freq + 1);
+    frequency_order.update_key(&element, &Element<T>::count, element.count + 1);
 
     // Updating ticket
     Ticket ticket = ticket_generator.generate_ticket(this->N);
@@ -121,7 +121,7 @@ void Algorithm<T>::print_level(TicketOrder<Element<T>>& level) {
     while(!s.empty()) {
         Element<T>* element = s.top();
         s.pop();
-        cout << element->id << ", " << element->ticket << ", " << element->get_freq() << ", " << element->over_estimation << endl;
+        cout << element->id << ", " << element->ticket << ", " << element->get_count() << ", " << element->over_estimation << endl;
     }
 }
 
@@ -136,7 +136,7 @@ void Algorithm<T>::print_state() {
     cout << "-----------------------" << endl;
     cout << "%%%%%% frequency_order %%%%%%" << endl;
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
-        cout << (*it)->id << ", " << (*it)->ticket << ", " << (*it)->get_freq() << ", " << (*it)->over_estimation << endl;
+        cout << (*it)->id << ", " << (*it)->ticket << ", " << (*it)->get_count() << ", " << (*it)->over_estimation << endl;
     }
     assert(level_1.size() + level_2.size() == this->sample_size());
     assert(frequency_order.size() == this->sample_size());

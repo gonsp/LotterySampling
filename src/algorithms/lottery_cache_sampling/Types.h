@@ -31,7 +31,7 @@ struct Element {
 
     T id;
     Ticket ticket;
-    unsigned int initial_estimated_freq;
+    unsigned int initial_estimated_count;
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;
     CacheOrderLocator<Element<T>> cache_order_locator;
@@ -40,7 +40,7 @@ struct Element {
         this->id = id;
     }
 
-    unsigned int get_freq() const {
+    unsigned int get_count() const {
         return frequency_order_locator.bucket_iterator->key;
     }
 };

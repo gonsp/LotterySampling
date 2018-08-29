@@ -28,7 +28,7 @@ struct Element {
 
     T id;
     Ticket ticket;
-    unsigned int freq;
+    unsigned int count;
     unsigned int over_estimation;
 
     Element(const T& id) {
@@ -36,8 +36,8 @@ struct Element {
     }
 
     bool compare_freq(const Element<T>& element) const {
-        if(this->freq != element.freq) {
-            return this->freq < element.freq;
+        if(this->count != element.count) {
+            return this->count < element.count;
         } else {
             return this->over_estimation > element.over_estimation;
         }
@@ -52,8 +52,8 @@ struct Element {
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;
 
-    unsigned int get_freq() const {
-        return freq;
+    unsigned int get_count() const {
+        return count;
     }
 };
 

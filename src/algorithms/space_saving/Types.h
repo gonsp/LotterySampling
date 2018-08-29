@@ -31,7 +31,7 @@ struct Element {
         this->id = id;
     }
 
-    unsigned int get_freq() const {
+    unsigned int get_count() const {
         return frequency_order_locator.bucket_iterator->key;
     }
 };

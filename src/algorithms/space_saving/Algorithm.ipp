@@ -46,7 +46,7 @@ template<class T>
 void Algorithm<T>::print_state() {
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         Element<T>* element = *it;
-        cout << element->id << ", " << element->get_freq() << ", " << element->over_estimation << endl;
+        cout << element->id << ", " << element->get_count() << ", " << element->over_estimation << endl;
     }
     assert(frequency_order.size() == this->sample_size());
 }

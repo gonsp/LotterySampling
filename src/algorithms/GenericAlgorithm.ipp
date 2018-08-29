@@ -25,9 +25,9 @@ void GenericAlgorithm<Element, T, FrequencyOrderIterator>::process_element(const
 
 template<template<typename> class Element, class T, class FrequencyOrderIterator>
 void GenericAlgorithm<Element, T, FrequencyOrderIterator>::frequent_query(float f, std::ostream& stream) {
-    for(FrequencyOrderIterator it = frequency_order_begin(); it != frequency_order_end() && (*it)->get_freq() >= f * N; ++it) {
+    for(FrequencyOrderIterator it = frequency_order_begin(); it != frequency_order_end() && (*it)->get_count() >= f * N; ++it) {
         Element<T>* element = *it;
-        stream << element->id << " " << element->get_freq() / float(N) << std::endl;
+        stream << element->id << " " << element->get_count() / float(N) << std::endl;
     }
 };
 
@@ -35,7 +35,7 @@ template<template<typename> class Element, class T, class FrequencyOrderIterator
 void GenericAlgorithm<Element, T, FrequencyOrderIterator>::k_top_query(int k, std::ostream& stream) {
     for(FrequencyOrderIterator it = frequency_order_begin(); it != frequency_order_end() && k-- > 0; ++it) {
         Element<T>* element = *it;
-        stream << element->id << " " << element->get_freq() / float(N) << std::endl;
+        stream << element->id << " " << element->get_count() / float(N) << std::endl;
     }
 };
 
