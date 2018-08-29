@@ -203,8 +203,14 @@ class TestAsymptotic(Test):
         if self.metrics_right == ['sample size']:
             axes_right.plot(X, m_hist * np.log(n_hist/m_hist), 'm:', label='m * ln(n/m)')
 
-        axes_left.legend(loc='upper left')
-        axes_right.legend(loc='upper right')
+
+        box = axes_left.get_position()
+        axes_left.set_position([box.x0, box.y0, box.width, box.height * 0.9])
+        axes_right.set_position([box.x0, box.y0, box.width, box.height * 0.9])
+
+        # Put a legend below current axis
+        axes_left.legend(loc='lower right', bbox_to_anchor=(0.5, 1.03))
+        axes_right.legend(loc='lower left', bbox_to_anchor=(0.5, 1.03))
 
         axes_left.set_xlabel(self.x_label)
         axes_left.set_ylabel(self.y_left_label)
@@ -213,6 +219,7 @@ class TestAsymptotic(Test):
         self.full_screen_plot()
         plt.title(self.test_command)
         plt.show()
+        self.stream.show()
 
 
     @abstractmethod
