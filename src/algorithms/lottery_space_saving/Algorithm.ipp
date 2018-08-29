@@ -22,9 +22,9 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
 
 template<class T>
 void Algorithm<T>::frequent_query(float f, ostream& stream) {
-    for(auto it = frequency_order.begin(); it != frequency_order.end() && frequency_order.get_key(*it) >= f * this->N; ++it) {
+    for(auto it = frequency_order.begin(); it != frequency_order.end() && (*it)->get_freq() >= f * this->N; ++it) {
         Element<T>* element = *it;
-        stream << element->id << " " << frequency_order.get_key(element) / float(this->N) << endl;
+        stream << element->id << " " << (*it)->get_freq() / float(this->N) << endl;
     }
 }
 
@@ -32,7 +32,7 @@ template<class T>
 void Algorithm<T>::k_top_query(int k, std::ostream& stream) {
     for(auto it = frequency_order.begin(); it != frequency_order.end() && k-- > 0; ++it) {
         Element<T>* element = *it;
-        stream << element->id << " " << frequency_order.get_key(element) / float(this->N) << endl;
+        stream << element->id << " " << (*it)->get_freq() / float(this->N) << endl;
     }
 }
 
@@ -50,7 +50,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
             ticket_generator.decremental_averaging(mean_ticket, removed_element->ticket, this->sample_size());
             this->remove_element(removed_element->id);
 
-            element.over_estimation = frequency_order.get_key(&element);
+            element.over_estimation = element.get_freq();
             frequency_order.increment_key(&element);
         } else {
             return false;
@@ -75,7 +75,7 @@ template<class T>
 void Algorithm<T>::print_state() {
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         Element<T>* element = *it;
-        cout << element->id << ", " << frequency_order.get_key(element) << ", " << element->over_estimation << endl;
+        cout << element->id << ", " << element->get_freq() << ", " << element->over_estimation << endl;
     }
     assert(frequency_order.size() == this->sample_size());
 }

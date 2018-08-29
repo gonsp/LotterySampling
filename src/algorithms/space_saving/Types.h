@@ -26,6 +26,10 @@ struct Element {
     Element(const T& id) {
         this->id = id;
     }
+
+    unsigned int get_freq() const {
+        return frequency_order_locator.bucket_iterator->key;
+    }
 };
 
 

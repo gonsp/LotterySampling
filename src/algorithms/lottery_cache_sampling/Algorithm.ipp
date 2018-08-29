@@ -23,15 +23,15 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
 
 template<class T>
 void Algorithm<T>::frequent_query(float f, ostream& stream) {
-    for(auto it = frequency_order.begin(); it != frequency_order.end() && frequency_order.get_key(*it) >= f * this->N; ++it) {
-        stream << (*it)->id << " " << frequency_order.get_key(*it) / float(this->N) << endl;
+    for(auto it = frequency_order.begin(); it != frequency_order.end() && (*it)->get_freq() >= f * this->N; ++it) {
+        stream << (*it)->id << " " << (*it)->get_freq() / float(this->N) << endl;
     }
 }
 
 template<class T>
 void Algorithm<T>::k_top_query(int k, ostream& stream) {
     for(auto it = frequency_order.begin(); it != frequency_order.end() && k-- > 0; ++it) {
-        stream << (*it)->id << " " << frequency_order.get_key(*it) / float(this->N) << endl;
+        stream << (*it)->id << " " << (*it)->get_freq() / float(this->N) << endl;
     }
 }
 
@@ -91,7 +91,7 @@ void Algorithm<T>::print_state() {
     cout << "Frequency order: " << endl;
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         Element<T>* element = *it;
-        cout << element->id << ", " << frequency_order.get_key(element) << ", " << element->initial_estimated_freq << endl;
+        cout << element->id << ", " << (*it)->get_freq() << ", " << element->initial_estimated_freq << endl;
     }
     assert(cache_order.size() == this->sample_size());
     assert(frequency_order.size() == this->sample_size());

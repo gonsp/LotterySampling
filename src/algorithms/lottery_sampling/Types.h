@@ -48,6 +48,10 @@ struct Element {
     int level;
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;
+
+    unsigned int get_freq() const {
+        return freq;
+    }
 };
 
 
