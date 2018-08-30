@@ -30,7 +30,7 @@ using BucketList = std::list<Bucket<Element>>;
 
 
 template<class Element>
-struct Iterator {
+struct Iterator : public std::iterator<std::bidirectional_iterator_tag, Element> {
 
 private:
 

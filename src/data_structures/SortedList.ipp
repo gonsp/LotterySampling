@@ -14,8 +14,8 @@ void SortedList<Element, locator_field>::insert_element(Element* element) {
     }
     Iterator<Element> iterator = Iterator<Element>(&bucket_list);
     iterator.bucket_iterator = prev(bucket_list.end());
-    iterator.bucket_iterator->elements.emplace_back(element);
-    iterator.element_iterator = prev(iterator.bucket_iterator->elements.end());
+    iterator.bucket_iterator->elements.emplace_front(element);
+    iterator.element_iterator = iterator.bucket_iterator->elements.begin();
     element->*locator_field = iterator;
     ++element_count;
 }
@@ -41,7 +41,7 @@ Element* SortedList<Element, locator_field>::pop_and_push(Element* element) {
     assert(!bucket_list.empty());
     Iterator<Element>& iterator = element->*locator_field;
     iterator.bucket_iterator = prev(bucket_list.end());
-    iterator.element_iterator = iterator.bucket_iterator->elements.begin(); // We select the oldest element with less hits
+    iterator.element_iterator = prev(iterator.bucket_iterator->elements.end()); // We select the oldest element with less hits
     Element* removed_element = *iterator.element_iterator;
 
     // Replacing the old element
@@ -68,8 +68,8 @@ void SortedList<Element, locator_field>::increment_key(Element* element) {
     if(old_bucket->elements.empty()) {
         bucket_list.erase(old_bucket);
     }
-    iterator.bucket_iterator->elements.push_back(element);
-    iterator.element_iterator = prev(iterator.bucket_iterator->elements.end());
+    iterator.bucket_iterator->elements.push_front(element);
+    iterator.element_iterator = iterator.bucket_iterator->elements.begin();
 }
 
 template<class Element, ClassField<Element, Locator<Element>> locator_field>
