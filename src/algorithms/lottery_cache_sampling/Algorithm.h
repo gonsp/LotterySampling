@@ -1,9 +1,9 @@
 #ifndef _LotteryCacheSampling_Algorithm_H_
 #define _LotteryCacheSampling_Algorithm_H_
 
-#include <algorithms/GenericAlgorithm.h>
-#include <utils/InputParser.h>
-#include "Types.h"
+#include "algorithms/GenericAlgorithm.h"
+#include "algorithms/lottery_cache_sampling/Types.h"
+#include "utils/InputParser.h"
 #include "utils/Misc.h"
 
 
@@ -40,6 +40,6 @@ public:
 
 }
 
-#include "Algorithm.ipp"
+#include "algorithms/lottery_cache_sampling/Algorithm.ipp"
 
 #endif //_LotteryCacheSampling_Algorithm_H_

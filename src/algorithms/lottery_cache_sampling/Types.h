@@ -1,8 +1,8 @@
 #ifndef _LotteryCacheSampling_Types_H_
 #define _LotteryCacheSampling_Types_H_
 
-#include <data_structures/SortedList.h>
 #include "utils/Misc.h"
+#include "data_structures/SortedList.h"
 #include "data_structures/List.h"
 #include "data_structures/SortedList.h"
 

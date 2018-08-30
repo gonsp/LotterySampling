@@ -1,8 +1,8 @@
 #ifndef _SortedTree_H_
 #define _SortedTree_H_
 
-#include <set>
 #include "utils/Misc.h"
+#include <set>
 
 namespace SortedTree {
 
@@ -44,6 +44,6 @@ public:
 
 }
 
-#include "SortedTree.ipp"
+#include "data_structures/SortedTree.ipp"
 
 #endif //_SortedTree_H_

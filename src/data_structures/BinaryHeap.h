@@ -1,8 +1,8 @@
 #ifndef _BinaryHeap_H_
 #define _BinaryHeap_H_
 
-#include <vector>
 #include "utils/Misc.h"
+#include <vector>
 
 
 namespace BinaryHeap {
@@ -55,6 +55,6 @@ public:
 
 }
 
-#include "BinaryHeap.ipp"
+#include "data_structures/BinaryHeap.ipp"
 
 #endif //_BinaryHeap_H_

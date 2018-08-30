@@ -1,4 +1,4 @@
-#include "SortedTree.h"
+#include "data_structures/SortedTree.h"
 
 
 namespace SortedTree {

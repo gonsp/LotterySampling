@@ -2,8 +2,9 @@
 #define _LotterySpaceSaving_Algorithm_H_
 
 #include "algorithms/GenericAlgorithm.h"
+#include "algorithms/lottery_space_saving/Types.h"
 #include "utils/InputParser.h"
-#include "Types.h"
+#include "utils/Misc.h"
 #include <string>
 
 
@@ -38,6 +39,6 @@ public:
 
 }
 
-#include "Algorithm.ipp"
+#include "algorithms/lottery_space_saving/Algorithm.ipp"
 
 #endif //_LotterySpaceSaving_Algorithm_H_

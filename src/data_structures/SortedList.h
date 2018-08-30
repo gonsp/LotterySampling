@@ -1,9 +1,8 @@
 #ifndef _SortedList_H_
 #define _SortedList_H_
 
-#include <list>
 #include "utils/Misc.h"
-
+#include <list>
 
 namespace SortedList {
 
@@ -103,6 +102,6 @@ public:
 
 }
 
-#include "SortedList.ipp"
+#include "data_structures/SortedList.ipp"
 
 #endif //_SortedList_H_

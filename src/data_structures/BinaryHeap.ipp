@@ -1,4 +1,4 @@
-#include "BinaryHeap.h"
+#include "data_structures/BinaryHeap.h"
 
 
 namespace BinaryHeap {

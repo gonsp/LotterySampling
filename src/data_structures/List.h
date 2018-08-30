@@ -1,8 +1,8 @@
 #ifndef _List_H_
 #define _List_H_
 
-#include <list>
 #include "utils/Misc.h"
+#include <list>
 
 namespace List {
 
@@ -43,6 +43,6 @@ public:
 
 }
 
-#include "List.ipp"
+#include "data_structures/List.ipp"
 
 #endif //_List_H_

@@ -1,9 +1,9 @@
 #ifndef _SortedVector_H_
 #define _SortedVector_H_
 
+#include "utils/Misc.h"
 #include <vector>
 #include <list>
-#include "utils/Misc.h"
 
 namespace SortedVector {
 
@@ -78,6 +78,6 @@ public:
 
 }
 
-#include "SortedVector.ipp"
+#include "data_structures/SortedVector.ipp"
 
 #endif //_SortedVector_H_

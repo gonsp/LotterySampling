@@ -1,4 +1,4 @@
-#include <algorithms/GenericAlgorithm.h>
+#include "algorithms/GenericAlgorithm.h"
 
 template<template<typename> class Element, class T, class FrequencyOrderIterator>
 void GenericAlgorithm<Element, T, FrequencyOrderIterator>::set_monitored_size(unsigned int m) {

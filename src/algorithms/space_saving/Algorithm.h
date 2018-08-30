@@ -2,8 +2,8 @@
 #define _SpaceSaving_Algorithm_H_
 
 #include "algorithms/GenericAlgorithm.h"
+#include "algorithms/space_saving/Types.h"
 #include "utils/InputParser.h"
-#include "Types.h"
 #include <string>
 
 
@@ -36,6 +36,6 @@ public:
 
 }
 
-#include "Algorithm.ipp"
+#include "algorithms/space_saving/Algorithm.ipp"
 
 #endif //_SpaceSaving_Algorithm_H_

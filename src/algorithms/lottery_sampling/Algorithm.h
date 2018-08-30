@@ -2,8 +2,8 @@
 #define _LotterySampling_Algorithm_H_
 
 #include "algorithms/GenericAlgorithm.h"
+#include "algorithms/lottery_sampling/Types.h"
 #include "utils/InputParser.h"
-#include "Types.h"
 #include "utils/Misc.h"
 
 namespace LotterySampling {
@@ -48,6 +48,6 @@ public:
 
 }
 
-#include "Algorithm.ipp"
+#include "algorithms/lottery_sampling/Algorithm.ipp"
 
 #endif //_LotterySampling_Algorithm_H_

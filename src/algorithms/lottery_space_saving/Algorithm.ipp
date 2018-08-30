@@ -1,3 +1,4 @@
+#include "algorithms/lottery_space_saving/Algorithm.h"
 #include <iostream>
 
 namespace LotterySpaceSaving {

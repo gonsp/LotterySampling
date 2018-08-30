@@ -1,4 +1,4 @@
-#include "Algorithm.h"
+#include "algorithms/lottery_sampling/Algorithm.h"
 #include "utils/InputParser.h"
 #include <iostream>
 #include <stack>

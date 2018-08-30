@@ -1,4 +1,4 @@
-#include "Algorithm.h"
+#include "algorithms/lottery_cache_sampling/Algorithm.h"
 #include <iostream>
 
 namespace LotteryCacheSampling {
