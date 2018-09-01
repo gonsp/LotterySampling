@@ -39,6 +39,12 @@ def get_weighted_precision(instance, stream, query_name, parameter):
     return get_intersection_sum(reported_elements, real_elements) / real_freq_sum_reported_elements
 
 
+def get_weighted_precision_2(instance, stream, query_name, parameter):
+    reported_elements, real_elements = execute_query(instance, stream, query_name, parameter)
+    real_freq_sum_reported_elements = sum([stream.elements[element] / stream.N for element in reported_elements.keys()])
+    return real_freq_sum_reported_elements / sum(freq for freq in real_elements.values())
+
+
 def execute_query(instance, stream, query_name, parameter):
     query = getattr(instance, query_name)
     reported_elements = dict(query(parameter))
