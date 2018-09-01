@@ -73,3 +73,22 @@ class Uniform(Stream):
         element = str(element)
         super()._next_element(element)
         return element
+
+
+class Unequal(Stream):
+
+    def __init__(self, alpha=100, beta=100, N=1000000, save=True):
+        super().__init__(save)
+        self.data = np.zeros(N, dtype=int)
+        for i in range(alpha):
+            for j in range(beta):
+                self.data[i*beta + j] = i
+        for i in range(alpha * beta, N):
+            self.data[i] = i - alpha * (beta - 1)
+        self.data = np.random.permutation(self.data)
+
+
+    def next_element(self):
+        element = str(self.data[self.N])
+        super()._next_element(element)
+        return element
