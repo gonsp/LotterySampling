@@ -24,11 +24,12 @@ class TicketGenerator {
 private:
 
     bool aging;
-    Ticket MAX_TICKET;
     std::mt19937_64 random_state;
     std::uniform_int_distribution<Ticket> dist;
 
 public:
+
+    Ticket MAX_TICKET;
 
     TicketGenerator() {}
 

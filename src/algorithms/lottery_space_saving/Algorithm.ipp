@@ -17,6 +17,11 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         seed = -1;
     }
+    if(parameters.has_parameter("-threshold")) {
+        threshold = stof(parameters.get_parameter("-threshold"));
+    } else {
+        threshold = -1;
+    }
     ticket_generator = TicketGenerator(aging, seed);
     mean_ticket = 0;
 }
@@ -38,9 +43,15 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     if(this->sample_size() < m) {
         frequency_order.insert_element(&element);
         element.over_estimation = 0;
-    } else { // Max number of monitored elements is reached. This new one will replace the one with less hits
+    } else { // Max number of monitored elements is reached. This new one may replace the one with less hits
         Element<T>* removed_element = *prev(frequency_order.end());
-        if(element.ticket >= removed_element->ticket || element.ticket >= mean_ticket) {
+        bool is_inserted = false;
+        if(threshold == -1) { // Not using fixed user defined threshold (default case), so the threshold will be increasing through the stream
+            is_inserted = element.ticket >= removed_element->ticket || element.ticket >= mean_ticket;
+        } else {
+            is_inserted = element.ticket >= threshold * ticket_generator.MAX_TICKET;
+        }
+        if(is_inserted) {
             frequency_order.pop_and_push(&element);
             ticket_generator.decremental_averaging(mean_ticket, removed_element->ticket, this->sample_size());
             this->remove_element(removed_element->id);
@@ -59,11 +70,13 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.increment_key(&element);
-    Ticket ticket = ticket_generator.generate_ticket(this->N);
-    if(ticket > element.ticket) {
-        ticket_generator.decremental_averaging(mean_ticket, element.ticket, this->sample_size());
-        ticket_generator.incremental_averaging(mean_ticket, ticket, this->sample_size());
-        element.ticket = ticket;
+    if(threshold != -1) {
+        Ticket ticket = ticket_generator.generate_ticket(this->N);
+        if(ticket > element.ticket) {
+            ticket_generator.decremental_averaging(mean_ticket, element.ticket, this->sample_size());
+            ticket_generator.incremental_averaging(mean_ticket, ticket, this->sample_size());
+            element.ticket = ticket;
+        }
     }
 }
 

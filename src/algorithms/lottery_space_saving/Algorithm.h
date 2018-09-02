@@ -19,6 +19,7 @@ private:
     FrequencyOrder<Element<T>> frequency_order;
     TicketGenerator ticket_generator;
     Ticket mean_ticket;
+    float threshold;
     unsigned int m;
 
     bool insert_element(Element<T>& element) override;
