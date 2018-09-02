@@ -35,12 +35,17 @@ class Stream():
         pass
 
 
+    @abstractmethod
+    def get_name(self):
+        pass
+
+
     def show(self, threshold=100):
         elements = [(int(element), freq) for element, freq in self.elements.items()]
         if threshold is not None:
             elements = filter(lambda element: element[0] < threshold, elements)
         keys, counters = list(zip(*elements))
-        print("Plotted freq sum:", sum(counters) / self.N)
+        print('Plotted freq sum:', sum(counters) / self.N)
         plt.bar(keys, counters)
         plt.show()
 
@@ -51,6 +56,7 @@ class Zipf(Stream):
         super().__init__(save)
         self.alpha = alpha
         np.random.seed(seed)
+        self.name = 'Zipf,alpha=' + str(alpha) + ',seed=' + str(seed)
 
 
     def next_element(self):
@@ -60,12 +66,17 @@ class Zipf(Stream):
         return element
 
 
+    def get_name(self):
+        return self.name
+
+
 class Uniform(Stream):
 
     def __init__(self, max=100000, seed=None, save=True):
         super().__init__(save)
         self.max = max
         np.random.seed(seed)
+        self.name = 'Uniform,max=' + str(max) + ',seed=' + str(seed)
 
 
     def next_element(self):
@@ -73,6 +84,10 @@ class Uniform(Stream):
         element = str(element)
         super()._next_element(element)
         return element
+
+
+    def get_name(self):
+        return self.name
 
 
 class Unequal(Stream):
@@ -87,9 +102,14 @@ class Unequal(Stream):
             self.data[i] = i - alpha * (beta - 1)
         np.random.seed(seed)
         self.data = np.random.permutation(self.data)
+        self.name = 'Unequal,alpha=' + str(alpha) + ',beta=' + str(beta) + ',N=' + str(N) + ',seed=' + str(seed)
 
 
     def next_element(self):
         element = str(self.data[self.N])
         super()._next_element(element)
         return element
+
+
+    def get_name(self):
+        return self.name

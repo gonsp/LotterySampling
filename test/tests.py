@@ -192,12 +192,22 @@ class TestAsymptotic(Test):
         _, axes_left = plt.subplots()
         axes_right = axes_left.twinx()
 
+        def get_line_format(axes, metric_index):
+            if axes == axes_left:
+                if metric_index == 0:
+                    return '-*'
+                elif metric_index == 1:
+                    return '-.x'
+                else:
+                    return ':x'
+            else:
+                return '--'
+
         for Y, metrics, axes in [(Y_left, self.metrics_left, axes_left), (Y_right, self.metrics_right, axes_right)]:
             for metric_index in range(0, Y.shape[2]):
                 axes.set_prop_cycle(None)
                 for i, instance in enumerate(instances):
-                    line_format = '-*' if metric_index == 0 else '-.x'
-                    line_format = line_format if axes == axes_left else '--'
+                    line_format = get_line_format(axes, metric_index)
                     axes.plot(X, Y[:, i, metric_index], line_format, label=metrics[metric_index] + ' ' + instance.name)
 
         if self.metrics_right == ['sample size']:
@@ -217,7 +227,7 @@ class TestAsymptotic(Test):
         axes_right.set_ylabel(self.y_right_label)
 
         self.full_screen_plot()
-        plt.title(self.test_command)
+        plt.title(self.test_command + ', ' + self.stream.get_name())
         plt.show()
         self.stream.show()
 
