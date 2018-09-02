@@ -70,7 +70,8 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.increment_key(&element);
-    if(threshold != -1) {
+    // TODO consider not updating tickets
+    if(threshold == -1) {
         Ticket ticket = ticket_generator.generate_ticket(this->N);
         if(ticket > element.ticket) {
             ticket_generator.decremental_averaging(mean_ticket, element.ticket, this->sample_size());
