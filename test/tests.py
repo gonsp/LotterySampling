@@ -42,12 +42,19 @@ class Test:
             # Instance('../bin/optimization-3-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
             # Instance('../bin/optimization-3-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
             # Instance('../bin/optimization-3-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
-            Instance('../bin/optimization-4-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            # Instance('../bin/optimization-4-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
             # Instance('../bin/optimization-4-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
             # Instance('../bin/optimization-4-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
-            Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            # Instance('../bin/optimization-5-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
+            # Instance('../bin/optimization-5-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
+            # Instance('../bin/optimization-5-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
+            # Instance('../bin/optimization-5-' + configuration, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed), profile=profile),
+            # Instance('../bin/optimization-5-' + configuration, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed), profile=profile),
+            # Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
             # Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
-            # Instance(self.exec_path, '-a space_saving -m ' + str(m), profile=profile)
+            # Instance(self.exec_path, '-a space_saving -m ' + str(m), profile=profile),
+            Instance(self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed), profile=profile),
+            Instance(self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed), profile=profile)
         ]
 
 
@@ -118,15 +125,14 @@ class TestMemoryLeak(Test):
 class TestAsymptotic(Test):
     # To test asymptotic behaviour of memory, exec time or accuracy (and sample size) with respect to the initial sample size
 
-    def __init__(self, profile=None, metrics_left=[], metrics_right=['sample size'], x_label='m', y_left_label='', y_right_label='Num elements'):
+    def __init__(self, extra_args=[], profile=None, metrics_left=[], metrics_right=['sample size'], x_label='m', y_left_label='', y_right_label='Num elements'):
         args = [
             ('initial_m', True),
             ('N', True),
             ('iterations', True),
-            ('seed', False),
-            ('k', False),
-            ('freq', False)
+            ('seed', False)
         ]
+        args += extra_args
         self.x_label = x_label
         self.y_left_label = y_left_label
         self.y_right_label = y_right_label
@@ -334,7 +340,8 @@ class TestAsymptoticTimeMemory(TestAsymptotic):
     def new_iteration(self, iteration):
         self.N = int(self.params.N)
         self.m = iteration * int(self.params.initial_m)
-        self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=False) # In expectation there will be N/2 inserts and N/2 updates.
+        self.stream = streams.Zipf(1.01, self.generate_seed(), save=True)
+        # self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=False) # In expectation there will be N/2 inserts and N/2 updates.
 
 
     def get_metrics_left(self, iteration, instance):
@@ -349,7 +356,12 @@ class TestAsymptoticAccuracy(TestAsymptotic):
     # Test to inspect how the precision and recall metrics variate when increasing the m
     
     def __init__(self):
-        super().__init__(metrics_left=['recall', 'precision'], metrics_right=['squared_error'], y_left_label='Accuracy', y_right_label='Squared error')
+        extra_args = [('k', False), ('freq', False), ('iterating_over', False)]
+        super().__init__(extra_args=extra_args, metrics_left=['recall', 'precision'], metrics_right=['squared_error'], y_left_label='Accuracy', y_right_label='Squared error')
+        if self.params.iterating_over is None:
+            self.params.iterating_over = 'm'
+        elif self.params.iterating_over == 'alpha':
+            self.x_label = 'alpha'
         if self.params.k is not None:
             self.query_param = int(self.params.k)
             self.query_name = 'k_top_query'
@@ -362,8 +374,22 @@ class TestAsymptoticAccuracy(TestAsymptotic):
 
     def new_iteration(self, iteration):
         self.N = int(self.params.N)
-        self.m = iteration * int(self.params.initial_m)
-        self.stream = streams.Zipf(1.01, self.generate_seed(), save=True)
+        self.m = int(self.params.initial_m)
+        if self.params.iterating_over is 'm':
+            self.m = iteration * self.m
+            self.alpha = 1.0001
+        else:
+            self.alpha = 1.0 + iteration * 0.001
+        self.stream = streams.Zipf(self.alpha, self.generate_seed(), save=True)
+        # self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
+        # self.stream = streams.Unequal(seed=self.generate_seed(), save=True)
+
+
+    def get_X_value(self, iteration):
+        if self.params.iterating_over == 'm':
+            return self.m
+        else:
+            return self.alpha
 
 
     def get_metrics_left(self, iteration, instance):
@@ -373,3 +399,5 @@ class TestAsymptoticAccuracy(TestAsymptotic):
 
     def get_metrics_right(self, iteration, instance):
         return [metrics.get_squared_error(instance, self.stream, self.query_name, self.query_param)]
+
+
