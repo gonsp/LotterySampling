@@ -3,8 +3,8 @@
 
 #include "utils/Misc.h"
 #include "data_structures/SortedList.h"
+#include <data_structures/SortedVector.h>
 #include "data_structures/List.h"
-#include "data_structures/SortedList.h"
 
 namespace LotteryCacheSampling {
 
@@ -12,26 +12,26 @@ namespace LotteryCacheSampling {
 using namespace std;
 
 template<class Element>
-using FrequencyOrder = SortedList::SortedList<Element, &Element::frequency_order_locator>;
+using FrequencyOrder = SortedVector::SortedVector<Element, &Element::frequency_order_locator>;
 
 template<class Element>
 using CacheOrder = List::List<Element, &Element::cache_order_locator>;
 
 template<class Element>
-using FrequencyOrderLocator = SortedList::Locator<Element>;
+using FrequencyOrderLocator = SortedVector::Locator;
 
 template<class Element>
 using CacheOrderLocator = List::Locator<Element>;
 
 template<class Element>
-using FrequencyOrderIterator = SortedList::Iterator<Element>;
+using FrequencyOrderIterator = SortedVector::Iterator<Element>;
 
 template<class T>
 struct Element {
 
     T id;
     Ticket ticket;
-    unsigned int initial_estimated_count;
+    unsigned int over_estimation;
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;
     CacheOrderLocator<Element<T>> cache_order_locator;

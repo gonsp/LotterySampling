@@ -42,22 +42,22 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 
     if(this->sample_size() < m) {
         cache_order.insert_element(&element);
-        element.initial_estimated_count = 0;
+        frequency_order.insert_element(&element);
+        element.over_estimation = 0;
     } else {
         Element<T>* older_hit = cache_order.get_older();
         if(element.ticket >= older_hit->ticket || element.ticket >= mean_ticket) {
-            cache_order.pop_and_push(&element);
             ticket_generator.decremental_averaging(mean_ticket, older_hit->ticket, this->sample_size());
-            frequency_order.remove_element(older_hit);
-            // TODO fill this
-            element.initial_estimated_count = 0;
+            cache_order.pop_and_push(&element);
+            frequency_order.replace(older_hit, &element);
+            element.over_estimation = older_hit->get_count();
+            frequency_order.increment_key(&element);
             this->remove_element(older_hit->id);
         } else {
             return false;
         }
     }
     ticket_generator.incremental_averaging(mean_ticket, element.ticket, this->sample_size() + 1);
-    frequency_order.insert_element(&element);
     return true;
 }
 
@@ -87,7 +87,7 @@ void Algorithm<T>::print_state() {
     cout << "Frequency order: " << endl;
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         Element<T>* element = *it;
-        cout << element->id << ", " << (*it)->get_count() << ", " << element->initial_estimated_count << endl;
+        cout << element->id << ", " << (*it)->get_count() << ", " << element->over_estimation << endl;
     }
     assert(cache_order.size() == this->sample_size());
     assert(frequency_order.size() == this->sample_size());
