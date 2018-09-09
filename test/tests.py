@@ -366,7 +366,7 @@ class TestAsymptoticAccuracy(TestAsymptotic):
             self.query_param = int(self.params.k)
             self.query_name = 'k_top_query'
         elif self.params.freq is not None:
-            self.query_param = int(self.params.freq)
+            self.query_param = float(self.params.freq)
             self.query_name = 'frequent_query'
         else:
             assert False

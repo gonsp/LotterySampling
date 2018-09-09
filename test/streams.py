@@ -32,7 +32,9 @@ class Stream():
 
 
     def frequent_query(self, freq):
-        pass
+        elements = filter(lambda element: element[1] >= self.N * freq, self.elements.items())
+        elements = [(id, count/self.N) for id, count in elements]
+        return sorted(elements, key=lambda element: -element[1])
 
 
     @abstractmethod
