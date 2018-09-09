@@ -31,9 +31,8 @@
 \newcommand{\C}{\mathcal{C}}
 \newcommand{\U}{\mathcal{U}}
 \newcommand{\K}{\mathcal{K}}
-\newcommand{\sought}[1][(i;j)]{\ensuremath{x^{#1}}}
-\newcommand{\comentario}[1]{\shadowbox{\begin{minipage}{0.8\textwidth}%
-\textbf{#1}\end{minipage}}}
+
+
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{defn}{Definition}
@@ -61,7 +60,15 @@ bookmarksnumbered = true,
 backref = true,
 }
 
+\newsavebox{\mybox}
+\newlength{\mylength}
 
+\newenvironment{comment}[1][\linewidth]{
+\setlength{\mylength}{#1}
+\begin{lrbox}{\mybox}\begin{minipage}{\mylength}
+\color{red}}{
+\end{minipage}\end{lrbox}
+\bigskip\centerline{\shadowbox{\usebox{\mybox}}}}
 
 \title{Lottery Sampling, Lottery Saving and other Algorithms
   for Top $k$ Frequent Elements}
@@ -72,6 +79,17 @@ backref = true,
 
 \begin{document}
 \maketitle
+\begin{comment}
+  Es muy buena idea que vayas escribiendo en este documento de trabajo
+  u otro equivalente que constituya la base de tu documentación del
+  TFG, las diferentes cosas que vayas haciendo, de la manera más
+  organizada que puedas, aunque no esé muy pulido. Este documento te
+  da un buen punto de partida sobre cómo organizar tu TFG (habrás
+  de incluir algunas secciones ``chorras'', you know it) y también
+  va estableciendo el marco de trabajo (p.e. esquema de nombres
+  para los diferentes algoritmos, la plantilla ``unificada'' para todos ellos,
+  las definiciones de las medidas de rendimiento, \ldots)
+\end{comment}
 
 \section{Preliminaries}
 Consider a (large) data stream $\mathcal{Z}=z_1,\ldots,z_N$, where each $z_j$ is
@@ -123,7 +141,7 @@ Moreover, in both problems, we might want that the algorithm
 We will concentrate in algorithms for
 top $k$ most frequent elements. Notice that there can be at most
 $\lceil 1/c\rceil$ heavy hitters in a data stream, and thus an algorithm
-that retrieves the top $k^\ast=\lfloor/c\rfloor$ most frequent elements will
+that retrieves the top $k^\ast=\lfloor 1/c\rfloor$ most frequent elements will
 obtain all the heavy hitters.
 
 
@@ -168,7 +186,7 @@ hence in three main aspects:
 \item When do we add to the sample an incoming item $z\not\in\mathcal{S}$
   ($\texttt{add?}(z,\mathcal{S})$? In several algorithms that we will
   consider later, this is a randomized choice.
-\item Which element $z'$ do we evict from the sample when a new element
+\item Which element $z^\ast$ do we evict from the sample when a new element
   $z$ has to be added to the sample
   ($\texttt{element\_to\_evict}(\mathcal{S})$)?
   Again, this choice might be probabilistic.
@@ -179,42 +197,64 @@ hence in three main aspects:
 Take for instance the well-known \textsc{SpaceSaving} (SS) \cite{SpaceSaving}.
 It always
 adds incoming items $z\not\in\mathcal{S}$, that is,
-$\texttt{add?}(z,\mathcal{S})=\textbf{true}$. The element $z'$ selected
-for eviction is one with minimal estimated frequency
+$\texttt{add?}(z,\mathcal{S})=\textbf{true}$. The element $z^\ast$ selected
+for eviction is one with lowest estimated frequency
 \[
-z' = \text{arg min}_{x\in\mathcal{S}}\{f'(x)\}.
+z^\ast = z_\text{lef} = \text{arg min}_{x\in\mathcal{S}}\{f'(x)\}.
 \]
 And the newly added item $z$ inherits the frequency of the evicted item:
-$f_\text{ini}(z)=f'(z')$.
+$f_\text{ini}(z)=f'(z^\ast)$.
 
 Let us know consider our first new algorithm \textsc{LotterySampling} (LS).
 Each element $x$ in the sample has, besides its frequency counter, a ticket
-$t(x)\in(0,1)$. When a new item $z$ in the data stream is retrieved
+$t(x)\in[0,1)$. When a new item $z$ in the data stream is retrieved
 LS generates, uniformly at random in $(0,1)$, a ticket $t$ for $z$. If $z$
 was already in the sample its frequency counter $f'(z)$ is updated (as usual),
 but also its ticket: if $t > t(z)$ then $t(z):= t$. If $z$ is not
-in the sample, we compare $t$ with the minimum ticket $t_\text{min}=t(z')$
+in the sample, we compare $t$ with the minimum ticket
+$t_\text{min}=t(z_\text{min})$
 in the sample. If $t > t_\text{min}$ then $z$ is added to the sample,
-otherwise $z$ is discarded. The element $z'$ to be evicted is the one with the
+otherwise $z$ is discarded. The element $z^\ast$ to be evicted
+is $z_\text{min}$, the one with the
 minimum ticket, and the frequency counter of $z$ is initialized with
 \[
 f_\text{ini}(z)=\left\lfloor\frac{1}{1-t_\text{min}}\right\rfloor.
 \]
 
-\textsc{LotterySaving-LFU} (LS-LFU) combines some of the ideas of the two
+\textsc{LotterySaving-LowestEstimatedFrequency} (LS-LEF) combines
+some of the ideas of the two
 algorithms above. When an item $z$ is not in the sample we compare its
-ticket $t$ with the ticket $t'=t(z')$ of the element $z'$
-with smallest frequency counter. Notice that $t'$ might be or not the minimum
-ticket in the sample. If $t > t'$ then $z$ is added and $z'$ is evicted, and
-$f_\text{ini}(z)=f'(z')$.
+ticket $t$ with the ticket $t_\text{lef}=t(z_\text{lef})$ of an element
+$z_\text{lef}$
+with smallest frequency counter (in cae of ties, any of them is picked
+at random). Notice that $t_\text{lef}$
+might be or not the minimum
+ticket in the sample. If $t > t_\text{lef}$ then $z$ is added
+and $z^\ast=z_\text{lef}$ is evicted, and
+$f_\text{ini}(z)=f'(z^\ast)$.
 
-\textsc{LotterySaving-LRU} (LS-LRU) is similar to LS-LFU, but the ticket
+\textsc{LotterySaving-LeastRecentlyObserved} (LS-LRO) is similar to LS-LEF,
+but the ticket
 $t$ a candidate element $z$ to enter the sample is compared with the
-ticket $t'=t(z')$ of the item $z'$
+ticket $t_\text{lro}=t(z_\text{lro})$ of the item $z_\text{lro}$
 in the sample that was observed least recently (i.e., 
-$z'$ is the item with frequency counter updated the longest ago). 
-Like in LS-LFU, if $t > t'$ then $z$ is added and $z'$ is evicted, and
-$f_\text{ini}(z)=f'(z')$.
+$z_\text{lro}$ is the item with frequency counter updated the longest ago). 
+Like in LS-LEF, if $t > t_\text{lro}$ then $z$ is added and
+$z^\ast=z_\text{lro}$ is evicted. The counter of $z$ is initialized using
+$f_\text{ini}(z)=f'(z_\text{lro})$.
+
+In \textsc{LotterySaving-SmallestTicket} (LS-ST) the element
+to be evicted is $z_\text{min}$; but instead of the rule for initialization of $f'$ of LS it uses the estimated frequency $f'$ of $z^\ast$,
+like LS-LEF and LS-LRO. That is, when an item $z$ is not in the sample
+we compare its
+ticket $t$ with the smallest ticket $t_\text{min}=t(z_\text{min})$ of the
+element $z_\text{min}$
+with smallest tickets (w.l.o.g. we can safely assume that no two tickets
+ever are identical).
+If $t > t_\text{min}$ then $z$ is added
+and $z^\ast=z_\text{min}$ is evicted, like in LS. But, unlike LS,
+we have $f_\text{ini}(z)=f'(z^\ast)$.
+
 
 \textsc{LotterySaving-Threshold} (LS-THR-$\theta$) has a parameter
 $\theta\in[0,1]$.
@@ -226,41 +266,52 @@ the ticket $t$ generated for $z$ is larger that $\theta\cdot t_\text{max}$,
 where $t_\text{max}$ is the largest ticket among the elements in the sample
 (LS-THR-0 is equivalent to SS).
 
-If $z$ is added to $\mathcal{S}$, LS-THR evicts the element $z'$
+If $z$ is added to $\mathcal{S}$, LS-THR evicts the element $z^\ast=z_\text{lef}$
 with minimum frequency counter and $z$ inherits the frequency counter
-of $z'$ as the initial estimation: $f_\text{ini}(z)=f'(z')$.
+of $z^\ast$ as the initial estimation: $f_\text{ini}(z)=f'(z^\ast)$.
 
 \textsc{LotterySaving-AboveMean} (LS-AM) adds a  new item to the sample
 if its ticket $t$ is larger that the mean value $\overline{t}$ of all
-the tickets in the sample. When $t > \overline{t}$, the evicted item $z'$
-is the one with smallest frequency counter and $z$ inherits $f'(z')$ like
-in LS-LFU and LS-THR.
+the tickets in the sample. When $t > \overline{t}$, the evicted item $z^\ast$
+is $z_\text{lef}$, one with smallest frequency counter,
+and $z$ inherits $f'(z^\ast)$ like
+in LS-LEF and LS-THR.
 
 Another variation is \textsc{LotterySaving-AboveMedian} (LS-MED) which adds
 a new item to the sample if its ticket $t$ is above the median $t_\text{med}$
 of the tickets in the sample. The remaining choices for the algorithm are as
 in LS-AM. LS-MED can be generalized to consider the $\alpha$-quantile
 (LS-QUANT-$\alpha$) of the tickets in the sample. Notice that LS-MED is 
-LS-QUANT-0.5.
+LS-QUANT-0.5; the algorithm uses $t_{(\lceil \alpha\cdot m\rceil)}$ to decide
+whether to include or not a new item in the sample, where $t_{(r)}$
+denotes the $\esimo{r}$ smallest ticket in the sample, $1\le r\le m$.
 
-The basic variants of LS-LFU and LS-LS-LRU can be modified to incorporate
+The basic variants of LS-LEF and LS-LRO can be modified to incorporate
 the ideas behind LS-AM and LS-MED.
-Thus LS-LFU-AM and LS-LRU-AM will add an element
-$z\not\in\mathcal{S}$ to the sample if $t > t(z')$
+Thus LS-LEF-AM and LS-LRO-AM will add an element
+$z\not\in\mathcal{S}$ to the sample if $t > t(z^\ast)$
 \textbf{or} $t$ is above the mean value $\overline{t}$ of the tickets
-in the sample. The evicted item $z'$ and the initialization of
+in the sample. The evicted item $z^\ast$ and the initialization of
 the frequency counter of $z$ is as in the corresponding basic algorithms.
 
 Instead of the mean value $\overline{t}$ of the tickets in the sample,
 we might consider the median of the tickets, or more generlly, the
-$\alpha$-quantile of the tickets, getting the variants LS-LFU-MED
-LS-LRU-MED, or more generally, LS-LFU-QUANT-$\alpha$ and LS-LRU-QUANT-$\alpha$. 
+$\alpha$-quantile of the tickets, getting the variants LS-LEF-MED
+LS-LRO-MED, or more generally, LS-LEF-QUANT-$\alpha$ and LS-LRO-QUANT-$\alpha$. 
 
-Another source of variations stems from the way tickets are updated when
-an item $z$ already in the sample is the incoming element from the stream.
-In all cases above we have assumed that tickets are updated via
-$t(z):= \max(t, t(z))$, where $t$ is the ticket generated for the current
-instance of $z$, whereas $t(z)$ is the ticket associated to $z$ in the sample.
+Notice that it makes no sense to ``combine''
+LS-AM and LS-QUANT with LS-ST since $t_\text{min}<\overline{t}$ and
+$t_\text{min}\le t_{(r)}$ for all $r$.
+
+Another source of variations stems from the way tickets are updated
+when an item $z$ already in the sample is the incoming element from
+the stream.  In all cases above we have assumed that tickets are
+updated via $t(z):= \max(t, t(z))$, where $t$ is the ticket generated
+for the current instance of $z$, whereas $t(z)$ is the ticket
+associated to $z$ in the sample.  We can derive corresponding variants
+of all the others discussed above were the items retain the ticket $t$
+with which they entered the sample, and never update it once in the
+sample, for instance.
 
 All algorithms using tickets can be also characterized as defining a
 \emph{thresold value} $t^\ast$ and a candidate item $z^\ast$ for eviction. The
@@ -270,9 +321,8 @@ the current instance.
 For example, lottery sampling (LS) takes
 $t^\ast\equiv t_\text{min} = \min\{t(z)\,|\,z\in\mathcal{S}\}$,
 and $z^\ast$ an element with the
-minimum ticket $t_\text{min}$. Observe that we can safely assume that
-all tickets in $\mathcal{S}$ are distinct, and we shall use $t_{(r)}$ to
-denote the $\esimo{r}$ smallest ticket in the sample, $1\le r\le m$.
+minimum ticket $t_\text{min}$. Recall that we can safely assume that
+all tickets in $\mathcal{S}$ are distinct.
 
 With these conventions the template for all the algorithms discussed above is
 as follows:
@@ -298,10 +348,13 @@ Report the k elements in S with largest f'
 Table \ref{table:algorithms} summarizes the characteristic values of
 $t^\ast$ and $z^\ast$. Observe that we have considered two options for
 the initialization of $f_\text{ini}(z)$ and three options for $z^\ast$
-(the element with minimum $t$, the element with minimum $f'$, and the
-least recently accessed element); if we contemplate $C$ different ways
-to define $t^\ast$ ($C=9$ in our table), we could consider up to $6C$
-different possible combinations. If we add on top of that the choice
+($z_\text{min}=\text{the element with minimum $t$}$,
+$z_\text{lef}=\text{an
+element with minimum $f'$}$, and $z_\text{lro}=\text{the
+least recently observed element}$); if we contemplate $C$ different ways
+to define $t^\ast$ ($C=9$ in our table), we could consider then up to $6C$
+different possible combinations---some make no sense.
+If we add on top of that the choice
 to update or not tickets of sampled elements we raise the count to
 $12C$. Moreover, LS-THR and LS-QUANT depend on an additional real parameter
 in $[0,1]$ giving us an additional source of variability.
@@ -309,21 +362,29 @@ in $[0,1]$ giving us an additional source of variability.
 \begin{table}
   \begin{tabular}{llll}
     Algorithm & $t^\ast$ & $z^\ast$ & $f_ini(z)$ \\\hline\hline
-    SS        & 0       & the element of minimum $f'$ & $f'(z^\ast)$ \\
-    LS        & $t_{(1)}=t(z^\ast)$ & the element of minimum $t$ & $\lfloor\frac{1}{1-t^\ast}\rfloor$ \\
-    LS-LFU    & $t(z^\ast)$ & the element of minimum $f'$ & $f'(z^\ast)$ \\
-    LS-LRU    & $t(z^\ast)$ & the element accessed longest ago & $f'(z^\ast)$ \\
-    LS-THR    & $\theta\cdot t_{(m)}=\theta\cdot t_\text{max}$ & the element of minimum $f'$ & $f'(z^\ast)$ \\
-    LS-AM     & $\overline{t}=\sum_{z\in\mathcal{S}}t(z)/m$ & the element of minimum $f'$ & $f'(z^\ast)$ \\
-    LS-QUANT  & $t_{\lceil\alpha m\rceil}$ & the element of minimum $f'$ & $f'(z^\ast)$ \\
-    LS-LFU-AM & $\min\{\overline{t},t(z^\ast)\}$ & the element of minimum $f'$ & $f'(z^\ast)$ \\
-    LS-LFU-MED & $\min\{t_{\lfloor(m+1)/2\rfloor},t(z^\ast)\}$ &
-    the element of minimum $f'$ & $f'(z^\ast)$
+    SS        & 0       & $z_\text{lef}$ & $f'(z^\ast)$ \\
+    LS        & $t_\text{min}=t(z^\ast)$ & $z_\text{min}$
+    & $\lfloor\frac{1}{1-t^\ast}\rfloor$ \\
+    LS-LEF    & $t(z^\ast)$ & $z_\text{lef}$ & $f'(z^\ast)$ \\
+    LS-LRO    & $t(z^\ast)$ & $z_\text{lro}$ & $f'(z^\ast)$ \\
+    LS-ST    & $t(z^\ast)$ & $z_\text{min}$ & $f'(z^\ast)$ \\
+    LS-THR    & $\theta\cdot t_{(m)}=\theta\cdot t_\text{max}$ & $z_\text{lef}$ & $f'(z^\ast)$ \\
+    LS-AM     & $\overline{t}=\sum_{z\in\mathcal{S}}t(z)/m$ & $z_\text{lef}$ & $f'(z^\ast)$ \\
+    LS-QUANT  & $t_{\lceil\alpha m\rceil}$ & $z_\text{lef}$ & $f'(z^\ast)$ \\
+    LS-LEF-AM & $\min\{\overline{t},t(z^\ast)\}$ & $z_\text{lef}$
+    & $f'(z^\ast)$ \\
+    LS-LEF-MED & $\min\{t_{\lfloor(m+1)/2\rfloor},t(z^\ast)\}$ &
+    $z_\text{lef}$ & $f'(z^\ast)$
   \end{tabular}
 \end{table}
 
-
-{\color{red}\textbf{Other strategies?}}
+The three strategies LS-ST, LS-LEF and LS-LRO are almost identical, they
+only differ in the definition of the element $z^\ast$ to be evicted.
+These three strategies will be called \emph{canonical}, as all the
+other algorithms that we have discussed here can be seen as variantions of one
+of the three; maybe in the way that tickets are updated, maybe in the way
+that $t^\ast$ is defined (e.g., $t^\ast\not=t(z^\ast)$), or the way that
+$f'$ is initialized (e.g., $f_ini(z)\not=f'(z^\ast)$).
 
 It is clear that the combinations that we can make ``playing'' around
 with the criteria for addition ($\texttt{add?}(z,\mathcal{S})$), the
@@ -332,14 +393,31 @@ are almost endless, but here we will restrict ourselves to the those
 that we have been able to analyze and for which the experiments give
 the best results. Another important issue in our choice has been the
 efficiency with which the different operations can be supported.
-Thus for instance, to implement LS-LFU it is very convenient to
+Thus for instance, to implement LS-LEF it is very convenient to
 maintain the elements of $\mathcal{S}$ sorted by frequency counter; locating
 the least frequent element becomes trivial, and maintaining the order of the
 sample after each frequency update is also very easy and efficient, as
 they increment one by one.
 
+\begin{comment}
+  Gonzalo: agrega a esta seccion otros algoritmos que estes probando.
+  En el documento final es posible que hayas de hacer una ``purga'',
+  eliminando las opciones que no han dado buenos resultados. Sin
+  embargo, SpaceSaving, Lottery Sampling y las tres variantes
+  canonicas LS-ST, LS-LEF y LS-LRO deben estar siempre, como
+  referencia. Para nuevas variantes inventa nombres y acronimos. Tambien
+  habriamos de pensar algun modo facil de indicar si una estrategia es con o sin
+  update de tickets, en vez de inventar nuevos nombres. Por ejemplo, LS*-LEF es
+  la variante de LS-LEF sin hacer update de los tickets.
 
-\subsection{Implementing the Algoithms}
+  Por cierto que nn una primera impresion yo
+  diria que LS*-LEF es casi lo mismo que
+  SpaceSaving pero lanzando una moneda e incluyendo al item z nuevo en
+  el sample con probabilidad $m/(m+1)$ (con probabilidad $1/(m+1)$ el item
+  nuevo no reemplaza a $z_\text{lef}$). 
+\end{comment}
+
+\subsection{Implementing the Algorithms}
 
 \section{Measures of Quality}
 Of course, for a top $k$ frequent elements algorithm we would like
@@ -448,11 +526,38 @@ non-null terms, $\epsilon_{II}$ also ranges between 0 (no mistakes in the
 frequency estimation) and 1 (all sampled items are infrequent and we make
 a gross overestimation of their frequencies).
 
-{\color{red} Other measures of quality}
+\begin{comment}
+  Revisa las definiciones para ver si son correctas y se adecuan
+  con las que usas
+  en los experimentos. Agrega nuevas medidas que estes usando y se te ocurran.
+  Ya habra ocasion de ``purgar'' aquellas que resulten poco relevantes,
+  redundantes o demasiado ad-hoc (como comentamos tiene que haber
+  un fundamento racional que justifique la definicion de la medida, no
+  vale que de los resultados que nos gustan :-))
+  
+  $R_u$ y $P_u$ las versiones no ponderadas de \emph{recall} y \emph{precision}
+  no son las mas utiles, pero han de estar y aparecer los valores
+  correspondientes en la parte experimental. En el paper de SS, son las medidas
+  que se usan y estara bien hacer la comparativa en base a estas dos
+  medidas tambien.
+\end{comment}
 
 \section{Analysis of the Algorithms}
 
 \section{Experimental Results}
-
-
+\begin{comment}
+  Esta sección (que ocupará una parte importante de este documento y
+  también en tu TFG) se dividira en no menos de tres partes:
+  \begin{itemize}
+  \item Descripción de los conjuntos de datos reales y sintéticos usados
+    en los experimentos
+  \item Descripción del \emph{setup} experimental: cuantas veces
+    se repetia el experimento, entorno de trabajo, etc.  
+  \item Presentación (tablas, gráficas) y análisis de los resultados
+    experimentales sobre calidad de los algoritmos (recall, precision, errores
+    de estimacion de frecuencias, \ldots)
+  \item Presentación (tablas, gráficas) y análisis de los resultados
+    experimentales sobre rendimiento (tiempo de proceso, memoria,\ldots)
+  \end{itemize}
+\end{comment}
 \end{document}
