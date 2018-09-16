@@ -45,7 +45,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         element.over_estimation = 0;
     } else { // Max number of monitored elements is reached. This new one may replace the one with less hits
         Element<T>* removed_element = *prev(frequency_order.end());
-        bool is_inserted = false;
+        bool is_inserted;
         if(threshold == -1) { // Not using fixed user defined threshold (default case), so the threshold will be increasing through the stream
             is_inserted = element.ticket >= removed_element->ticket || element.ticket >= mean_ticket;
         } else {
