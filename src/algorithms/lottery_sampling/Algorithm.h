@@ -40,6 +40,8 @@ public:
 
     FrequencyOrderIterator<Element<T>> frequency_order_end() override;
 
+    float get_threshold() const override;
+
     void print_state() override;
 
     void print_level(TicketOrder<Element<T>>& level);

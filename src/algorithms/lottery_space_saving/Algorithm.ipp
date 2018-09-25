@@ -82,6 +82,11 @@ void Algorithm<T>::update_element(Element<T>& element) {
 }
 
 template<class T>
+float Algorithm<T>::get_threshold() const {
+    return mean_ticket / float(ticket_generator.MAX_TICKET);
+}
+
+template<class T>
 void Algorithm<T>::print_state() {
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         Element<T>* element = *it;

@@ -111,6 +111,11 @@ void Algorithm<T>::update_element(Element<T>& element) {
 }
 
 template<class T>
+float Algorithm<T>::get_threshold() const {
+    return level_1.top()->ticket / float(ticket_generator.MAX_TICKET);
+}
+
+template<class T>
 void Algorithm<T>::print_level(TicketOrder<Element<T>>& level) {
     TicketOrder<Element<T>> aux = level;
     stack<Element<T>*> s;

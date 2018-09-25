@@ -75,6 +75,11 @@ void Algorithm<T>::update_element(Element<T>& element) {
 }
 
 template<class T>
+float Algorithm<T>::get_threshold() const {
+    return mean_ticket / float(ticket_generator.MAX_TICKET);
+}
+
+template<class T>
 void Algorithm<T>::print_state() {
     cout << "Cache order:" << endl;
     Ticket real_mean_ticket = 0;

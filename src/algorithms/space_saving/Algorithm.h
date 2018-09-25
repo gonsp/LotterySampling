@@ -30,6 +30,8 @@ public:
 
     FrequencyOrderIterator<Element<T>> frequency_order_end() override;
 
+    float get_threshold() const override { return 0; };
+
     void print_state() override;
 };
 
