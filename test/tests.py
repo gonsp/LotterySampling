@@ -123,34 +123,34 @@ class TestMemoryLeak(Test):
 
 
 class TestAsymptotic(Test):
-    # To test asymptotic behaviour of memory, exec time or accuracy (and sample size) with respect to the initial sample size
+    # To test asymptotic behaviour of memory, exec time or accuracy (and sample size) with respect to the initial sample size or through the evolution of a stream (depending on the parameter iterations)
 
     def __init__(self, extra_args=[], profile=None, metrics_left=[], metrics_right=['sample size'], x_label='m', y_left_label='', y_right_label='Num elements'):
         args = [
             ('initial_m', True),
             ('N', True),
-            ('iterations', True),
+            ('iterations', False),
             ('seed', False)
         ]
         args += extra_args
-        self.x_label = x_label
+        super().__init__(configuration='release' if profile is None else 'debug', args=args)
+
+        self.x_label = x_label if self.params.iterations is not None else 'N'
         self.y_left_label = y_left_label
         self.y_right_label = y_right_label
         self.metrics_left = metrics_left
         self.metrics_right = metrics_right
         self.profile = profile
 
-        super().__init__(configuration='release' if profile is None else 'debug', args=args)
-
 
     def run(self):
 
         self.seed = self.generate_seed()
 
-        if self.params.iterations is None:
-            self.params.iterations = 10
-        else:
+        if self.params.iterations is not None:
             self.params.iterations = int(self.params.iterations)
+        elif self.profile is not None:
+            self.error("This test uses a profiler, so the iterations argument needs to be provided")
 
         X = []
         Y_left = []
@@ -158,35 +158,42 @@ class TestAsymptotic(Test):
         m_hist = []
         n_hist = []
 
-        for iteration in range(1, self.params.iterations + 1):
+        iterations = self.params.iterations if self.params.iterations is not None else 1
+        for iteration in range(1, iterations + 1):
             print('Iteration:', iteration, '/', self.params.iterations)
 
             self.new_iteration(iteration)
 
             instances = self.create_instances(self.m, self.seed, self.profile)
 
+            ##################################################
+            def get_metrics():
+                Y_left_results = []
+                Y_right_results = []
+                for instance in instances:
+                    if self.profile is not None:
+                        instance.finish()
+                    Y_left_results.append(self.get_metrics_left(iteration, instance))
+                    Y_right_results.append(self.get_metrics_right(iteration, instance))
+                    if self.params.iterations is not None:
+                        instance.finish()
+
+                X.append(self.get_X_value(iteration) if self.params.iterations is not None else i)
+                Y_left.append(Y_left_results)
+                Y_right.append(Y_right_results)
+                m_hist.append(self.m)
+                n_hist.append(self.stream.n)
+            ##################################################
+
             for i in range(self.N):
                 element = self.stream.next_element()
                 for instance in instances:
                     instance.process_element(str(element))
+                if self.params.iterations is None and i % (self.N // 100) == 0:
+                    get_metrics()
 
-            Y_left_results = []
-            Y_right_results = []
-            for instance in instances:
-                if self.profile is not None:
-                    instance.finish()
-                Y_left_results.append(self.get_metrics_left(iteration, instance))
-                Y_right_results.append(self.get_metrics_right(iteration, instance))
-                instance.finish()
-
-            print(Y_left_results)
-            print(Y_right_results)
-
-            X.append(self.get_X_value(iteration))
-            Y_left.append(Y_left_results)
-            Y_right.append(Y_right_results)
-            m_hist.append(self.m)
-            n_hist.append(self.stream.n)
+            if self.params.iterations is not None:
+                get_metrics()
 
         X = np.array(X)
         Y_left = np.array(Y_left)
@@ -198,6 +205,7 @@ class TestAsymptotic(Test):
         _, axes_left = plt.subplots()
         axes_right = axes_left.twinx()
 
+        ##################################################
         def get_line_format(axes, metric_index):
             if axes == axes_left:
                 if metric_index == 0:
@@ -208,6 +216,7 @@ class TestAsymptotic(Test):
                     return ':x'
             else:
                 return '--'
+        ##################################################
 
         for Y, metrics, axes in [(Y_left, self.metrics_left, axes_left), (Y_right, self.metrics_right, axes_right)]:
             for metric_index in range(0, Y.shape[2]):
@@ -353,7 +362,7 @@ class TestAsymptoticTimeMemory(TestAsymptotic):
 
 
 class TestAsymptoticAccuracy(TestAsymptotic):
-    # Test to inspect how the precision and recall metrics variate when increasing the m
+    # Test to inspect how the precision and recall metrics variate
     
     def __init__(self):
         extra_args = [('k', False), ('freq', False), ('iterating_over', False)]
