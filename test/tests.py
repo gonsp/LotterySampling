@@ -410,3 +410,24 @@ class TestAsymptoticAccuracy(TestAsymptotic):
         return [metrics.get_squared_error(instance, self.stream, self.query_name, self.query_param)]
 
 
+class TestAsymptoticThreshold(TestAsymptotic):
+    # Test to inspect how the threshold evolves
+
+    def __init__(self):
+        super().__init__(metrics_left=[], metrics_right=['threshold'], y_left_label='void', y_right_label='Threshold')
+
+
+    def new_iteration(self, iteration):
+        self.N = int(self.params.N)
+        self.m = iteration * int(self.params.initial_m)
+        # self.stream = streams.Zipf(1.0001, self.generate_seed(), save=True)
+        # self.stream = streams.Uniform(2*self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
+        # self.stream = streams.Unequal(seed=self.generate_seed(), save=True)
+        self.stream = streams.MultiZipf([1.0001, 1.0001, 1.0001, 1.0001, 1.5], self.N, seed=self.generate_seed(), save=True)
+
+
+    def get_metrics_left(self, iteration, instance):
+        return []
+
+    def get_metrics_right(self, iteration, instance):
+        return [instance.get_stats()['threshold']]
