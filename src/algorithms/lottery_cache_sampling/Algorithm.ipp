@@ -10,14 +10,19 @@ template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
     this->set_monitored_size(m);
-    bool aging = parameters.has_parameter("-aging");
     int seed;
     if(parameters.has_parameter("-seed")) {
         seed = stoi(parameters.get_parameter("-seed"));
     } else {
         seed = -1;
     }
-    ticket_generator = TicketGenerator(aging, seed);
+    unsigned int window_size;
+    if(parameters.has_parameter("-aging")) {
+        window_size = (unsigned int) stoul(parameters.get_parameter("-aging"));
+    } else {
+        window_size = 0;
+    }
+    ticket_generator = TicketGenerator(window_size, seed);
     mean_ticket = 0;
 }
 
@@ -76,7 +81,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
 template<class T>
 float Algorithm<T>::get_threshold() const {
-    return mean_ticket / float(ticket_generator.MAX_TICKET);
+    return ticket_generator.normalize_ticket(mean_ticket, this->N);
 }
 
 template<class T>

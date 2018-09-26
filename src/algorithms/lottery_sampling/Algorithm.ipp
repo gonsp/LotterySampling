@@ -11,7 +11,6 @@ using namespace std;
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
-    bool aging = parameters.has_parameter("-aging");
     multilevel = parameters.has_parameter("-multilevel");
     level_1 = TicketOrder<Element<T>>(m);
     if(!multilevel) {
@@ -23,7 +22,13 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         seed = -1;
     }
-    ticket_generator = TicketGenerator(aging, seed);
+    unsigned int window_size;
+    if(parameters.has_parameter("-aging")) {
+        window_size = (unsigned int) stoul(parameters.get_parameter("-aging"));
+    } else {
+        window_size = 0;
+    }
+    ticket_generator = TicketGenerator(window_size, seed);
 }
 
 template<class T>
@@ -112,7 +117,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
 template<class T>
 float Algorithm<T>::get_threshold() const {
-    return level_1.top()->ticket / float(ticket_generator.MAX_TICKET);
+    return ticket_generator.normalize_ticket(level_1.top()->ticket, this->N);
 }
 
 template<class T>
