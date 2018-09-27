@@ -26,10 +26,9 @@ private:
 
     std::mt19937_64 random_state;
     std::uniform_int_distribution<Ticket> dist;
+    unsigned int window_size;
 
 public:
-
-    unsigned int window_size;
 
     Ticket MAX_TICKET;
 

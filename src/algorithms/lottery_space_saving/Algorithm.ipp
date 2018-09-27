@@ -10,6 +10,7 @@ template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
     this->set_monitored_size(m);
+    ticket_update = !parameters.has_parameter("-no_ticket_update");
     int seed;
     if(parameters.has_parameter("-seed")) {
         seed = stoi(parameters.get_parameter("-seed"));
@@ -75,8 +76,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.increment_key(&element);
-    // TODO consider not updating tickets
-    if(threshold == -1) {
+    if(threshold == -1 and ticket_update) {
         Ticket ticket = ticket_generator.generate_ticket(this->N);
         if(ticket > element.ticket) {
             ticket_generator.decremental_averaging(mean_ticket, element.ticket, this->sample_size());

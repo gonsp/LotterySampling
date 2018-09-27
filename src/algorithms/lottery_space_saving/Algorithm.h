@@ -21,6 +21,7 @@ private:
     Ticket mean_ticket;
     float threshold;
     unsigned int m;
+    bool ticket_update;
 
     bool insert_element(Element<T>& element) override;
 
