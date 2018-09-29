@@ -10,6 +10,10 @@ class Stream():
         self.n = 0
         self.save = save
         self.elements = {}
+        self.cache_k = None
+        self.cache_freq = None
+        self.cache_k_param = -1
+        self.cache_freq_param = -1
 
 
     @abstractmethod
@@ -19,6 +23,8 @@ class Stream():
 
     def _next_element(self, element):
         self.N += 1
+        self.cache_k = None
+        self.cache_freq = None
         if self.save:  # To speed-up tests in which is not necessary to check accuracy
             if element in self.elements:
                 self.elements[element] += 1
@@ -28,13 +34,18 @@ class Stream():
 
 
     def k_top_query(self, k):
-        return [(element, self.elements[element]/self.N) for element in heapq.nlargest(k, self.elements, key=self.elements.get)]
-
+        if self.cache_k is None or self.cache_k_param != k:
+            self.cache_k = [(element, self.elements[element]/self.N) for element in heapq.nlargest(k, self.elements, key=self.elements.get)]
+            self.cache_k_param = k
+        return self.cache_k
 
     def frequent_query(self, freq):
-        elements = filter(lambda element: element[1] >= self.N * freq, self.elements.items())
-        elements = [(id, count/self.N) for id, count in elements]
-        return sorted(elements, key=lambda element: -element[1])
+        if self.cache_freq is None or self.cache_freq_param != freq:
+            elements = filter(lambda element: element[1] >= self.N * freq, self.elements.items())
+            elements = [(id, count/self.N) for id, count in elements]
+            self.cache_freq = sorted(elements, key=lambda element: -element[1])
+            self.cache_freq_param = freq
+        return self.cache_freq
 
 
     @abstractmethod
