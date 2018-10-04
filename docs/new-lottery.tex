@@ -151,7 +151,7 @@ scheme.  They all keep a \emph{sample} $\mathcal{S}$ of up to $m$
 distinct elements, for some value $m\ge k$ fixed in advance. Each element
 $x$ in the sample is eqquiped with a frequency counter
 \[
-f'(x) = f_\text{obs}(x) + f_\text{ini}(x),
+f(x) = f_\text{obs}(x) + f_\text{ini}(x),
 \]
 which is the sum of two components: $f_\text{obs}(x)$ is the number of
 times that $x$ has been observed in the data stream since it has been included
@@ -162,7 +162,7 @@ to the sample.
 In the initial phase, the algorithms populate the sample with the
 initial distinct elements in the data stream, recording their
 frequencies. In particular, $f_\text{ini}(x)=0$ for these elements,
-and $f'(x)$ will be the real frequenciy of $x$ in the ``prefix'' of
+and $f(x)$ will be the real frequenciy of $x$ in the ``prefix'' of
 the data stream examined so far.  This first phase ends when $m$
 distinct elements have already been collected and an \esimo{(m+1)}
 distinct element occurs in the data stream, or when the data stream is
@@ -171,21 +171,39 @@ complete information about the full data stream and all required
 information can be obtained exactly.  In the interesting case, when $m
 < n$ (typically, $m\ll n$), the algorithms loop through the remaining
 items in the data stream $\mathcal{Z}$. For every incoming item $z$,
-if $z$ is already in $\mathcal{S}$, the algorithms update $f'(z)$ and
+if $z$ is already in $\mathcal{S}$, the algorithms update $f(z)$ and
 perhaps perform some additional bookkeeping (depending on the
 particular algorithm under consideration), but not much more has to be
 done. On the other hand, if $z\not\in\mathcal{S}$ then we apply some
 criterium $\texttt{add?}(z,\mathcal{S})$;
 if $\texttt{add?}(z,\mathcal{S})$ is not satisfied,
-then $z$ is discarded. Otherwise, some element $z'\in\mathcal{S}$ is choosen
-and evicted from the sample ($z'=\texttt{element\_to\_evict}(\mathcal{S})$),
+then $z$ is discarded. Otherwise, some element $z^\ast\in\mathcal{S}$ is choosen
+and evicted from the sample ($z^\ast=\texttt{element\_to\_evict}(\mathcal{S})$),
 and $z$ is added to $\mathcal{S}$; the frequency counter is initialized
-$f'(z)=1+f_\text{ini}(z)$. The algorithms that we will consider differ
-hence in three main aspects:  
+$f(z)=1+f_\text{ini}(z)$. As in the case where $z\in\mathcal{S}$, some
+additional bookkeeping might be necessary for each particular algorithm.
+
+The algorithms that we will consider differ
+hence three main aspects:  
 \begin{enumerate}
 \item When do we add to the sample an incoming item $z\not\in\mathcal{S}$
-  ($\texttt{add?}(z,\mathcal{S})$? In several algorithms that we will
-  consider later, this is a randomized choice.
+  ($\texttt{add?}(z,\mathcal{S})$? We will consider algorithms that
+  make the decision by first generating a number $t\in[0,1]$,
+  a \emph{token},
+  uniformly and independently at random. If $t \ge t^\ast$ then
+  $z$ will be added, where $t^\ast\in[0,1]$ is a \emph{threshold} value defined
+  by each particular algorithm, and in general will depend on the ``evolution''
+  of the data stream---namely, on the state of the sample and all
+  the tokens generated so far\footnote{The well-known SpaceSaving algorithm
+    might be seen as a particular instance of this scheme with $t^\ast=0$;
+    therefore the generation of tokens is not necessary at all.}. 
+
+  The details about how $t^\ast$ is computed---this includes
+  whether tokens are generated
+  for every instance in the data stream, or only for those for which we need to
+  decide whether we add or not them to the sample---will lead to several
+  different ``subfamilies'' of the generic algorithm.
+  
 \item Which element $z^\ast$ do we evict from the sample when a new element
   $z$ has to be added to the sample
   ($\texttt{element\_to\_evict}(\mathcal{S})$)?
@@ -200,17 +218,37 @@ adds incoming items $z\not\in\mathcal{S}$, that is,
 $\texttt{add?}(z,\mathcal{S})=\textbf{true}$. The element $z^\ast$ selected
 for eviction is one with lowest estimated frequency
 \[
-z^\ast = z_\text{lef} = \text{arg min}_{x\in\mathcal{S}}\{f'(x)\}.
+z^\ast = z_\text{lef} = \text{arg min}_{x\in\mathcal{S}}\{f(x)\}.
 \]
 And the newly added item $z$ inherits the frequency of the evicted item:
-$f_\text{ini}(z)=f'(z^\ast)$.
+$f_\text{ini}(z)=f(z^\ast)$.
 
-Let us know consider our first new algorithm \textsc{LotterySampling} (LS).
+A first simple variation of SpaceSaving that we will call
+\textsc{Randomized SpaceSaving} (RSS) will behave as SS, but the
+addition of the current elements $z$, if not in $\mathcal{S}$,
+is decided a threshold $t^\ast>0$. The simplest case is
+to have a fixed threshold, say $t^\ast=0.95$, but more sophisticated
+schemes are also possible if the threshold $t^\ast$ is dynamically computed,
+for example, $t^\ast$ might be the mean value of the 
+tokens providing ``entrance'' to the $m$ current elements in the sample.
+
+Generalizing the ideas above we move on a family of algorithms
+where the main distinctive feature is that for every element in the sample
+we keep a \emph{ticket} $t(z)$ which is the maximum among the
+tokens generated for $z$. While in RSS variants
+we do not generate a token when the current element $z$ in
+the data stream is already in the sample, in the algorithms that we will
+explore below tokens are generated for each element of the data stream,
+whether they already belong or not to the sample.
+
+Let us know consider the first algorithm in this family, that we call
+\textsc{LotterySampling} (LS).
 Each element $x$ in the sample has, besides its frequency counter, a ticket
 $t(x)\in[0,1)$. When a new item $z$ in the data stream is retrieved
-LS generates, uniformly at random in $(0,1)$, a ticket $t$ for $z$. If $z$
-was already in the sample its frequency counter $f'(z)$ is updated (as usual),
-but also its ticket: if $t > t(z)$ then $t(z):= t$. If $z$ is not
+LS generates, uniformly at random in $(0,1)$, a random nuber $t$ for $z$. If $z$
+was already in the sample its frequency counter $f(z)$ is updated (as usual),
+but also its ticket: if $t > t(z)$ then $t(z):= t$; in other words,
+$t(z)$ is always the largest random number generated for $z$. If $z$ is not
 in the sample, we compare $t$ with the minimum ticket
 $t_\text{min}=t(z_\text{min})$
 in the sample. If $t > t_\text{min}$ then $z$ is added to the sample,
@@ -220,40 +258,49 @@ minimum ticket, and the frequency counter of $z$ is initialized with
 \[
 f_\text{ini}(z)=\left\lfloor\frac{1}{1-t_\text{min}}\right\rfloor.
 \]
+Notice that when $z$ is added to the sample $t$ must be the largest
+random number generated for $z$ so far, hence, we also set $t(z):=t$.
+We will actually do that ($t(z):=t$) whenever an element $z$ enters
+the sample in all the variants that we consider below. However, in
+some of them, it is not true that $t(z)$ is the largest random number
+ever generated for $z$, and hence, it's not, rigorously speaking, the
+\emph{ticket} of $t$.  The property is true in those variants in which
+the minimum ticket $t_\text{min}$ is always
+evicted when a new element $z$ enters the sample, either because we evict
+$z_\text{min}$ or becasue we swap tickets between $z\_text{min}$ and $z^\ast$
+(\emph{ticket stealing}).
 
-\textsc{LotterySaving-LowestEstimatedFrequency} (LS-LEF) combines
-some of the ideas of the two
-algorithms above. When an item $z$ is not in the sample we compare its
-ticket $t$ with the ticket $t_\text{lef}=t(z_\text{lef})$ of an element
-$z_\text{lef}$
-with smallest frequency counter (in cae of ties, any of them is picked
-at random). Notice that $t_\text{lef}$
-might be or not the minimum
-ticket in the sample. If $t > t_\text{lef}$ then $z$ is added
-and $z^\ast=z_\text{lef}$ is evicted, and
-$f_\text{ini}(z)=f'(z^\ast)$.
+\textsc{LotterySaving-LowestEstimatedFrequency} (LS-LEF) combines some
+of the ideas of the two algorithms above. When an item $z$ is not in
+the sample we compare the random number $t$ with the ticket
+$t_\text{lef}=t(z_\text{lef})$ of an element $z_\text{lef}$ with
+smallest frequency counter (in case of ties, any of them is picked at
+random). Notice that $t_\text{lef}$ might be or not the minimum ticket
+in the sample. If $t > t_\text{lef}$ then $z$ is added and
+$z^\ast=z_\text{lef}$ is evicted, and $f_\text{ini}(z)=f(z^\ast)$. 
 
 \textsc{LotterySaving-LeastRecentlyObserved} (LS-LRO) is similar to LS-LEF,
 but the ticket
-$t$ a candidate element $z$ to enter the sample is compared with the
+$t$ of a candidate element $z$ to enter the sample is compared with the
 ticket $t_\text{lro}=t(z_\text{lro})$ of the item $z_\text{lro}$
 in the sample that was observed least recently (i.e., 
 $z_\text{lro}$ is the item with frequency counter updated the longest ago). 
 Like in LS-LEF, if $t > t_\text{lro}$ then $z$ is added and
 $z^\ast=z_\text{lro}$ is evicted. The counter of $z$ is initialized using
-$f_\text{ini}(z)=f'(z_\text{lro})$.
+$f_\text{ini}(z)=f(z_\text{lro})$.
 
 In \textsc{LotterySaving-SmallestTicket} (LS-ST) the element
-to be evicted is $z_\text{min}$; but instead of the rule for initialization of $f'$ of LS it uses the estimated frequency $f'$ of $z^\ast$,
+to be evicted is $z_\text{min}$; but instead of the rule
+for initialization of $f$ of LS it uses the estimated frequency $f$ of $z^\ast$,
 like LS-LEF and LS-LRO. That is, when an item $z$ is not in the sample
 we compare its
 ticket $t$ with the smallest ticket $t_\text{min}=t(z_\text{min})$ of the
 element $z_\text{min}$
-with smallest tickets (w.l.o.g. we can safely assume that no two tickets
+with smallest ticket (w.l.o.g. we can safely assume that no two tickets
 ever are identical).
 If $t > t_\text{min}$ then $z$ is added
 and $z^\ast=z_\text{min}$ is evicted, like in LS. But, unlike LS,
-we have $f_\text{ini}(z)=f'(z^\ast)$.
+we have $f_\text{ini}(z)=f(z^\ast)$.
 
 
 \textsc{LotterySaving-Threshold} (LS-THR-$\theta$) has a parameter
@@ -268,13 +315,13 @@ where $t_\text{max}$ is the largest ticket among the elements in the sample
 
 If $z$ is added to $\mathcal{S}$, LS-THR evicts the element $z^\ast=z_\text{lef}$
 with minimum frequency counter and $z$ inherits the frequency counter
-of $z^\ast$ as the initial estimation: $f_\text{ini}(z)=f'(z^\ast)$.
+of $z^\ast$ as the initial estimation: $f_\text{ini}(z)=f(z^\ast)$.
 
 \textsc{LotterySaving-AboveMean} (LS-AM) adds a  new item to the sample
 if its ticket $t$ is larger that the mean value $\overline{t}$ of all
 the tickets in the sample. When $t > \overline{t}$, the evicted item $z^\ast$
 is $z_\text{lef}$, one with smallest frequency counter,
-and $z$ inherits $f'(z^\ast)$ like
+and $z$ inherits $f(z^\ast)$ like
 in LS-LEF and LS-THR.
 
 Another variation is \textsc{LotterySaving-AboveMedian} (LS-MED) which adds
@@ -334,11 +381,11 @@ while Z is not exhausted do
       t:= Random(0,1)
       if z in S then
            Update the ticket t(z)
-           f'(z):= f'(z) + 1
+           f(z):= f(z) + 1
       else if t > t* then
            S:= S - {z*} + {z}
            t(z):= t
-           f'(z):= fini(z) + 1
+           f(z):= fini(z) + 1
       else // do nothing
       Update t* and z*
 endwhile
@@ -350,7 +397,7 @@ $t^\ast$ and $z^\ast$. Observe that we have considered two options for
 the initialization of $f_\text{ini}(z)$ and three options for $z^\ast$
 ($z_\text{min}=\text{the element with minimum $t$}$,
 $z_\text{lef}=\text{an
-element with minimum $f'$}$, and $z_\text{lro}=\text{the
+element with minimum $f$}$, and $z_\text{lro}=\text{the
 least recently observed element}$); if we contemplate $C$ different ways
 to define $t^\ast$ ($C=9$ in our table), we could consider then up to $6C$
 different possible combinations---some make no sense.
@@ -362,19 +409,19 @@ in $[0,1]$ giving us an additional source of variability.
 \begin{table}
   \begin{tabular}{llll}
     Algorithm & $t^\ast$ & $z^\ast$ & $f_ini(z)$ \\\hline\hline
-    SS        & 0       & $z_\text{lef}$ & $f'(z^\ast)$ \\
+    SS        & 0       & $z_\text{lef}$ & $f(z^\ast)$ \\
     LS        & $t_\text{min}=t(z^\ast)$ & $z_\text{min}$
     & $\lfloor\frac{1}{1-t^\ast}\rfloor$ \\
-    LS-LEF    & $t(z^\ast)$ & $z_\text{lef}$ & $f'(z^\ast)$ \\
-    LS-LRO    & $t(z^\ast)$ & $z_\text{lro}$ & $f'(z^\ast)$ \\
-    LS-ST    & $t(z^\ast)$ & $z_\text{min}$ & $f'(z^\ast)$ \\
-    LS-THR    & $\theta\cdot t_{(m)}=\theta\cdot t_\text{max}$ & $z_\text{lef}$ & $f'(z^\ast)$ \\
-    LS-AM     & $\overline{t}=\sum_{z\in\mathcal{S}}t(z)/m$ & $z_\text{lef}$ & $f'(z^\ast)$ \\
-    LS-QUANT  & $t_{\lceil\alpha m\rceil}$ & $z_\text{lef}$ & $f'(z^\ast)$ \\
+    LS-LEF    & $t(z^\ast)$ & $z_\text{lef}$ & $f(z^\ast)$ \\
+    LS-LRO    & $t(z^\ast)$ & $z_\text{lro}$ & $f(z^\ast)$ \\
+    LS-ST    & $t(z^\ast)$ & $z_\text{min}$ & $f(z^\ast)$ \\
+    LS-THR    & $\theta\cdot t_{(m)}=\theta\cdot t_\text{max}$ & $z_\text{lef}$ & $f(z^\ast)$ \\
+    LS-AM     & $\overline{t}=\sum_{z\in\mathcal{S}}t(z)/m$ & $z_\text{lef}$ & $f(z^\ast)$ \\
+    LS-QUANT  & $t_{\lceil\alpha m\rceil}$ & $z_\text{lef}$ & $f(z^\ast)$ \\
     LS-LEF-AM & $\min\{\overline{t},t(z^\ast)\}$ & $z_\text{lef}$
-    & $f'(z^\ast)$ \\
+    & $f(z^\ast)$ \\
     LS-LEF-MED & $\min\{t_{\lfloor(m+1)/2\rfloor},t(z^\ast)\}$ &
-    $z_\text{lef}$ & $f'(z^\ast)$
+    $z_\text{lef}$ & $f(z^\ast)$
   \end{tabular}
 \end{table}
 
@@ -384,7 +431,7 @@ These three strategies will be called \emph{canonical}, as all the
 other algorithms that we have discussed here can be seen as variantions of one
 of the three; maybe in the way that tickets are updated, maybe in the way
 that $t^\ast$ is defined (e.g., $t^\ast\not=t(z^\ast)$), or the way that
-$f'$ is initialized (e.g., $f_ini(z)\not=f'(z^\ast)$).
+$f$ is initialized (e.g., $f_ini(z)\not=f(z^\ast)$).
 
 It is clear that the combinations that we can make ``playing'' around
 with the criteria for addition ($\texttt{add?}(z,\mathcal{S})$), the
@@ -444,8 +491,8 @@ two random variables will be essential:
   frequencies will be those collected by the algorithm. The indicator
   variable $Y_i=1$ if $x_i$ is reported, $Y_i=0$ otherwise
   (either because $x_i\not\in\mathcal{S}$ or because
-  $f'(x_i)$ is not among the largest
-  $k$ values of $f'$ in $\mathcal{S}$). Like the $Y'_i$'s, the $Y_i$'s
+  $f(x_i)$ is not among the largest
+  $k$ values of $f$ in $\mathcal{S}$). Like the $Y'_i$'s, the $Y_i$'s
   are not independent; and $Y_1+\cdots+Y_n=k$.
 \end{enumerate}
 
@@ -501,9 +548,9 @@ frequencies for the frequent elements:
 \[
 \epsilon_I = \frac{\sum_{1\le i\le k} (f_i-\hat{f}_i)^2}{\sum_{1\le i\le k} f_i^2},
 \]
-where $\hat{f}_i=f'(x_i)$ if $x_i\in\mathcal{S}$ and $\hat{f}_i=0$, otherwise.
+where $\hat{f}_i=f(x_i)$ if $x_i\in\mathcal{S}$ and $\hat{f}_i=0$, otherwise.
 For reasons that will be discussed later we might also take
-$\hat{f}_i=\min\{f'(x_i),2f_\text{obs}(x_i)\}$. Since $f_\text{obs}(x_i)\le f_i$
+$\hat{f}_i=\min\{f(x_i),2f_\text{obs}(x_i)\}$. Since $f_\text{obs}(x_i)\le f_i$
 for all $i$, the numerator in $\epsilon_I$ cannot exceed the denominator
 and thus $\epsilon_I$ will range between 0 (perfect estimation and all frequent
 elements in the sample) and 1 (all frequent elements missing and/or
