@@ -60,7 +60,7 @@ public:
 
     Element* pop_and_push(Element* element);
 
-    void replace(Element* replaced_element, Element* element);
+    void replace_element(Element* replaced_element, Element* element);
 
     void increment_key(Element* element);
 
