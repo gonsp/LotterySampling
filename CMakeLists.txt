@@ -26,6 +26,9 @@ set(SOURCE_FILES
         src/utils/Misc.cpp
         src/algorithms/GenericAlgorithm.h
         src/algorithms/GenericAlgorithm.ipp
+        src/algorithms/lottery_sampling/Algorithm.h
+        src/algorithms/lottery_sampling/Algorithm.ipp
+        src/algorithms/lottery_sampling/Types.h
         src/algorithms/lottery_sampling_original/Algorithm.h
         src/algorithms/lottery_sampling_original/Algorithm.ipp
         src/algorithms/lottery_sampling_original/Types.h

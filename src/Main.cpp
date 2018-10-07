@@ -1,6 +1,7 @@
 #include "utils/InputParser.h"
 #include "utils/Stats.h"
 #include "algorithms/GenericAlgorithm.h"
+#include "algorithms/lottery_sampling/Algorithm.h"
 #include "algorithms/lottery_sampling_original/Algorithm.h"
 #include "algorithms/lottery_cache_sampling/Algorithm.h"
 #include "algorithms/lottery_space_saving/Algorithm.h"
@@ -18,7 +19,7 @@ int main(int num_args, char* args[]) {
 
     GenericAlgorithmInterface<id_t>* algorithm;
     if(!params.has_parameter("-a") || params.get_parameter("-a") == "lottery_sampling") {
-//        algorithm = new LotterySampling::Algorithm<id_t>(params);
+        algorithm = new LotterySampling::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "space_saving") {
         algorithm = new SpaceSaving::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "lottery_sampling_original") {
