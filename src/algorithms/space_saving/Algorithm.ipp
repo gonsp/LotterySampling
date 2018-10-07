@@ -67,5 +67,14 @@ void Algorithm<T>::print_state() {
     assert(frequency_order.size() == this->sample_size());
 }
 
+template<class T>
+float Algorithm<T>::get_threshold() const {
+    if(threshold == -1) {
+        return 0;
+    } else {
+        return threshold;
+    }
+}
+
 
 }
