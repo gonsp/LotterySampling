@@ -35,9 +35,9 @@ public:
 
     TicketGenerator(int seed);
 
-    Ticket generate_ticket(unsigned int N);
+    Ticket generate_ticket();
 
-    float normalize_ticket(Ticket ticket, unsigned int N) const;
+    float normalize_ticket(Ticket ticket) const;
 
     unsigned int estimate_frequency(const Ticket& min_ticket) const;
 

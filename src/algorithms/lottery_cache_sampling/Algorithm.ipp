@@ -32,7 +32,7 @@ FrequencyOrderIterator<Element<T>> Algorithm<T>::frequency_order_end() {
 
 template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
-    element.ticket = ticket_generator.generate_ticket(this->N);
+    element.ticket = ticket_generator.generate_ticket();
 
     // An element is inserted if:
     // - There are less than the maximum sampled elements or
@@ -65,7 +65,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.increment_key(&element);
     cache_order.move_to_front(&element);
 
-    Ticket ticket = ticket_generator.generate_ticket(this->N);
+    Ticket ticket = ticket_generator.generate_ticket();
     if(ticket > element.ticket) {
         ticket_generator.decremental_averaging(mean_ticket, element.ticket, this->sample_size());
         ticket_generator.incremental_averaging(mean_ticket, ticket, this->sample_size());
@@ -75,7 +75,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
 template<class T>
 float Algorithm<T>::get_threshold() const {
-    return ticket_generator.normalize_ticket(mean_ticket, this->N);
+    return ticket_generator.normalize_ticket(mean_ticket);
 }
 
 template<class T>

@@ -66,7 +66,7 @@ void Algorithm<T>::insert_level_2(Element<T>& element) {
 template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
 
-    element.ticket = ticket_generator.generate_ticket(this->N);
+    element.ticket = ticket_generator.generate_ticket();
 
     if(this->sample_size() < m) {
         element.count = 1;
@@ -96,7 +96,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.update_key(&element, &Element<T>::count, element.count + 1);
 
     // Updating ticket
-    Ticket ticket = ticket_generator.generate_ticket(this->N);
+    Ticket ticket = ticket_generator.generate_ticket();
     if(ticket > element.ticket) { // The new ticket is better than the old one
         element.ticket = ticket; // Updating (the better) ticket
         if(element.level == 2 && level_1.top()->ticket < ticket) {
@@ -111,7 +111,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
 template<class T>
 float Algorithm<T>::get_threshold() const {
-    return ticket_generator.normalize_ticket(level_1.top()->ticket, this->N);
+    return ticket_generator.normalize_ticket(level_1.top()->ticket);
 }
 
 template<class T>

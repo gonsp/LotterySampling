@@ -11,12 +11,12 @@ TicketGenerator::TicketGenerator(int seed) {
     dist = uniform_int_distribution<Ticket>(0, MAX_TICKET);
 }
 
-Ticket TicketGenerator::generate_ticket(unsigned int N) {
+Ticket TicketGenerator::generate_ticket() {
     Ticket ticket = dist(random_state);
     return ticket;
 }
 
-float TicketGenerator::normalize_ticket(Ticket ticket, unsigned int N) const {
+float TicketGenerator::normalize_ticket(Ticket ticket) const {
     return ticket / float(MAX_TICKET);
 }
 
