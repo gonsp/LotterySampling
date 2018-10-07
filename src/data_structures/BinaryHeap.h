@@ -43,6 +43,8 @@ public:
 
     Element* pop_and_push(Element* element);
 
+    void replace_element(Element* replaced_element, Element* element);
+
     void remove_element(Element* element);
 
     void key_updated(Element* element);
