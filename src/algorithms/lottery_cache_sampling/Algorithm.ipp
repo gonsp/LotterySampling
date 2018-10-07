@@ -16,13 +16,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         seed = -1;
     }
-    unsigned int window_size;
-    if(parameters.has_parameter("-aging")) {
-        window_size = (unsigned int) stoul(parameters.get_parameter("-aging"));
-    } else {
-        window_size = 0;
-    }
-    ticket_generator = TicketGenerator(window_size, seed);
+    ticket_generator = TicketGenerator(seed);
     mean_ticket = 0;
 }
 

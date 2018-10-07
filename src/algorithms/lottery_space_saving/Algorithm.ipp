@@ -17,18 +17,12 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         seed = -1;
     }
-    unsigned int window_size;
-    if(parameters.has_parameter("-aging")) {
-        window_size = (unsigned int) stoul(parameters.get_parameter("-aging"));
-    } else {
-        window_size = 0;
-    }
     if(parameters.has_parameter("-threshold")) {
         threshold = stof(parameters.get_parameter("-threshold"));
     } else {
         threshold = -1;
     }
-    ticket_generator = TicketGenerator(window_size, seed);
+    ticket_generator = TicketGenerator(seed);
     mean_ticket = 0;
 }
 
@@ -62,7 +56,6 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
             ticket_generator.decremental_averaging(mean_ticket, removed_element->ticket, this->sample_size());
             this->remove_element(removed_element->id);
 
-            // TODO maybe it's better to use the LotterySampling way to estimate the initial frequency?
             element.over_estimation = element.get_count();
             frequency_order.increment_key(&element);
         } else {

@@ -1,9 +1,9 @@
-#include "algorithms/lottery_sampling/Algorithm.h"
+#include "algorithms/lottery_sampling_original/Algorithm.h"
 #include "utils/InputParser.h"
 #include <iostream>
 #include <stack>
 
-namespace LotterySampling {
+namespace LotterySamplingOriginal {
 
 
 using namespace std;
@@ -22,13 +22,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         seed = -1;
     }
-    unsigned int window_size;
-    if(parameters.has_parameter("-aging")) {
-        window_size = (unsigned int) stoul(parameters.get_parameter("-aging"));
-    } else {
-        window_size = 0;
-    }
-    ticket_generator = TicketGenerator(window_size, seed);
+    ticket_generator = TicketGenerator(seed);
 }
 
 template<class T>

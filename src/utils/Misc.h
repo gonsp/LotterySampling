@@ -26,7 +26,6 @@ private:
 
     std::mt19937_64 random_state;
     std::uniform_int_distribution<Ticket> dist;
-    unsigned int window_size;
 
 public:
 
@@ -34,7 +33,7 @@ public:
 
     TicketGenerator() {}
 
-    TicketGenerator(unsigned int window_size, int seed);
+    TicketGenerator(int seed);
 
     Ticket generate_ticket(unsigned int N);
 

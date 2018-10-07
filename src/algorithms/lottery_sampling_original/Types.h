@@ -4,7 +4,7 @@
 #include "data_structures/BinaryHeap.h"
 #include "data_structures/SortedTree.h"
 
-namespace LotterySampling {
+namespace LotterySamplingOriginal {
 
     
 using namespace std;

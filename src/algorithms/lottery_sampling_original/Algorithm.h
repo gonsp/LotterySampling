@@ -2,11 +2,11 @@
 #define _LotterySampling_Algorithm_H_
 
 #include "algorithms/GenericAlgorithm.h"
-#include "algorithms/lottery_sampling/Types.h"
+#include "algorithms/lottery_sampling_original/Types.h"
 #include "utils/InputParser.h"
 #include "utils/Misc.h"
 
-namespace LotterySampling {
+namespace LotterySamplingOriginal {
 
 
 template<class T>
@@ -50,6 +50,6 @@ public:
 
 }
 
-#include "algorithms/lottery_sampling/Algorithm.ipp"
+#include "algorithms/lottery_sampling_original/Algorithm.ipp"
 
 #endif //_LotterySampling_Algorithm_H_
