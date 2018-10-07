@@ -1,5 +1,5 @@
-#ifndef _LotterySampling_Algorithm_H_
-#define _LotterySampling_Algorithm_H_
+#ifndef _LotterySamplingOriginal_Algorithm_H_
+#define _LotterySamplingOriginal_Algorithm_H_
 
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling_original/Types.h"
@@ -52,4 +52,4 @@ public:
 
 #include "algorithms/lottery_sampling_original/Algorithm.ipp"
 
-#endif //_LotterySampling_Algorithm_H_
+#endif //_LotterySamplingOriginal_Algorithm_H_

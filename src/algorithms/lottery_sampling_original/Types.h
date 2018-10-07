@@ -1,5 +1,5 @@
-#ifndef _LotterySampling_Types_H_
-#define _LotterySampling_Types_H_
+#ifndef _LotterySamplingOriginal_Types_H_
+#define _LotterySamplingOriginal_Types_H_
 
 #include "data_structures/BinaryHeap.h"
 #include "data_structures/SortedTree.h"
@@ -60,4 +60,4 @@ struct Element {
 
 }
 
-#endif //_LotterySampling_Types_H_
+#endif //_LotterySamplingOriginal_Types_H_

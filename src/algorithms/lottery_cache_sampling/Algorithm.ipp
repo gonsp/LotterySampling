@@ -48,7 +48,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         if(element.ticket >= older_hit->ticket || element.ticket >= mean_ticket) {
             ticket_generator.decremental_averaging(mean_ticket, older_hit->ticket, this->sample_size());
             cache_order.pop_and_push(&element);
-            frequency_order.replace(older_hit, &element);
+            frequency_order.replace_element(older_hit, &element);
             element.over_estimation = older_hit->get_count();
             frequency_order.increment_key(&element);
             this->remove_element(older_hit->id);

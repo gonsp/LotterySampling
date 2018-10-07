@@ -15,6 +15,13 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         threshold = -1;
     }
+    int seed;
+    if(parameters.has_parameter("-seed")) {
+        seed = stoi(parameters.get_parameter("-seed"));
+    } else {
+        seed = -1;
+    }
+    ticket_generator = TicketGenerator(seed);
 }
 
 template<class T>
