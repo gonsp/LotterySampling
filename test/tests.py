@@ -32,30 +32,25 @@ class Test:
 
     def create_instances(self, m, seed, profile=None):
         configuration = 'release' if profile is None else 'debug'
-        return [
-            # Instance('../bin/optimization-1-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
-            # Instance('../bin/optimization-1-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
-            # Instance('../bin/optimization-1-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
-            # Instance('../bin/optimization-2-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
-            # Instance('../bin/optimization-2-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
-            # Instance('../bin/optimization-2-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
-            # Instance('../bin/optimization-3-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
-            # Instance('../bin/optimization-3-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
-            # Instance('../bin/optimization-3-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
-            # Instance('../bin/optimization-4-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
-            # Instance('../bin/optimization-4-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
-            # Instance('../bin/optimization-4-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
-            # Instance('../bin/optimization-5-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
-            # Instance('../bin/optimization-5-' + configuration, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
-            # Instance('../bin/optimization-5-' + configuration, '-a space_saving -m ' + str(m), profile=profile),
-            # Instance('../bin/optimization-5-' + configuration, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed), profile=profile),
-            # Instance('../bin/optimization-5-' + configuration, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed), profile=profile),
-            # Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging', profile=profile),
-            # Instance(self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed) + ' -aging -multilevel', profile=profile),
-            # Instance(self.exec_path, '-a space_saving -m ' + str(m), profile=profile),
-            Instance(self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed), profile=profile),
-            Instance(self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed), profile=profile)
+        old_version = '../bin/optimization-7-' + configuration
+        instances = [
+            # (old_version,    '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
+            # (old_version,    '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
+            # (old_version,    '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
+            # (old_version,    '-a space_saving -m ' + str(m)),
+            # (old_version,    '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
+            # (old_version,    '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
+            # (old_version,    '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed)),
+
+            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
+            (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
+            (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
+            (self.exec_path, '-a space_saving -m ' + str(m)),
+            (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
+            (self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
+            (self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed))
         ]
+        return [Instance(instance[0], instance[1], profile=profile) for instance in instances]
 
 
     def build_executable(self, configuration='release'):
@@ -125,7 +120,7 @@ class TestMemoryLeak(Test):
 class TestAsymptotic(Test):
     # To test asymptotic behaviour of memory, exec time or accuracy (and sample size) with respect to the initial sample size or through the evolution of a stream (depending on the parameter iterations)
 
-    def __init__(self, extra_args=[], profile=None, metrics_left=[], metrics_right=['sample size'], x_label='m', y_left_label='', y_right_label='Num elements'):
+    def __init__(self, extra_args=[], profile=None, metrics_left=[], metrics_right=[], x_label='m', y_left_label='', y_right_label=''):
         args = [
             ('initial_m', True),
             ('N', True),
@@ -155,8 +150,6 @@ class TestAsymptotic(Test):
         X = []
         Y_left = []
         Y_right = []
-        m_hist = []
-        n_hist = []
 
         iterations = self.params.iterations if self.params.iterations is not None else 1
         for iteration in range(1, iterations + 1):
@@ -181,8 +174,6 @@ class TestAsymptotic(Test):
                 X.append(self.get_X_value(iteration) if self.params.iterations is not None else i)
                 Y_left.append(Y_left_results)
                 Y_right.append(Y_right_results)
-                m_hist.append(self.m)
-                n_hist.append(self.stream.n)
             ##################################################
 
             for i in range(self.N):
@@ -190,6 +181,7 @@ class TestAsymptotic(Test):
                 for instance in instances:
                     instance.process_element(str(element))
                 if self.params.iterations is None and i % (self.N // 100) == 0:
+                    print(i * 100 / self.N, '%')
                     get_metrics()
 
             if self.params.iterations is not None:
@@ -198,8 +190,6 @@ class TestAsymptotic(Test):
         X = np.array(X)
         Y_left = np.array(Y_left)
         Y_right = np.array(Y_right)
-        m_hist = np.array(m_hist)
-        n_hist = np.array(n_hist)
 
         print('Showing results')
         _, axes_left = plt.subplots()
@@ -224,10 +214,6 @@ class TestAsymptotic(Test):
                 for i, instance in enumerate(instances):
                     line_format = get_line_format(axes, metric_index)
                     axes.plot(X, Y[:, i, metric_index], line_format, label=metrics[metric_index] + ' ' + instance.name)
-
-        if self.metrics_right == ['sample size']:
-            axes_right.plot(X, m_hist * np.log(n_hist/m_hist), 'm:', label='m * ln(n/m)')
-
 
         box = axes_left.get_position()
         axes_left.set_position([box.x0, box.y0, box.width, box.height * 0.9])
@@ -366,7 +352,7 @@ class TestAsymptoticAccuracy(TestAsymptotic):
     
     def __init__(self):
         extra_args = [('k', False), ('freq', False), ('iterating_over', False)]
-        super().__init__(extra_args=extra_args, metrics_left=['recall', 'precision'], metrics_right=['squared_error'], y_left_label='Accuracy', y_right_label='Squared error')
+        super().__init__(extra_args=extra_args, metrics_left=['recall', 'precision'], metrics_right=['threshold'], y_left_label='Accuracy', y_right_label='Threshold')
         if self.params.iterating_over is None:
             self.params.iterating_over = 'm'
         elif self.params.iterating_over == 'alpha':
@@ -386,12 +372,13 @@ class TestAsymptoticAccuracy(TestAsymptotic):
         self.m = int(self.params.initial_m)
         if self.params.iterating_over is 'm':
             self.m = iteration * self.m
-            self.alpha = 1.0001
+            self.alpha = 1.00001
         else:
             self.alpha = 1.0 + iteration * 0.001
         self.stream = streams.Zipf(self.alpha, self.generate_seed(), save=True)
-        # self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
-        # self.stream = streams.Unequal(seed=self.generate_seed(), save=True)
+        # self.stream = streams.Uniform(10*self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
+        # self.stream = streams.Unequal(alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=True)
+        # self.stream = streams.MultiZipf([1.00001, 1.0001, 1.00002, 1.00001], self.N, seed=self.generate_seed(), save=True)
 
 
     def get_X_value(self, iteration):
@@ -403,11 +390,13 @@ class TestAsymptoticAccuracy(TestAsymptotic):
 
     def get_metrics_left(self, iteration, instance):
         return [metrics.get_weighted_recall(instance, self.stream, self.query_name, self.query_param),
-                metrics.get_weighted_precision(instance, self.stream, self.query_name, self.query_param)]
+                metrics.get_precision(instance, self.stream, self.query_name, self.query_param)]
+                # metrics.get_weighted_precision(instance, self.stream, self.query_name, self.query_param)]
 
 
     def get_metrics_right(self, iteration, instance):
-        return [metrics.get_squared_error(instance, self.stream, self.query_name, self.query_param)]
+        return [instance.get_stats()['threshold']]
+        # return [metrics.get_squared_error(instance, self.stream, self.query_name, self.query_param)]
 
 
 class TestAsymptoticThreshold(TestAsymptotic):
@@ -420,10 +409,10 @@ class TestAsymptoticThreshold(TestAsymptotic):
     def new_iteration(self, iteration):
         self.N = int(self.params.N)
         self.m = iteration * int(self.params.initial_m)
-        # self.stream = streams.Zipf(1.0001, self.generate_seed(), save=True)
-        # self.stream = streams.Uniform(2*self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
-        # self.stream = streams.Unequal(seed=self.generate_seed(), save=True)
-        self.stream = streams.MultiZipf([1.0001, 1.0001, 1.0001, 1.0001, 1.5], self.N, seed=self.generate_seed(), save=True)
+        # self.stream = streams.Zipf(1.00001, self.generate_seed(), save=False)
+        # self.stream = streams.Uniform(2*self.m, self.generate_seed(), save=False)  # In expectation there will be N/2 inserts and N/2 updates.
+        self.stream = streams.Unequal(alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=False)
+        # self.stream = streams.MultiZipf([1.0001, 1.0001, 1.0001, 1.0001, 1.5], self.N, seed=self.generate_seed(), save=False)
 
 
     def get_metrics_left(self, iteration, instance):
