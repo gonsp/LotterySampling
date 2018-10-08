@@ -18,6 +18,11 @@ private:
     FrequencyOrder<Element<T>> frequency_order;
     unsigned int m;
 
+    // For the new version with fixed threshold
+    float threshold;
+    TicketGenerator ticket_generator;
+
+
     bool insert_element(Element<T>& element) override;
 
     void update_element(Element<T>& element) override;
@@ -29,6 +34,8 @@ public:
     FrequencyOrderIterator<Element<T>> frequency_order_begin() override;
 
     FrequencyOrderIterator<Element<T>> frequency_order_end() override;
+
+    float get_threshold() const override;
 
     void print_state() override;
 };

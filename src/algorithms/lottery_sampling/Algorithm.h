@@ -5,6 +5,8 @@
 #include "algorithms/lottery_sampling/Types.h"
 #include "utils/InputParser.h"
 #include "utils/Misc.h"
+#include <string>
+
 
 namespace LotterySampling {
 
@@ -14,23 +16,15 @@ class Algorithm : public GenericAlgorithm<Element, T, FrequencyOrderIterator<Ele
 
 private:
 
-    TicketOrder<Element<T>> level_1;
-    TicketOrder<Element<T>> level_2;
-
     FrequencyOrder<Element<T>> frequency_order;
-
-    unsigned int m;
-    bool multilevel;
+    TicketOrder<Element<T>> ticket_order;
 
     TicketGenerator ticket_generator;
+    unsigned int m;
 
     bool insert_element(Element<T>& element) override;
 
     void update_element(Element<T>& element) override;
-
-    void insert_level_1(Element<T>& element);
-
-    void insert_level_2(Element<T>& element);
 
 public:
 
@@ -40,9 +34,9 @@ public:
 
     FrequencyOrderIterator<Element<T>> frequency_order_end() override;
 
-    void print_state() override;
+    float get_threshold() const override;
 
-    void print_level(TicketOrder<Element<T>>& level);
+    void print_state() override;
 };
 
 

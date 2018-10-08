@@ -2,6 +2,7 @@
 #define _Misc_H_
 
 #include <random>
+#include <cstdint>
 
 template<class ClassName>
 using ComparatorFunction = bool (ClassName::*)(const ClassName& element) const;
@@ -23,7 +24,6 @@ class TicketGenerator {
 
 private:
 
-    bool aging;
     std::mt19937_64 random_state;
     std::uniform_int_distribution<Ticket> dist;
 
@@ -33,9 +33,11 @@ public:
 
     TicketGenerator() {}
 
-    TicketGenerator(bool aging, int seed);
+    TicketGenerator(int seed);
 
-    Ticket generate_ticket(unsigned int N);
+    Ticket generate_ticket();
+
+    float normalize_ticket(Ticket ticket) const;
 
     unsigned int estimate_frequency(const Ticket& min_ticket) const;
 

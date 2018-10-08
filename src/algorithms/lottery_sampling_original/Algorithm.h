@@ -1,14 +1,12 @@
-#ifndef _LotterySpaceSaving_Algorithm_H_
-#define _LotterySpaceSaving_Algorithm_H_
+#ifndef _LotterySamplingOriginal_Algorithm_H_
+#define _LotterySamplingOriginal_Algorithm_H_
 
 #include "algorithms/GenericAlgorithm.h"
-#include "algorithms/lottery_space_saving/Types.h"
+#include "algorithms/lottery_sampling_original/Types.h"
 #include "utils/InputParser.h"
 #include "utils/Misc.h"
-#include <string>
 
-
-namespace LotterySpaceSaving {
+namespace LotterySamplingOriginal {
 
 
 template<class T>
@@ -16,14 +14,23 @@ class Algorithm : public GenericAlgorithm<Element, T, FrequencyOrderIterator<Ele
 
 private:
 
+    TicketOrder<Element<T>> level_1;
+    TicketOrder<Element<T>> level_2;
+
     FrequencyOrder<Element<T>> frequency_order;
-    TicketGenerator ticket_generator;
-    Ticket mean_ticket;
+
     unsigned int m;
+    bool multilevel;
+
+    TicketGenerator ticket_generator;
 
     bool insert_element(Element<T>& element) override;
 
     void update_element(Element<T>& element) override;
+
+    void insert_level_1(Element<T>& element);
+
+    void insert_level_2(Element<T>& element);
 
 public:
 
@@ -36,11 +43,13 @@ public:
     float get_threshold() const override;
 
     void print_state() override;
+
+    void print_level(TicketOrder<Element<T>>& level);
 };
 
 
 }
 
-#include "algorithms/lottery_space_saving/Algorithm.ipp"
+#include "algorithms/lottery_sampling_original/Algorithm.ipp"
 
-#endif //_LotterySpaceSaving_Algorithm_H_
+#endif //_LotterySamplingOriginal_Algorithm_H_

@@ -55,6 +55,14 @@ Element* BinaryHeap<Element, comparator_func, locator_field>::pop_and_push(Eleme
 }
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator> locator_field>
+void BinaryHeap<Element, comparator_func, locator_field>::replace_element(
+        Element* replaced_element, Element* element) {
+    v[replaced_element->*locator_field] = element;
+    element->*locator_field = replaced_element->*locator_field;
+    key_updated(element);
+}
+
+template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator> locator_field>
 void BinaryHeap<Element, comparator_func, locator_field>::key_updated(Element* element) {
     key_updated(element->*locator_field);
 }

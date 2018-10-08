@@ -33,6 +33,7 @@ void Stats::report(std::ostream& stream, GenericAlgorithmInterface<T>* algorithm
     // Python string format to build a dictionary
     stream << "{";
     stream << "'sample_size' : " << algorithm->sample_size() << ",";
+    stream << "'threshold' : " << algorithm->get_threshold() << ",";
     stream << "'memory_usage' : " << mstats().bytes_used << ",";
     stream << "'total_time' : " << get_interval(initial_time) << ",";
     stream << "'process_element_time' : " << process_element_time << ",";

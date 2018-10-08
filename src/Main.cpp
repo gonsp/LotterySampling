@@ -2,6 +2,7 @@
 #include "utils/Stats.h"
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling/Algorithm.h"
+#include "algorithms/lottery_sampling_original/Algorithm.h"
 #include "algorithms/lottery_cache_sampling/Algorithm.h"
 #include "algorithms/lottery_space_saving/Algorithm.h"
 #include "algorithms/space_saving/Algorithm.h"
@@ -21,6 +22,8 @@ int main(int num_args, char* args[]) {
         algorithm = new LotterySampling::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "space_saving") {
         algorithm = new SpaceSaving::Algorithm<id_t>(params);
+    } else if(params.get_parameter("-a") == "lottery_sampling_original") {
+        algorithm = new LotterySamplingOriginal::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "lottery_cache_sampling") {
         algorithm = new LotteryCacheSampling::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "lottery_space_saving") {
