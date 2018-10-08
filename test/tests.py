@@ -1,4 +1,3 @@
-import math
 import sys
 import os
 import random
@@ -43,10 +42,10 @@ class Test:
             # (old_version,    '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed)),
 
             (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
-            (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
-            (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
-            (self.exec_path, '-a space_saving -m ' + str(m)),
-            (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
+            # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
+            # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
+            # (self.exec_path, '-a space_saving -m ' + str(m)),
+            # (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
             (self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             (self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed))
         ]
@@ -147,9 +146,9 @@ class TestAsymptotic(Test):
         elif self.profile is not None:
             self.error("This test uses a profiler, so the iterations argument needs to be provided")
 
-        X = []
-        Y_left = []
-        Y_right = []
+        self.X = []
+        self.Y_left = []
+        self.Y_right = []
 
         iterations = self.params.iterations if self.params.iterations is not None else 1
         for iteration in range(1, iterations + 1):
@@ -157,39 +156,42 @@ class TestAsymptotic(Test):
 
             self.new_iteration(iteration)
 
-            instances = self.create_instances(self.m, self.seed, self.profile)
-
-            ##################################################
-            def get_metrics():
-                Y_left_results = []
-                Y_right_results = []
-                for instance in instances:
-                    if self.profile is not None:
-                        instance.finish()
-                    Y_left_results.append(self.get_metrics_left(iteration, instance))
-                    Y_right_results.append(self.get_metrics_right(iteration, instance))
-                    if self.params.iterations is not None:
-                        instance.finish()
-
-                X.append(self.get_X_value(iteration) if self.params.iterations is not None else i)
-                Y_left.append(Y_left_results)
-                Y_right.append(Y_right_results)
-            ##################################################
+            self.instances = self.create_instances(self.m, self.seed, self.profile)
 
             for i in range(self.N):
                 element = self.stream.next_element()
-                for instance in instances:
+                for instance in self.instances:
                     instance.process_element(str(element))
                 if self.params.iterations is None and i % (self.N // 100) == 0:
                     print(i * 100 / self.N, '%')
-                    get_metrics()
+                    self.get_metrics(i)
 
             if self.params.iterations is not None:
-                get_metrics()
+                self.get_metrics(iteration)
 
-        X = np.array(X)
-        Y_left = np.array(Y_left)
-        Y_right = np.array(Y_right)
+        self.plot_results()
+
+
+    def get_metrics(self, iteration):
+        Y_left_results = []
+        Y_right_results = []
+        for instance in self.instances:
+            if self.profile is not None:
+                instance.finish()
+            Y_left_results.append(self.get_metrics_left(instance))
+            Y_right_results.append(self.get_metrics_right(instance))
+            if self.params.iterations is not None:
+                instance.finish()
+
+        self.X.append(self.get_X_value(iteration) if self.params.iterations is not None else iteration)
+        self.Y_left.append(Y_left_results)
+        self.Y_right.append(Y_right_results)
+
+
+    def plot_results(self):
+        X = np.array(self.X)
+        Y_left = np.array(self.Y_left)
+        Y_right = np.array(self.Y_right)
 
         print('Showing results')
         _, axes_left = plt.subplots()
@@ -211,7 +213,7 @@ class TestAsymptotic(Test):
         for Y, metrics, axes in [(Y_left, self.metrics_left, axes_left), (Y_right, self.metrics_right, axes_right)]:
             for metric_index in range(0, Y.shape[2]):
                 axes.set_prop_cycle(None)
-                for i, instance in enumerate(instances):
+                for i, instance in enumerate(self.instances):
                     line_format = get_line_format(axes, metric_index)
                     axes.plot(X, Y[:, i, metric_index], line_format, label=metrics[metric_index] + ' ' + instance.name)
 
@@ -233,6 +235,7 @@ class TestAsymptotic(Test):
         self.stream.show()
 
 
+
     @abstractmethod
     def new_iteration(self, iteration):
         pass
@@ -243,11 +246,11 @@ class TestAsymptotic(Test):
 
 
     @abstractmethod
-    def get_metrics_left(self, iteration, instance):
+    def get_metrics_left(self, instance):
         pass
 
 
-    def get_metrics_right(self, iteration, instance):
+    def get_metrics_right(self, instance):
         return [instance.get_stats()['sample_size']]
 
 
@@ -263,7 +266,7 @@ class TestAsymptoticMemoryProfiler(TestAsymptotic):
         self.m = iteration * int(self.params.initial_m)
         self.stream = streams.Zipf(1.1, self.generate_seed(), save=True)
 
-    def get_metrics_left(self, iteration, instance):
+    def get_metrics_left(self, instance):
         return [instance.get_stats()['memory_usage_peak_profiler']]
 
 
@@ -281,7 +284,7 @@ class TestAsymptoticMemory(TestAsymptotic):
         self.stream = streams.Zipf(1.1, self.generate_seed(), save=True)
 
  
-    def get_metrics_left(self, iteration, instance):
+    def get_metrics_left(self, instance):
         return [instance.get_stats()['memory_usage']]
 
 
@@ -303,7 +306,7 @@ class TestAsymptoticTimeProfiler(TestAsymptotic):
         self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
 
 
-    def get_metrics_left(self, iteration, instance):
+    def get_metrics_left(self, instance):
         return [instance.get_stats()['process_element_cost_profiler'] / self.N]
 
 
@@ -321,7 +324,7 @@ class TestAsymptoticTime(TestAsymptotic):
         self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
 
 
-    def get_metrics_left(self, iteration, instance):
+    def get_metrics_left(self, instance):
         return [instance.get_stats()['process_element_time'] / self.N]
 
 
@@ -339,11 +342,11 @@ class TestAsymptoticTimeMemory(TestAsymptotic):
         # self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=False) # In expectation there will be N/2 inserts and N/2 updates.
 
 
-    def get_metrics_left(self, iteration, instance):
+    def get_metrics_left(self, instance):
         return [instance.get_stats()['process_element_cost_profiler'] / self.N]
 
 
-    def get_metrics_right(self, iteration, instance):
+    def get_metrics_right(self, instance):
         return [instance.get_stats()['memory_usage']]
 
 
@@ -388,13 +391,15 @@ class TestAsymptoticAccuracy(TestAsymptotic):
             return self.alpha
 
 
-    def get_metrics_left(self, iteration, instance):
-        return [metrics.get_weighted_recall(instance, self.stream, self.query_name, self.query_param),
-                metrics.get_precision(instance, self.stream, self.query_name, self.query_param)]
+    def get_metrics_left(self, instance):
+        # query_param = self.query_param
+        query_param = self.m
+        return [metrics.get_weighted_recall(instance, self.stream, self.query_name, query_param),
+                metrics.get_precision(instance, self.stream, self.query_name, query_param)]
                 # metrics.get_weighted_precision(instance, self.stream, self.query_name, self.query_param)]
 
 
-    def get_metrics_right(self, iteration, instance):
+    def get_metrics_right(self, instance):
         return [instance.get_stats()['threshold']]
         # return [metrics.get_squared_error(instance, self.stream, self.query_name, self.query_param)]
 
@@ -415,8 +420,8 @@ class TestAsymptoticThreshold(TestAsymptotic):
         # self.stream = streams.MultiZipf([1.0001, 1.0001, 1.0001, 1.0001, 1.5], self.N, seed=self.generate_seed(), save=False)
 
 
-    def get_metrics_left(self, iteration, instance):
+    def get_metrics_left(self, instance):
         return []
 
-    def get_metrics_right(self, iteration, instance):
+    def get_metrics_right(self, instance):
         return [instance.get_stats()['threshold']]
