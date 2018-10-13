@@ -41,6 +41,9 @@ set(SOURCE_FILES
         src/algorithms/space_saving/Algorithm.h
         src/algorithms/space_saving/Algorithm.ipp
         src/algorithms/space_saving/Types.h
+        src/algorithms/frequent/Algorithm.h
+        src/algorithms/frequent/Algorithm.ipp
+        src/algorithms/frequent/Types.h
         src/data_structures/BinaryHeap.h
         src/data_structures/BinaryHeap.ipp
         src/data_structures/SortedTree.h

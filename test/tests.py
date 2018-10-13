@@ -44,10 +44,11 @@ class Test:
             (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
-            # (self.exec_path, '-a space_saving -m ' + str(m)),
+            (self.exec_path, '-a space_saving -m ' + str(m)),
             # (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
-            (self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
-            (self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed))
+            (self.exec_path, '-a frequent -m ' + str(m))
+            # (self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
+            # (self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed))
         ]
         return [Instance(instance[0], instance[1], profile=profile) for instance in instances]
 
@@ -392,8 +393,8 @@ class TestAsymptoticAccuracy(TestAsymptotic):
 
 
     def get_metrics_left(self, instance):
-        # query_param = self.query_param
-        query_param = self.m
+        query_param = self.query_param
+        # query_param = self.m
         return [metrics.get_weighted_recall(instance, self.stream, self.query_name, query_param),
                 metrics.get_precision(instance, self.stream, self.query_name, query_param)]
                 # metrics.get_weighted_precision(instance, self.stream, self.query_name, self.query_param)]
@@ -414,9 +415,9 @@ class TestAsymptoticThreshold(TestAsymptotic):
     def new_iteration(self, iteration):
         self.N = int(self.params.N)
         self.m = iteration * int(self.params.initial_m)
-        # self.stream = streams.Zipf(1.00001, self.generate_seed(), save=False)
+        self.stream = streams.Zipf(1.00001, self.generate_seed(), save=False)
         # self.stream = streams.Uniform(2*self.m, self.generate_seed(), save=False)  # In expectation there will be N/2 inserts and N/2 updates.
-        self.stream = streams.Unequal(alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=False)
+        # self.stream = streams.Unequal(alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=False)
         # self.stream = streams.MultiZipf([1.0001, 1.0001, 1.0001, 1.0001, 1.5], self.N, seed=self.generate_seed(), save=False)
 
 

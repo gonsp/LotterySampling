@@ -6,6 +6,7 @@
 #include "algorithms/lottery_cache_sampling/Algorithm.h"
 #include "algorithms/lottery_space_saving/Algorithm.h"
 #include "algorithms/space_saving/Algorithm.h"
+#include "algorithms/frequent/Algorithm.h"
 #include <iostream>
 #include <string>
 
@@ -28,6 +29,8 @@ int main(int num_args, char* args[]) {
         algorithm = new LotteryCacheSampling::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "lottery_space_saving") {
         algorithm = new LotterySpaceSaving::Algorithm<id_t>(params);
+    } else if(params.get_parameter("-a") == "frequent") {
+        algorithm = new Frequent::Algorithm<id_t>(params);
     } else {
         params.error();
     }
