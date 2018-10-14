@@ -19,6 +19,7 @@ private:
     unsigned int h;
     Counters counters;
     Hasher<T> hasher;
+    bool count_min;
 
     bool insert_element(Element<T>& element) override;
 
@@ -28,7 +29,9 @@ private:
 
 public:
 
-    Algorithm(const InputParser& parameters);
+    Algorithm(const InputParser& parameters) : Algorithm(parameters, false) {};
+
+    Algorithm(const InputParser& parameters, bool count_min);
 
     FrequencyOrderIterator<Element<T>> frequency_order_begin() override;
 

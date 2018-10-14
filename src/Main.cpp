@@ -34,6 +34,8 @@ int main(int num_args, char* args[]) {
         algorithm = new Frequent::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "count_sketch") {
         algorithm = new CountSketch::Algorithm<id_t>(params);
+    } else if(params.get_parameter("-a") == "count_min") {
+        algorithm = new CountSketch::Algorithm<id_t>(params, true);
     } else {
         params.error();
     }

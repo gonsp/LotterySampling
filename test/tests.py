@@ -47,7 +47,8 @@ class Test:
             # (self.exec_path, '-a space_saving -m ' + str(m)),
             # (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
             # (self.exec_path, '-a frequent -m ' + str(m)),
-            (self.exec_path, '-a count_sketch -m ' + str(m) + ' -h 100')
+            (self.exec_path, '-a count_sketch -m ' + str(m) + ' -h 100'),
+            (self.exec_path, '-a count_min -m ' + str(m) + ' -h 100')
             # (self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed))
         ]

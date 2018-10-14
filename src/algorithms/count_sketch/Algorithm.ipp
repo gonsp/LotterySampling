@@ -7,7 +7,7 @@ namespace CountSketch {
 using namespace std;
 
 template<class T>
-Algorithm<T>::Algorithm(const InputParser& parameters) {
+Algorithm<T>::Algorithm(const InputParser& parameters, bool count_min) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
     this->set_monitored_size(m);
     h = (unsigned int) stoul(parameters.get_parameter("-h"));
@@ -15,6 +15,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
         cerr << "h needs to be even" << endl;
         exit(1);
     }
+    this->count_min = count_min;
     counters = Counters(h, vector<int>(m, 0));
 }
 
@@ -34,12 +35,21 @@ int Algorithm<T>::update_count(Element<T>& element) {
     size_t id_hash = hasher(element.id);
     for(int i = 0; i < h; ++i) {
         unsigned int index = hasher(id_hash + i) % m;
-        int increment = hasher(id_hash + h + i) % 2 == 0 ? -1 : 1;
+        int increment;
+        if(count_min) {
+            increment = 1;
+        } else {
+            increment = hasher(id_hash + h + i) % 2 == 0 ? -1 : 1;
+        }
         counters[i][index] += increment;
         element_counters[i] = counters[i][index];
     }
-    std::nth_element(element_counters.begin(), element_counters.begin() + h/2, element_counters.end());
-    return element_counters[h/2];
+    if(count_min) {
+        std::nth_element(element_counters.begin(), element_counters.begin() + h/2, element_counters.end());
+        return element_counters[h/2];
+    } else {
+        return *std::min_element(element_counters.begin(), element_counters.end());
+    }
 }
 
 template<class T>
