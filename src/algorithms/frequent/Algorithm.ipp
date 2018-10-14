@@ -27,7 +27,7 @@ template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
     if(this->sample_size() < m) {
         frequency_order.insert_element(&element);
-    } else { // Max number of monitored elements is reached. This new one will replace the one with less hits
+    } else {
         bool is_inserted = (*prev(frequency_order.end()))->get_count() == offset;
         if(!is_inserted) {
             ++offset;

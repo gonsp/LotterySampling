@@ -44,9 +44,10 @@ class Test:
             (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
-            (self.exec_path, '-a space_saving -m ' + str(m)),
+            # (self.exec_path, '-a space_saving -m ' + str(m)),
             # (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
-            (self.exec_path, '-a frequent -m ' + str(m))
+            # (self.exec_path, '-a frequent -m ' + str(m)),
+            (self.exec_path, '-a count_sketch -m ' + str(m) + ' -h 100')
             # (self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed))
         ]
@@ -380,7 +381,7 @@ class TestAsymptoticAccuracy(TestAsymptotic):
         else:
             self.alpha = 1.0 + iteration * 0.001
         self.stream = streams.Zipf(self.alpha, self.generate_seed(), save=True)
-        # self.stream = streams.Uniform(10*self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
+        # self.stream = streams.Uniform(3*self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
         # self.stream = streams.Unequal(alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=True)
         # self.stream = streams.MultiZipf([1.00001, 1.0001, 1.00002, 1.00001], self.N, seed=self.generate_seed(), save=True)
 

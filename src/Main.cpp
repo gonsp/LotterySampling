@@ -7,6 +7,7 @@
 #include "algorithms/lottery_space_saving/Algorithm.h"
 #include "algorithms/space_saving/Algorithm.h"
 #include "algorithms/frequent/Algorithm.h"
+#include "algorithms/count_sketch/Algorithm.h"
 #include <iostream>
 #include <string>
 
@@ -31,6 +32,8 @@ int main(int num_args, char* args[]) {
         algorithm = new LotterySpaceSaving::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "frequent") {
         algorithm = new Frequent::Algorithm<id_t>(params);
+    } else if(params.get_parameter("-a") == "count_sketch") {
+        algorithm = new CountSketch::Algorithm<id_t>(params);
     } else {
         params.error();
     }
