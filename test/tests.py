@@ -214,7 +214,7 @@ class TestAsymptotic(Test):
         ##################################################
 
         for Y, metrics, axes in [(Y_left, self.metrics_left, axes_left), (Y_right, self.metrics_right, axes_right)]:
-            for metric_index in range(0, Y.shape[2]):
+            for metric_index, metric in enumerate(metrics):
                 axes.set_prop_cycle(None)
                 for i, instance in enumerate(self.instances):
                     line_format = get_line_format(axes, metric_index)
