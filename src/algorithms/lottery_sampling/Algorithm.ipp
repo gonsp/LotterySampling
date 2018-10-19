@@ -10,6 +10,11 @@ template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
     this->set_monitored_size(m);
+    if(parameters.has_parameter("-h")) {
+        h = (unsigned int) stoul(parameters.get_parameter("-h"));
+    } else {
+        h = 1;
+    }
     int seed;
     if(parameters.has_parameter("-seed")) {
         seed = stoi(parameters.get_parameter("-seed"));
@@ -31,7 +36,7 @@ FrequencyOrderIterator<Element<T>> Algorithm<T>::frequency_order_end() {
 
 template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
-    element.ticket = ticket_generator.generate_ticket();
+    element.update_tickets(ticket_generator, h);
 
     if(this->sample_size() < m) {
         frequency_order.insert_element(&element);
@@ -56,9 +61,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.increment_key(&element);
-    Ticket ticket = ticket_generator.generate_ticket();
-    if(ticket > element.ticket) {
-        element.ticket = ticket;
+    if(element.update_tickets(ticket_generator, h)) {
         ticket_order.key_updated(&element);
     }
 }

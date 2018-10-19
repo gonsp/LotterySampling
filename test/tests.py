@@ -33,7 +33,7 @@ class Test:
         configuration = 'release' if profile is None else 'debug'
         old_version = '../bin/optimization-7-' + configuration
         instances = [
-            # (old_version,    '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
+            (old_version,    '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (old_version,    '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
             # (old_version,    '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
             # (old_version,    '-a space_saving -m ' + str(m)),
@@ -41,14 +41,15 @@ class Test:
             # (old_version,    '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (old_version,    '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed)),
 
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
-            # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
+            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -h 200 -seed ' + str(seed)),
+            # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -h 20 -seed ' + str(seed)),
+            # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -h 100 -seed ' + str(seed))
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
             # (self.exec_path, '-a space_saving -m ' + str(m)),
             # (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
             # (self.exec_path, '-a frequent -m ' + str(m)),
-            (self.exec_path, '-a count_sketch -m ' + str(m) + ' -h 100'),
-            (self.exec_path, '-a count_min -m ' + str(m) + ' -h 100')
+            # (self.exec_path, '-a count_sketch -m ' + str(m) + ' -h 20'),
+            # (self.exec_path, '-a count_min -m ' + str(m) + ' -h 20')
             # (self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed))
         ]
@@ -235,8 +236,7 @@ class TestAsymptotic(Test):
         self.full_screen_plot()
         plt.title(self.test_command + ', ' + self.stream.get_name())
         plt.show()
-        self.stream.show()
-
+        # self.stream.show()
 
 
     @abstractmethod
