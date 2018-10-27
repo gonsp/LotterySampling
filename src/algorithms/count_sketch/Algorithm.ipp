@@ -32,14 +32,14 @@ FrequencyOrderIterator<Element<T>> Algorithm<T>::frequency_order_end() {
 template<class T>
 int Algorithm<T>::update_count(Element<T>& element) {
     vector<int> element_counters = vector<int>(h);
-    size_t id_hash = hasher(element.id);
+    size_t id_hash = element_hasher(element.id);
     for(int i = 0; i < h; ++i) {
-        unsigned int index = hasher(id_hash + i) % m;
+        unsigned int index = hash_hasher(id_hash + i) % m;
         int increment;
         if(count_min) {
             increment = 1;
         } else {
-            increment = hasher(id_hash + h + i) % 2 == 0 ? -1 : 1;
+            increment = hash_hasher(id_hash + h + i) % 2 == 0 ? -1 : 1;
         }
         counters[i][index] += increment;
         element_counters[i] = counters[i][index];

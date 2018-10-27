@@ -18,7 +18,8 @@ private:
     unsigned int m;
     unsigned int h;
     Counters counters;
-    Hasher<T> hasher;
+    Hasher<T> element_hasher;
+    Hasher<size_t> hash_hasher;
     bool count_min;
 
     bool insert_element(Element<T>& element) override;
