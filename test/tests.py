@@ -33,7 +33,7 @@ class Test:
         configuration = 'release' if profile is None else 'debug'
         old_version = '../bin/optimization-7-' + configuration
         instances = [
-            (old_version,    '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
+            # (old_version,    '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (old_version,    '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
             # (old_version,    '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
             # (old_version,    '-a space_saving -m ' + str(m)),
@@ -41,15 +41,15 @@ class Test:
             # (old_version,    '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (old_version,    '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed)),
 
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -h 200 -seed ' + str(seed)),
-            # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -h 20 -seed ' + str(seed)),
+            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -h 1 -seed ' + str(seed)),
+            # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -h 1 -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -h 100 -seed ' + str(seed))
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
-            # (self.exec_path, '-a space_saving -m ' + str(m)),
-            # (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
+            (self.exec_path, '-a space_saving -m ' + str(m)),
+            (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
             # (self.exec_path, '-a frequent -m ' + str(m)),
             # (self.exec_path, '-a count_sketch -m ' + str(m) + ' -h 20'),
-            # (self.exec_path, '-a count_min -m ' + str(m) + ' -h 20')
+            (self.exec_path, '-a count_min -m ' + str(m) + ' -h 20')
             # (self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed))
         ]
@@ -101,11 +101,12 @@ class TestMemoryLeak(Test):
     def run(self):
 
         m = 10000
+        N = 1000000
         seed = self.generate_seed()
-        stream = streams.Uniform(3*m, seed, save=False)
+        stream = streams.Uniform(N, 3*m, seed, save=False)
         instances = self.create_instances(m, seed, 'memory_leak')
 
-        for i in range(1000000):
+        for i in range(N):
             element = stream.next_element()
             for instance in instances:
                 instance.process_element(str(element))
@@ -162,12 +163,12 @@ class TestAsymptotic(Test):
 
             self.instances = self.create_instances(self.m, self.seed, self.profile)
 
-            for i in range(self.N):
+            for i in range(self.stream.N_total):
                 element = self.stream.next_element()
                 for instance in self.instances:
                     instance.process_element(str(element))
-                if self.params.iterations is None and i % (self.N // 100) == 0:
-                    print(i * 100 / self.N, '%')
+                if self.params.iterations is None and i % (self.stream.N_total // 100) == 0:
+                    print(i * 100 / self.stream.N_total, '%')
                     self.get_metrics(i)
 
             if self.params.iterations is not None:
@@ -265,9 +266,9 @@ class TestAsymptoticMemoryProfiler(TestAsymptotic):
         super().__init__(profile='memory_usage', metrics_left=['memory'], y_left_label='Max used memory (bytes)')
 
     def new_iteration(self, iteration):
-        self.N = int(self.params.N)
+        N = int(self.params.N)
         self.m = iteration * int(self.params.initial_m)
-        self.stream = streams.Zipf(1.1, self.generate_seed(), save=True)
+        self.stream = streams.Zipf(N, 1.1, self.generate_seed(), save=True)
 
     def get_metrics_left(self, instance):
         return [instance.get_stats()['memory_usage_peak_profiler']]
@@ -282,9 +283,9 @@ class TestAsymptoticMemory(TestAsymptotic):
 
 
     def new_iteration(self, iteration):
-        self.N = int(self.params.N)
+        N = int(self.params.N)
         self.m = iteration * int(self.params.initial_m)
-        self.stream = streams.Zipf(1.1, self.generate_seed(), save=True)
+        self.stream = streams.Zipf(N, 1.1, self.generate_seed(), save=True)
 
  
     def get_metrics_left(self, instance):
@@ -302,11 +303,11 @@ class TestAsymptoticTimeProfiler(TestAsymptotic):
 
 
     def new_iteration(self, iteration):
-        self.N = int(self.params.N)
+        N = int(self.params.N)
         self.m = iteration * int(self.params.initial_m)
-        # self.stream = streams.Uniform(int(N / 2))                                 # To test the "insert_element" operation (with a few updates)
-        # self.stream = streams.Uniform(int(1.1 * self.m))                          # To test the "update_element" operation (with a few inserts)
-        self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
+        # self.stream = streams.Uniform(N, int(N / 2))                                 # To test the "insert_element" operation (with a few updates)
+        # self.stream = streams.Uniform(N, int(1.1 * self.m))                          # To test the "update_element" operation (with a few inserts)
+        self.stream = streams.Uniform(N, 2 * self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
 
 
     def get_metrics_left(self, instance):
@@ -322,9 +323,9 @@ class TestAsymptoticTime(TestAsymptotic):
 
 
     def new_iteration(self, iteration):
-        self.N = int(self.params.N)
+        N = int(self.params.N)
         self.m = iteration * int(self.params.initial_m)
-        self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
+        self.stream = streams.Uniform(N, 2 * self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
 
 
     def get_metrics_left(self, instance):
@@ -339,9 +340,9 @@ class TestAsymptoticTimeMemory(TestAsymptotic):
 
 
     def new_iteration(self, iteration):
-        self.N = int(self.params.N)
+        N = int(self.params.N)
         self.m = iteration * int(self.params.initial_m)
-        self.stream = streams.Zipf(1.01, self.generate_seed(), save=True)
+        self.stream = streams.Zipf(N, 1.01, self.generate_seed(), save=True)
         # self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=False) # In expectation there will be N/2 inserts and N/2 updates.
 
 
@@ -374,17 +375,17 @@ class TestAsymptoticAccuracy(TestAsymptotic):
 
 
     def new_iteration(self, iteration):
-        self.N = int(self.params.N)
+        N = int(self.params.N)
         self.m = int(self.params.initial_m)
         if self.params.iterating_over is 'm':
             self.m = iteration * self.m
             self.alpha = 1.00001
         else:
             self.alpha = 1.0 + iteration * 0.001
-        self.stream = streams.Zipf(self.alpha, self.generate_seed(), save=True)
-        # self.stream = streams.Uniform(3*self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
-        # self.stream = streams.Unequal(alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=True)
-        # self.stream = streams.MultiZipf([1.00001, 1.0001, 1.00002, 1.00001], self.N, seed=self.generate_seed(), save=True)
+        self.stream = streams.Zipf(N, self.alpha, self.generate_seed(), save=True)
+        # self.stream = streams.Uniform(N, 3*self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
+        # self.stream = streams.Unequal(N, alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=True)
+        # self.stream = streams.MultiZipf(N, [1.00001, 1.0001, 1.00002, 1.00001], seed=self.generate_seed(), save=True)
 
 
     def get_X_value(self, iteration):
@@ -415,12 +416,12 @@ class TestAsymptoticThreshold(TestAsymptotic):
 
 
     def new_iteration(self, iteration):
-        self.N = int(self.params.N)
+        N = int(self.params.N)
         self.m = iteration * int(self.params.initial_m)
-        self.stream = streams.Zipf(1.00001, self.generate_seed(), save=False)
-        # self.stream = streams.Uniform(2*self.m, self.generate_seed(), save=False)  # In expectation there will be N/2 inserts and N/2 updates.
-        # self.stream = streams.Unequal(alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=False)
-        # self.stream = streams.MultiZipf([1.0001, 1.0001, 1.0001, 1.0001, 1.5], self.N, seed=self.generate_seed(), save=False)
+        self.stream = streams.Zipf(N, 1.00001, self.generate_seed(), save=False)
+        # self.stream = streams.Uniform(N, 2*self.m, self.generate_seed(), save=False)  # In expectation there will be N/2 inserts and N/2 updates.
+        # self.stream = streams.Unequal(N, alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=False)
+        # self.stream = streams.MultiZipf(N, [1.0001, 1.0001, 1.0001, 1.0001, 1.5], seed=self.generate_seed(), save=False)
 
 
     def get_metrics_left(self, instance):
