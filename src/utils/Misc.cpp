@@ -7,7 +7,6 @@ TicketGenerator::TicketGenerator(int seed) {
         seed = random_device()();
     }
     random_state = mt19937_64(seed);
-    MAX_TICKET = numeric_limits<uint64_t>::max();
     dist = uniform_int_distribution<Ticket>(0, MAX_TICKET);
 }
 
@@ -16,11 +15,17 @@ Ticket TicketGenerator::generate_ticket() {
     return ticket;
 }
 
-float TicketGenerator::normalize_ticket(Ticket ticket) const {
-    return ticket / float(MAX_TICKET);
+double TicketGenerator::normalize_ticket(Ticket ticket) {
+    return ticket / double(MAX_TICKET);
 }
 
-unsigned int TicketGenerator::estimate_frequency(const Ticket& min_ticket) const {
+unsigned int TicketGenerator::estimate_count(const Ticket& ticket) {
+    double normalized_ticket = TicketGenerator::estimate_count(ticket);
+    unsigned int estimated_count = normalized_ticket / (1 - normalized_ticket);
+    return estimated_count;
+}
+
+unsigned int TicketGenerator::estimate_count_geometric(const Ticket& min_ticket) {
     // TODO Protect from infinity
     return static_cast<unsigned int>(1 / (1 - min_ticket / double(MAX_TICKET)));
 }

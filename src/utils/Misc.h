@@ -29,7 +29,7 @@ private:
 
 public:
 
-    Ticket MAX_TICKET;
+    static const Ticket MAX_TICKET = std::numeric_limits<uint64_t>::max();
 
     TicketGenerator() {}
 
@@ -37,9 +37,11 @@ public:
 
     Ticket generate_ticket();
 
-    float normalize_ticket(Ticket ticket) const;
+    static double normalize_ticket(Ticket ticket);
 
-    unsigned int estimate_frequency(const Ticket& min_ticket) const;
+    static unsigned int estimate_count(const Ticket& ticket);
+
+    static unsigned int estimate_count_geometric(const Ticket& min_ticket);
 
     void incremental_averaging(Ticket& old_mean, const Ticket& ticket, unsigned int n) const;
 

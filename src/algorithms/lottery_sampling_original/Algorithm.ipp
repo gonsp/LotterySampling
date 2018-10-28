@@ -74,10 +74,10 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         insert_level_1(element);
     } else {
         if(element.ticket > level_1.top()->ticket) {
-            element.count = ticket_generator.estimate_frequency(level_1.top()->ticket);
+            element.count = TicketGenerator::estimate_count_geometric(level_1.top()->ticket);
             insert_level_1(element);
         } else if(!level_2.empty() && element.ticket > level_2.top()->ticket) {
-            element.count = ticket_generator.estimate_frequency(level_2.top()->ticket);
+            element.count = TicketGenerator::estimate_count_geometric(level_2.top()->ticket);
             insert_level_2(element);
         } else {
             // New element didn't get a good enough ticket to get sampled, so it's discarded

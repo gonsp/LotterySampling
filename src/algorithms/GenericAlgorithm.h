@@ -9,7 +9,9 @@
 // and the type of Element is not known in compile time
 template<class T>
 class GenericAlgorithmInterface {
+    
 public:
+    
     virtual void frequent_query(float f, std::ostream& stream) = 0;
 
     virtual void k_top_query(int k, std::ostream& stream) = 0;
@@ -23,6 +25,7 @@ public:
     virtual void print_state() = 0; // For debugging purposes
 
     virtual ~GenericAlgorithmInterface() {};
+    
 };
 
 
@@ -60,6 +63,7 @@ public:
     void frequent_query(float f, std::ostream& stream) override;
 
     void k_top_query(int k, std::ostream& stream) override;
+
 };
 
 

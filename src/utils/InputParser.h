@@ -19,6 +19,7 @@ public:
     const std::string get_parameter(const std::string& parameter_name) const;
 
     void error() const;
+
 };
 
 #endif //_InputParser_H_
