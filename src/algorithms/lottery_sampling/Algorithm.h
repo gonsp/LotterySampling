@@ -21,7 +21,6 @@ private:
 
     TicketGenerator ticket_generator;
     unsigned int m;
-    unsigned int h;
 
     bool insert_element(Element<T>& element) override;
 

@@ -12,11 +12,6 @@ template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
     multilevel = parameters.has_parameter("-multilevel");
-    if(parameters.has_parameter("-h")) {
-        h = (unsigned int) stoul(parameters.get_parameter("-h"));
-    } else {
-        h = 1;
-    }
     level_1 = TicketOrder<Element<T>>(m);
     if(!multilevel) {
         this->set_monitored_size(m);
@@ -71,18 +66,18 @@ void Algorithm<T>::insert_level_2(Element<T>& element) {
 template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
 
-    element.update_tickets(ticket_generator, h);
+    element.ticket = ticket_generator.generate_ticket();
 
     if(this->sample_size() < m) {
         element.count = 1;
         element.over_estimation = 0;
         insert_level_1(element);
     } else {
-        if(element.mean_ticket > level_1.top()->mean_ticket) {
-            element.count = ticket_generator.estimate_frequency(level_1.top()->mean_ticket);
+        if(element.ticket > level_1.top()->ticket) {
+            element.count = ticket_generator.estimate_frequency(level_1.top()->ticket);
             insert_level_1(element);
-        } else if(!level_2.empty() && element.mean_ticket > level_2.top()->mean_ticket) {
-            element.count = ticket_generator.estimate_frequency(level_2.top()->mean_ticket);
+        } else if(!level_2.empty() && element.ticket > level_2.top()->ticket) {
+            element.count = ticket_generator.estimate_frequency(level_2.top()->ticket);
             insert_level_2(element);
         } else {
             // New element didn't get a good enough ticket to get sampled, so it's discarded
@@ -101,8 +96,10 @@ void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.update_key(&element, &Element<T>::count, element.count + 1);
 
     // Updating ticket
-    if(element.update_tickets(ticket_generator, h)) { // The new ticket is better than the old one
-        if(element.level == 2 && level_1.top()->mean_ticket < element.mean_ticket) {
+    Ticket ticket = ticket_generator.generate_ticket();
+    if(ticket > element.ticket) { // The new ticket is better than the old one
+        element.ticket = ticket; // Updating (the better) ticket
+        if(element.level == 2 && level_1.top()->ticket < ticket) {
             // element is moving from level_2 to level_1, so we kick out the lowest ticket from level_1 to level_2
             level_2.remove_element(&element);
             insert_level_1(element);
@@ -114,7 +111,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
 template<class T>
 float Algorithm<T>::get_threshold() const {
-    return ticket_generator.normalize_ticket(level_1.top()->mean_ticket);
+    return ticket_generator.normalize_ticket(level_1.top()->ticket);
 }
 
 template<class T>
@@ -128,7 +125,7 @@ void Algorithm<T>::print_level(TicketOrder<Element<T>>& level) {
     while(!s.empty()) {
         Element<T>* element = s.top();
         s.pop();
-        cout << element->id << ", " << element->mean_ticket << ", " << element->get_count() << ", " << element->over_estimation << endl;
+        cout << element->id << ", " << element->ticket << ", " << element->get_count() << ", " << element->over_estimation << endl;
     }
 }
 
@@ -143,7 +140,7 @@ void Algorithm<T>::print_state() {
     cout << "-----------------------" << endl;
     cout << "%%%%%% frequency_order %%%%%%" << endl;
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
-        cout << (*it)->id << ", " << (*it)->mean_ticket << ", " << (*it)->get_count() << ", " << (*it)->over_estimation << endl;
+        cout << (*it)->id << ", " << (*it)->ticket << ", " << (*it)->get_count() << ", " << (*it)->over_estimation << endl;
     }
     assert(level_1.size() + level_2.size() == this->sample_size());
     assert(frequency_order.size() == this->sample_size());

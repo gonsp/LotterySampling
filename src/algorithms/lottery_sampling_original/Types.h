@@ -27,9 +27,7 @@ template<class T>
 struct Element {
 
     T id;
-    Ticket mean_ticket;
-    vector<Ticket> tickets;
-
+    Ticket ticket;
     unsigned int count;
     unsigned int over_estimation;
 
@@ -46,20 +44,7 @@ struct Element {
     }
 
     bool compare_ticket(const Element<T>& element) const {
-        return this->mean_ticket < element.mean_ticket;
-    }
-
-    bool update_tickets(TicketGenerator& ticket_generator, unsigned int h) {
-        if(tickets.size() != h) {
-            tickets = vector<Ticket>(h, 0);
-        }
-        Ticket old_mean_ticket = mean_ticket;
-        mean_ticket = 0;
-        for(int i = 0; i < h; ++i) {
-            tickets[i] = max(tickets[i], ticket_generator.generate_ticket());
-            ticket_generator.incremental_averaging(mean_ticket, tickets[i], i + 1);
-        }
-        return mean_ticket > old_mean_ticket;
+        return this->ticket < element.ticket;
     }
 
     TicketOrderLocator ticket_order_locator;

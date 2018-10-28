@@ -20,7 +20,6 @@ private:
     FrequencyOrder<Element<T>> frequency_order;
 
     unsigned int m;
-    unsigned int h;
     bool multilevel;
 
     TicketGenerator ticket_generator;
