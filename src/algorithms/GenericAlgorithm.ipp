@@ -1,14 +1,14 @@
 #include "algorithms/GenericAlgorithm.h"
 
-template<template<typename> class Element, class T, class FrequencyOrderIterator>
-void GenericAlgorithm<Element, T, FrequencyOrderIterator>::set_monitored_size(unsigned int m) {
+template<template<typename> class Element, class T, class FrequencyOrder>
+void GenericAlgorithm<Element, T, FrequencyOrder>::set_monitored_size(unsigned int m) {
     // TODO experiment with different max_load_factor
     monitored_elements.max_load_factor(1);
     monitored_elements.reserve(m);
 }
 
-template<template<typename> class Element, class T, class FrequencyOrderIterator>
-void GenericAlgorithm<Element, T, FrequencyOrderIterator>::process_element(const T& element_id) {
+template<template<typename> class Element, class T, class FrequencyOrder>
+void GenericAlgorithm<Element, T, FrequencyOrder>::process_element(const T& element_id) {
     ++N;
     typename MonitoredElements::iterator it = monitored_elements.find(element_id);
     if(it == monitored_elements.end()) { // element wasn't being sampled
@@ -23,29 +23,29 @@ void GenericAlgorithm<Element, T, FrequencyOrderIterator>::process_element(const
     }
 }
 
-template<template<typename> class Element, class T, class FrequencyOrderIterator>
-void GenericAlgorithm<Element, T, FrequencyOrderIterator>::frequent_query(float f, std::ostream& stream) {
-    for(FrequencyOrderIterator it = frequency_order_begin(); it != frequency_order_end() && (*it)->get_count() >= f * N; ++it) {
+template<template<typename> class Element, class T, class FrequencyOrder>
+void GenericAlgorithm<Element, T, FrequencyOrder>::frequent_query(float f, std::ostream& stream) {
+    for(auto it = get_frequency_order().begin(); it != get_frequency_order().end() && (*it)->get_count() >= f * N; ++it) {
         Element<T>* element = *it;
         stream << element->id << " " << element->get_count() / float(N) << std::endl;
     }
 };
 
-template<template<typename> class Element, class T, class FrequencyOrderIterator>
-void GenericAlgorithm<Element, T, FrequencyOrderIterator>::k_top_query(int k, std::ostream& stream) {
-    for(FrequencyOrderIterator it = frequency_order_begin(); it != frequency_order_end() && k-- > 0; ++it) {
+template<template<typename> class Element, class T, class FrequencyOrder>
+void GenericAlgorithm<Element, T, FrequencyOrder>::k_top_query(int k, std::ostream& stream) {
+    for(auto it = get_frequency_order().begin(); it != get_frequency_order().end() && k-- > 0; ++it) {
         Element<T>* element = *it;
         stream << element->id << " " << element->get_count() / float(N) << std::endl;
     }
 };
 
-template<template<typename> class Element, class T, class FrequencyOrderIterator>
-void GenericAlgorithm<Element, T, FrequencyOrderIterator>::remove_element(const T& element_id) {
+template<template<typename> class Element, class T, class FrequencyOrder>
+void GenericAlgorithm<Element, T, FrequencyOrder>::remove_element(const T& element_id) {
     monitored_elements.erase(element_id);
     --m;
 }
 
-template<template<typename> class Element, class T, class FrequencyOrderIterator>
-unsigned int GenericAlgorithm<Element, T, FrequencyOrderIterator>::sample_size() const {
+template<template<typename> class Element, class T, class FrequencyOrder>
+unsigned int GenericAlgorithm<Element, T, FrequencyOrder>::sample_size() const {
     return m;
 }

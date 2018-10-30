@@ -23,13 +23,8 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
 }
 
 template<class T>
-FrequencyOrderIterator<Element<T>> Algorithm<T>::frequency_order_begin() {
-    return frequency_order.begin();
-}
-
-template<class T>
-FrequencyOrderIterator<Element<T>> Algorithm<T>::frequency_order_end() {
-    return frequency_order.end();
+FrequencyOrder<Element<T>>& Algorithm<T>::get_frequency_order() {
+    return frequency_order;
 }
 
 template<class T>
@@ -104,7 +99,7 @@ float Algorithm<T>::get_threshold() const {
 
 template<class T>
 void Algorithm<T>::print_state() {
-    for(auto it = frequency_order_begin(); it != frequency_order_end(); ++it) {
+    for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         Element<T>& element = *(*it);
         cout << element.id << ", " << element.get_count() << ", " << TicketUtils::normalize_ticket(element.mean_ticket) << ", " << element.observed_count << endl;
 

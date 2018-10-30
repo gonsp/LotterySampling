@@ -29,7 +29,7 @@ public:
 };
 
 
-template<template<typename> class Element, class T, class FrequencyOrderIterator>
+template<template<typename> class Element, class T, class FrequencyOrder>
 class GenericAlgorithm : public GenericAlgorithmInterface<T> {
 
 private:
@@ -46,9 +46,7 @@ protected:
 
     virtual void update_element(Element<T>& element) = 0;
 
-    virtual FrequencyOrderIterator frequency_order_begin() = 0;
-
-    virtual FrequencyOrderIterator frequency_order_end() = 0;
+    virtual FrequencyOrder& get_frequency_order() = 0;
 
     void remove_element(const T& element_id);
 

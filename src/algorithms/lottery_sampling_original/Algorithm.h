@@ -10,7 +10,7 @@ namespace LotterySamplingOriginal {
 
 
 template<class T>
-class Algorithm : public GenericAlgorithm<Element, T, FrequencyOrderIterator<Element<T>>> {
+class Algorithm : public GenericAlgorithm<Element, T, FrequencyOrder<Element<T>>> {
 
 private:
 
@@ -36,9 +36,7 @@ public:
 
     Algorithm(const InputParser& parameters);
 
-    FrequencyOrderIterator<Element<T>> frequency_order_begin() override;
-
-    FrequencyOrderIterator<Element<T>> frequency_order_end() override;
+    FrequencyOrder<Element<T>>& get_frequency_order() override;
 
     float get_threshold() const override;
 
