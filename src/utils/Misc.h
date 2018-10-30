@@ -37,15 +37,17 @@ public:
 
     Ticket generate_ticket();
 
-    static double normalize_ticket(Ticket ticket);
+    static double normalize_ticket(const Ticket& ticket);
+
+    static Ticket estimate_ticket(unsigned int count);
 
     static unsigned int estimate_count(const Ticket& ticket);
 
     static unsigned int estimate_count_geometric(const Ticket& min_ticket);
 
-    void incremental_averaging(Ticket& old_mean, const Ticket& ticket, unsigned int n) const;
+    static void incremental_averaging(Ticket& old_mean, const Ticket& ticket, unsigned int n);
 
-    void decremental_averaging(Ticket& old_mean, const Ticket& ticket, unsigned int n) const;
+    static void decremental_averaging(Ticket& old_mean, const Ticket& ticket, unsigned int n);
 };
 
 

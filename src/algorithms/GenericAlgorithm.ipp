@@ -12,12 +12,12 @@ void GenericAlgorithm<Element, T, FrequencyOrderIterator>::process_element(const
     ++N;
     typename MonitoredElements::iterator it = monitored_elements.find(element_id);
     if(it == monitored_elements.end()) { // element wasn't being sampled
-        has_extra_element = true;
         it = monitored_elements.emplace(element_id, element_id).first; // Create instance of element
         if(!insert_element(it->second)) {
             monitored_elements.erase(it); // Since the algorithm has chosen no to keep it in the sample, we remove it
+        } else {
+            ++m;
         }
-        has_extra_element = false;
     } else { // element was being sampled
         update_element(it->second);
     }
@@ -42,9 +42,10 @@ void GenericAlgorithm<Element, T, FrequencyOrderIterator>::k_top_query(int k, st
 template<template<typename> class Element, class T, class FrequencyOrderIterator>
 void GenericAlgorithm<Element, T, FrequencyOrderIterator>::remove_element(const T& element_id) {
     monitored_elements.erase(element_id);
+    --m;
 }
 
 template<template<typename> class Element, class T, class FrequencyOrderIterator>
 unsigned int GenericAlgorithm<Element, T, FrequencyOrderIterator>::sample_size() const {
-    return monitored_elements.size() - (has_extra_element ? 1 : 0);
+    return m;
 }

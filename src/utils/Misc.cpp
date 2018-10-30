@@ -15,12 +15,16 @@ Ticket TicketGenerator::generate_ticket() {
     return ticket;
 }
 
-double TicketGenerator::normalize_ticket(Ticket ticket) {
+double TicketGenerator::normalize_ticket(const Ticket& ticket) {
     return ticket / double(MAX_TICKET);
 }
 
+Ticket TicketGenerator::estimate_ticket(unsigned int count) {
+    return Ticket(count / double(count + 1) * MAX_TICKET);
+}
+
 unsigned int TicketGenerator::estimate_count(const Ticket& ticket) {
-    double normalized_ticket = TicketGenerator::estimate_count(ticket);
+    double normalized_ticket = TicketGenerator::normalize_ticket(ticket);
     unsigned int estimated_count = normalized_ticket / (1 - normalized_ticket);
     return estimated_count;
 }
@@ -30,7 +34,8 @@ unsigned int TicketGenerator::estimate_count_geometric(const Ticket& min_ticket)
     return static_cast<unsigned int>(1 / (1 - min_ticket / double(MAX_TICKET)));
 }
 
-void TicketGenerator::incremental_averaging(Ticket& mean, const Ticket& ticket, unsigned int n) const {
+// n is the number of elements TO BE aggregated in mean (after calling the function)
+void TicketGenerator::incremental_averaging(Ticket& mean, const Ticket& ticket, unsigned int n) {
     // To avoid overflows
     if(ticket > mean) {
         mean = mean + (ticket - mean) / n;
@@ -39,7 +44,8 @@ void TicketGenerator::incremental_averaging(Ticket& mean, const Ticket& ticket, 
     }
 }
 
-void TicketGenerator::decremental_averaging(Ticket& mean, const Ticket& ticket, unsigned int n) const {
+// n is the number of elements aggregated in mean (before calling the function)
+void TicketGenerator::decremental_averaging(Ticket& mean, const Ticket& ticket, unsigned int n) {
     if(n == 1) {
         mean = 0;
     } else {
