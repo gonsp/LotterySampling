@@ -3,6 +3,7 @@
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling/Algorithm.h"
 #include "algorithms/lottery_sampling_original/Algorithm.h"
+#include "algorithms/lottery_sampling_parallel/Algorithm.h"
 #include "algorithms/lottery_cache_sampling/Algorithm.h"
 #include "algorithms/lottery_space_saving/Algorithm.h"
 #include "algorithms/space_saving/Algorithm.h"
@@ -18,6 +19,7 @@ int main(int num_args, char* args[]) {
     InputParser params(num_args, args);
 
     typedef long long int id_t;
+//    typedef string id_t;
 
     GenericAlgorithmInterface<id_t>* algorithm;
     if(!params.has_parameter("-a") || params.get_parameter("-a") == "lottery_sampling") {
@@ -26,6 +28,8 @@ int main(int num_args, char* args[]) {
         algorithm = new SpaceSaving::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "lottery_sampling_original") {
         algorithm = new LotterySamplingOriginal::Algorithm<id_t>(params);
+    } else if(params.get_parameter("-a") == "lottery_sampling_parallel") {
+        algorithm = new LotterySamplingParallel::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "lottery_cache_sampling") {
         algorithm = new LotteryCacheSampling::Algorithm<id_t>(params);
     } else if(params.get_parameter("-a") == "lottery_space_saving") {
@@ -66,6 +70,7 @@ int main(int num_args, char* args[]) {
             cout << ":end" << endl;
         } else { // It's a new element in the data stream
             id_t element = stoll(s);
+//            id_t element = s;
             stats.start_counting(stats.process_element_count);
             algorithm->process_element(element);
             stats.finish_counting(stats.process_element_time);

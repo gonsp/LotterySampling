@@ -3,7 +3,7 @@
 
 #include "data_structures/SortedList.h"
 #include "data_structures/SortedVector.h"
-#include "utils/Misc.h"
+#include "utils/TicketUtils.h"
 
 namespace LotterySpaceSaving {
 

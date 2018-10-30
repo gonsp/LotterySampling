@@ -1,10 +1,10 @@
 #ifndef _LotterySampling_Types_H_
 #define _LotterySampling_Types_H_
 
-#include <data_structures/BinaryHeap.h>
+#include "data_structures/BinaryHeap.h"
 #include "data_structures/SortedList.h"
 #include "data_structures/SortedVector.h"
-#include "utils/Misc.h"
+#include "utils/TicketUtils.h"
 
 namespace LotterySampling {
 

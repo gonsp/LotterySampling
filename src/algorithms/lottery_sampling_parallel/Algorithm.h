@@ -5,7 +5,7 @@
 #include "algorithms/lottery_sampling_original/Algorithm.h"
 #include "algorithms/lottery_sampling_parallel/Types.h"
 #include "utils/InputParser.h"
-#include "utils/Misc.h"
+#include "utils/TicketUtils.h"
 
 namespace LotterySamplingParallel {
 
@@ -17,7 +17,7 @@ private:
 
     FrequencyOrder<Element<T>> frequency_order;
     std::vector<TicketOrder<ElementInstance<T>>> instances;
-    TicketGenerator ticket_generator;
+    TicketUtils ticket_generator;
     unsigned int m;
 
     bool insert_element(Element<T>& element) override;

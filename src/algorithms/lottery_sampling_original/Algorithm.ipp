@@ -1,6 +1,6 @@
 #include "algorithms/lottery_sampling_original/Algorithm.h"
 #include "utils/InputParser.h"
-#include <iostream>
+#include "utils/TicketUtils.h"
 #include <stack>
 
 namespace LotterySamplingOriginal {
@@ -22,7 +22,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         seed = -1;
     }
-    ticket_generator = TicketGenerator(seed);
+    ticket_generator = TicketUtils(seed);
 }
 
 template<class T>
@@ -74,10 +74,10 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         insert_level_1(element);
     } else {
         if(element.ticket > level_1.top()->ticket) {
-            element.count = TicketGenerator::estimate_count_geometric(level_1.top()->ticket);
+            element.count = TicketUtils::estimate_count_geometric(level_1.top()->ticket);
             insert_level_1(element);
         } else if(!level_2.empty() && element.ticket > level_2.top()->ticket) {
-            element.count = TicketGenerator::estimate_count_geometric(level_2.top()->ticket);
+            element.count = TicketUtils::estimate_count_geometric(level_2.top()->ticket);
             insert_level_2(element);
         } else {
             // New element didn't get a good enough ticket to get sampled, so it's discarded
@@ -111,7 +111,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
 template<class T>
 float Algorithm<T>::get_threshold() const {
-    return ticket_generator.normalize_ticket(level_1.top()->ticket);
+    return TicketUtils::normalize_ticket(level_1.top()->ticket);
 }
 
 template<class T>

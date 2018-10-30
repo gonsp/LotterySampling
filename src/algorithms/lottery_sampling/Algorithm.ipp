@@ -1,4 +1,5 @@
 #include "algorithms/lottery_sampling/Algorithm.h"
+#include "utils/TicketUtils.h"
 #include <iostream>
 
 namespace LotterySampling {
@@ -16,7 +17,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         seed = -1;
     }
-    ticket_generator = TicketGenerator(seed);
+    ticket_generator = TicketUtils(seed);
 }
 
 template<class T>
@@ -65,7 +66,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
 template<class T>
 float Algorithm<T>::get_threshold() const {
-    return ticket_generator.normalize_ticket(ticket_order.top()->ticket);
+    return TicketUtils::normalize_ticket(ticket_order.top()->ticket);
 }
 
 template<class T>

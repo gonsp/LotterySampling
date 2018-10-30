@@ -3,6 +3,7 @@
 
 #include "data_structures/BinaryHeap.h"
 #include "data_structures/SortedTree.h"
+#include "utils/TicketUtils.h"
 
 namespace LotterySamplingOriginal {
 

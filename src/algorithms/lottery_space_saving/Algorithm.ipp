@@ -1,4 +1,5 @@
 #include "algorithms/lottery_space_saving/Algorithm.h"
+#include "utils/TicketUtils.h"
 #include <iostream>
 
 namespace LotterySpaceSaving {
@@ -16,7 +17,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         seed = -1;
     }
-    ticket_generator = TicketGenerator(seed);
+    ticket_generator = TicketUtils(seed);
     mean_ticket = 0;
 }
 
@@ -42,7 +43,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         bool is_inserted = element.ticket >= removed_element->ticket || element.ticket >= mean_ticket;
         if(is_inserted) {
             frequency_order.pop_and_push(&element);
-            ticket_generator.decremental_averaging(mean_ticket, removed_element->ticket, this->sample_size());
+            TicketUtils::decremental_averaging(mean_ticket, removed_element->ticket, this->sample_size());
             this->remove_element(removed_element->id);
 
             element.over_estimation = element.get_count();
@@ -51,7 +52,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
             return false;
         }
     }
-    ticket_generator.incremental_averaging(mean_ticket, element.ticket, this->sample_size() + 1);
+    TicketUtils::incremental_averaging(mean_ticket, element.ticket, this->sample_size() + 1);
     return true;
 }
 
@@ -60,15 +61,15 @@ void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.increment_key(&element);
     Ticket ticket = ticket_generator.generate_ticket();
     if(ticket > element.ticket) {
-        ticket_generator.decremental_averaging(mean_ticket, element.ticket, this->sample_size());
-        ticket_generator.incremental_averaging(mean_ticket, ticket, this->sample_size());
+        TicketUtils::decremental_averaging(mean_ticket, element.ticket, this->sample_size());
+        TicketUtils::incremental_averaging(mean_ticket, ticket, this->sample_size());
         element.ticket = ticket;
     }
 }
 
 template<class T>
 float Algorithm<T>::get_threshold() const {
-    return ticket_generator.normalize_ticket(mean_ticket);
+    return TicketUtils::normalize_ticket(mean_ticket);
 }
 
 template<class T>

@@ -1,7 +1,7 @@
 #ifndef _LotteryCacheSampling_Types_H_
 #define _LotteryCacheSampling_Types_H_
 
-#include "utils/Misc.h"
+#include "utils/TicketUtils.h"
 #include "data_structures/SortedList.h"
 #include <data_structures/SortedVector.h>
 #include "data_structures/List.h"

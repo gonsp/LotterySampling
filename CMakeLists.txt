@@ -23,7 +23,8 @@ set(SOURCE_FILES
         src/utils/Stats.h
         src/utils/Stats.ipp
         src/utils/Misc.h
-        src/utils/Misc.cpp
+        src/Utils/TicketUtils.h
+        src/Utils/TicketUtils.cpp
         src/algorithms/GenericAlgorithm.h
         src/algorithms/GenericAlgorithm.ipp
         src/algorithms/lottery_sampling/Algorithm.h

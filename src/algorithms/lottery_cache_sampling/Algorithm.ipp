@@ -16,7 +16,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         seed = -1;
     }
-    ticket_generator = TicketGenerator(seed);
+    ticket_generator = TicketUtils(seed);
     mean_ticket = 0;
 }
 
@@ -46,7 +46,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     } else {
         Element<T>* older_hit = cache_order.get_older();
         if(element.ticket >= older_hit->ticket || element.ticket >= mean_ticket) {
-            ticket_generator.decremental_averaging(mean_ticket, older_hit->ticket, this->sample_size());
+            TicketUtils::decremental_averaging(mean_ticket, older_hit->ticket, this->sample_size());
             cache_order.pop_and_push(&element);
             frequency_order.replace_element(older_hit, &element);
             element.over_estimation = older_hit->get_count();
@@ -56,7 +56,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
             return false;
         }
     }
-    ticket_generator.incremental_averaging(mean_ticket, element.ticket, this->sample_size() + 1);
+    TicketUtils::incremental_averaging(mean_ticket, element.ticket, this->sample_size() + 1);
     return true;
 }
 
@@ -67,15 +67,15 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
     Ticket ticket = ticket_generator.generate_ticket();
     if(ticket > element.ticket) {
-        ticket_generator.decremental_averaging(mean_ticket, element.ticket, this->sample_size());
-        ticket_generator.incremental_averaging(mean_ticket, ticket, this->sample_size());
+        TicketUtils::decremental_averaging(mean_ticket, element.ticket, this->sample_size());
+        TicketUtils::incremental_averaging(mean_ticket, ticket, this->sample_size());
         element.ticket = ticket;
     }
 }
 
 template<class T>
 float Algorithm<T>::get_threshold() const {
-    return ticket_generator.normalize_ticket(mean_ticket);
+    return TicketUtils::normalize_ticket(mean_ticket);
 }
 
 template<class T>
@@ -86,7 +86,7 @@ void Algorithm<T>::print_state() {
     for(auto it = cache_order.begin(); it != cache_order.end(); ++it) {
         Element<T>* element = *it;
         cout << element->id << ", " << element->ticket << endl;
-        ticket_generator.incremental_averaging(real_mean_ticket, element->ticket, ++i);
+        TicketUtils::incremental_averaging(real_mean_ticket, element->ticket, ++i);
     }
     cout << "Frequency order: " << endl;
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {

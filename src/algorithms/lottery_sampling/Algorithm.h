@@ -4,7 +4,7 @@
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling/Types.h"
 #include "utils/InputParser.h"
-#include "utils/Misc.h"
+#include "utils/TicketUtils.h"
 #include <string>
 
 
@@ -19,7 +19,7 @@ private:
     FrequencyOrder<Element<T>> frequency_order;
     TicketOrder<Element<T>> ticket_order;
 
-    TicketGenerator ticket_generator;
+    TicketUtils ticket_generator;
     unsigned int m;
 
     bool insert_element(Element<T>& element) override;

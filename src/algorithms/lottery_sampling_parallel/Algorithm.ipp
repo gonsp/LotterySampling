@@ -1,7 +1,7 @@
 #include "algorithms/lottery_sampling_parallel/Algorithm.h"
 #include "utils/InputParser.h"
+#include "utils/TicketUtils.h"
 #include <iostream>
-#include <stack>
 
 namespace LotterySamplingParallel {
 
@@ -19,7 +19,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         seed = -1;
     }
-    ticket_generator = TicketGenerator(seed);
+    ticket_generator = TicketUtils(seed);
 }
 
 template<class T>
@@ -53,7 +53,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
     element.observed_count++;
 
     Ticket new_mean_ticket = 0;
-    Ticket estimated_ticket = TicketGenerator::estimate_ticket(element.observed_count);
+    Ticket estimated_ticket = TicketUtils::estimate_ticket(element.observed_count);
 
     for(int i = 0; i < instances.size(); ++i) {
 
@@ -91,7 +91,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
             }
         }
 
-        ticket_generator.incremental_averaging(new_mean_ticket, ticket, i + 1);
+        TicketUtils::incremental_averaging(new_mean_ticket, ticket, i + 1);
     }
 
     frequency_order.update_key(&element, &Element<T>::mean_ticket, new_mean_ticket);
@@ -106,10 +106,10 @@ template<class T>
 void Algorithm<T>::print_state() {
     for(auto it = frequency_order_begin(); it != frequency_order_end(); ++it) {
         Element<T>& element = *(*it);
-        cout << element.id << ", " << element.get_count() << ", " << TicketGenerator::normalize_ticket(element.mean_ticket) << ", " << element.observed_count << endl;
+        cout << element.id << ", " << element.get_count() << ", " << TicketUtils::normalize_ticket(element.mean_ticket) << ", " << element.observed_count << endl;
 
         Ticket mean_ticket = 0;
-        Ticket estimated_ticket = TicketGenerator::estimate_ticket(element.observed_count);
+        Ticket estimated_ticket = TicketUtils::estimate_ticket(element.observed_count);
         for(int i = 0; i < instances.size(); ++i) {
             Ticket ticket;
             if(element.instances.count(i) == 0) {
@@ -117,10 +117,10 @@ void Algorithm<T>::print_state() {
             } else {
                 ticket = element.instances.find(i)->second.ticket;
             }
-            cout << TicketGenerator::normalize_ticket(ticket) << " ";
+            cout << TicketUtils::normalize_ticket(ticket) << " ";
             mean_ticket += ticket / instances.size();
         }
-        cout << endl << TicketGenerator::normalize_ticket(mean_ticket) << endl;
+        cout << endl << TicketUtils::normalize_ticket(mean_ticket) << endl;
     }
 }
 

@@ -21,7 +21,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     } else {
         seed = -1;
     }
-    ticket_generator = TicketGenerator(seed);
+    ticket_generator = TicketUtils(seed);
 }
 
 template<class T>
@@ -40,7 +40,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         frequency_order.insert_element(&element);
         element.over_estimation = 0;
     } else { // Max number of monitored elements is reached. This new one will replace the one with less hits
-        bool is_inserted = threshold == -1 || ticket_generator.generate_ticket() >= threshold * ticket_generator.MAX_TICKET;
+        bool is_inserted = threshold == -1 || ticket_generator.generate_ticket() >= threshold * TicketUtils::MAX_TICKET;
         if(!is_inserted) {
             return false;
         }

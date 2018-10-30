@@ -4,7 +4,7 @@
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_space_saving/Types.h"
 #include "utils/InputParser.h"
-#include "utils/Misc.h"
+#include "utils/TicketUtils.h"
 #include <string>
 
 
@@ -17,7 +17,7 @@ class Algorithm : public GenericAlgorithm<Element, T, FrequencyOrderIterator<Ele
 private:
 
     FrequencyOrder<Element<T>> frequency_order;
-    TicketGenerator ticket_generator;
+    TicketUtils ticket_generator;
     Ticket mean_ticket;
     unsigned int m;
 

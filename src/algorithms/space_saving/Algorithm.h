@@ -4,6 +4,7 @@
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/space_saving/Types.h"
 #include "utils/InputParser.h"
+#include "utils/TicketUtils.h"
 #include <string>
 
 
@@ -20,7 +21,7 @@ private:
 
     // For the new version with fixed threshold
     float threshold;
-    TicketGenerator ticket_generator;
+    TicketUtils ticket_generator;
 
 
     bool insert_element(Element<T>& element) override;

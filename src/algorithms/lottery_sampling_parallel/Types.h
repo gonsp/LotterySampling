@@ -3,6 +3,7 @@
 
 #include "data_structures/BinaryHeap.h"
 #include "data_structures/SortedTree.h"
+#include "utils/TicketUtils.h"
 #include <unordered_map>
 
 namespace LotterySamplingParallel {
@@ -53,7 +54,7 @@ struct Element {
     }
 
     unsigned int get_count() const {
-        return TicketGenerator::estimate_count(mean_ticket);
+        return TicketUtils::estimate_count(mean_ticket);
     }
 
     bool compare_freq(const Element<T>& element) const {

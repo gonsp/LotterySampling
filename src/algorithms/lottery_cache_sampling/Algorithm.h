@@ -4,7 +4,7 @@
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_cache_sampling/Types.h"
 #include "utils/InputParser.h"
-#include "utils/Misc.h"
+#include "utils/TicketUtils.h"
 
 
 namespace LotteryCacheSampling {
@@ -19,7 +19,7 @@ private:
     CacheOrder<Element<T>> cache_order;
 
     unsigned int m;
-    TicketGenerator ticket_generator;
+    TicketUtils ticket_generator;
     Ticket mean_ticket;
 
     bool insert_element(Element<T>& element) override;

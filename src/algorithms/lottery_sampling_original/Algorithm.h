@@ -4,7 +4,7 @@
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling_original/Types.h"
 #include "utils/InputParser.h"
-#include "utils/Misc.h"
+#include "utils/TicketUtils.h"
 
 namespace LotterySamplingOriginal {
 
@@ -22,7 +22,7 @@ private:
     unsigned int m;
     bool multilevel;
 
-    TicketGenerator ticket_generator;
+    TicketUtils ticket_generator;
 
     bool insert_element(Element<T>& element) override;
 
