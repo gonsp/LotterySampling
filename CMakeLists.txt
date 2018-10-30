@@ -32,6 +32,9 @@ set(SOURCE_FILES
         src/algorithms/lottery_sampling_original/Algorithm.h
         src/algorithms/lottery_sampling_original/Algorithm.ipp
         src/algorithms/lottery_sampling_original/Types.h
+        src/algorithms/lottery_sampling_parallel/Algorithm.h
+        src/algorithms/lottery_sampling_parallel/Algorithm.ipp
+        src/algorithms/lottery_sampling_parallel/Types.h
         src/algorithms/lottery_cache_sampling/Algorithm.h
         src/algorithms/lottery_cache_sampling/Algorithm.ipp
         src/algorithms/lottery_cache_sampling/Types.h
