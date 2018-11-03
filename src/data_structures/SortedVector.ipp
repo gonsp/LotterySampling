@@ -84,12 +84,12 @@ unsigned int SortedVector<Element, locator_field>::size() const {
 }
 
 template<class Element, ClassField<Element, Locator> locator_field>
-Iterator<Element> SortedVector<Element, locator_field>::begin() const {
+IteratorConst<Element> SortedVector<Element, locator_field>::begin() const {
     return v.begin();
 }
 
 template<class Element, ClassField<Element, Locator> locator_field>
-Iterator<Element> SortedVector<Element, locator_field>::end() const {
+IteratorConst<Element> SortedVector<Element, locator_field>::end() const {
     return v.end();
 }
 

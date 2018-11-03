@@ -13,6 +13,9 @@ typedef unsigned int KeyType;
 template<class Element>
 using Iterator = typename std::vector<Element*>::iterator;
 
+template<class Element>
+using IteratorConst = typename std::vector<Element*>::const_iterator;
+
 struct Bucket {
     KeyType key;
     unsigned int boundary;
@@ -68,9 +71,9 @@ public:
 
     unsigned int size() const;
 
-    Iterator<Element> begin() const;
+    IteratorConst<Element> begin() const;
 
-    Iterator<Element> end() const;
+    IteratorConst<Element> end() const;
 
     Iterator<Element> begin();
 
