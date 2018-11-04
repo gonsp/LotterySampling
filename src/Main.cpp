@@ -14,35 +14,36 @@
 
 using namespace std;
 
+template<class T>
+GenericAlgorithmInterface<T>* create_algorithm_instance(const InputParser& params) {
+    if(!params.has_parameter("-a") || params.get_parameter("-a") == "lottery_sampling") {
+        return new LotterySampling::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "space_saving") {
+        return new SpaceSaving::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "lottery_sampling_original") {
+        return new LotterySamplingOriginal::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "lottery_sampling_parallel") {
+        return new LotterySamplingParallel::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "lottery_cache_sampling") {
+        return new LotteryCacheSampling::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "lottery_space_saving") {
+        return new LotterySpaceSaving::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "frequent") {
+        return new Frequent::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "count_sketch") {
+        return new CountSketch::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "count_min") {
+        return new CountSketch::Algorithm<T>(params, true);
+    } else {
+        params.error();
+    }
+}
+
 int main(int num_args, char* args[]) {
 
     InputParser params(num_args, args);
 
-    typedef long long int id_t;
-//    typedef string id_t;
-
-    GenericAlgorithmInterface<id_t>* algorithm;
-    if(!params.has_parameter("-a") || params.get_parameter("-a") == "lottery_sampling") {
-        algorithm = new LotterySampling::Algorithm<id_t>(params);
-    } else if(params.get_parameter("-a") == "space_saving") {
-        algorithm = new SpaceSaving::Algorithm<id_t>(params);
-    } else if(params.get_parameter("-a") == "lottery_sampling_original") {
-        algorithm = new LotterySamplingOriginal::Algorithm<id_t>(params);
-    } else if(params.get_parameter("-a") == "lottery_sampling_parallel") {
-        algorithm = new LotterySamplingParallel::Algorithm<id_t>(params);
-    } else if(params.get_parameter("-a") == "lottery_cache_sampling") {
-        algorithm = new LotteryCacheSampling::Algorithm<id_t>(params);
-    } else if(params.get_parameter("-a") == "lottery_space_saving") {
-        algorithm = new LotterySpaceSaving::Algorithm<id_t>(params);
-    } else if(params.get_parameter("-a") == "frequent") {
-        algorithm = new Frequent::Algorithm<id_t>(params);
-    } else if(params.get_parameter("-a") == "count_sketch") {
-        algorithm = new CountSketch::Algorithm<id_t>(params);
-    } else if(params.get_parameter("-a") == "count_min") {
-        algorithm = new CountSketch::Algorithm<id_t>(params, true);
-    } else {
-        params.error();
-    }
+    GenericAlgorithmInterface<int>* algorithm = create_algorithm_instance<int>(params);
 
     Stats stats;
     string s;
@@ -69,8 +70,8 @@ int main(int num_args, char* args[]) {
             algorithm->print_state();
             cout << ":end" << endl;
         } else { // It's a new element in the data stream
-            id_t element = stoll(s);
-//            id_t element = s;
+            int element = stoll(s);
+//          string element = s;
             stats.start_counting(stats.process_element_count);
             algorithm->process_element(element);
             stats.finish_counting(stats.process_element_time);
