@@ -48,7 +48,7 @@ struct Element {
         return this->ticket < element.ticket;
     }
 
-    TicketOrderLocator ticket_order_locator;
+    TicketOrderLocator ticket_order_locator = -1;
     int level;
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;

@@ -36,6 +36,7 @@ GenericAlgorithmInterface<T>* create_algorithm_instance(const InputParser& param
         return new CountSketch::Algorithm<T>(params, true);
     } else {
         params.error();
+        return nullptr;
     }
 }
 

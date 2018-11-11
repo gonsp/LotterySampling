@@ -43,9 +43,11 @@ public:
 
     Element* pop_and_push(Element* element);
 
-    void replace_element(Element* replaced_element, Element* element);
+    void pop_and_push(Element* replaced_element, Element* element);
 
     void remove_element(Element* element);
+
+    bool is_inside(Element* element) const;
 
     void key_updated(Element* element);
 

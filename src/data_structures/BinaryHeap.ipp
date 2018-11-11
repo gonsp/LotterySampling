@@ -38,6 +38,7 @@ Element* BinaryHeap<Element, comparator_func, locator_field>::pop(Locator locato
         v.pop_back();
         key_updated(locator); // To regain the heap property
     }
+    element->*locator_field = -1;
     return element;
 }
 
@@ -55,12 +56,18 @@ Element* BinaryHeap<Element, comparator_func, locator_field>::pop_and_push(Eleme
 }
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator> locator_field>
-void BinaryHeap<Element, comparator_func, locator_field>::replace_element(
+void BinaryHeap<Element, comparator_func, locator_field>::pop_and_push(
         Element* replaced_element, Element* element) {
     v[replaced_element->*locator_field] = element;
     element->*locator_field = replaced_element->*locator_field;
+    replaced_element->*locator_field = -1;
     key_updated(element);
 }
+
+template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator> locator_field>
+bool BinaryHeap<Element, comparator_func, locator_field>::is_inside(Element* element) const {
+    return element->*locator_field != -1;
+};
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator> locator_field>
 void BinaryHeap<Element, comparator_func, locator_field>::key_updated(Element* element) {

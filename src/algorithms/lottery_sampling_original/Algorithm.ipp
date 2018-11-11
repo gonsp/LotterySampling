@@ -120,7 +120,7 @@ void Algorithm<T>::print_level(TicketOrder<Element<T>>& level) {
     while(!s.empty()) {
         Element<T>* element = s.top();
         s.pop();
-        cout << element->id << ", " << element->ticket << ", " << element->get_count() << ", " << element->over_estimation << endl;
+        cout << element->id << ", " << TicketUtils::normalize_ticket(element->ticket) << ", " << element->get_count() << ", " << element->over_estimation << endl;
     }
 }
 
@@ -135,7 +135,7 @@ void Algorithm<T>::print_state() {
     cout << "-----------------------" << endl;
     cout << "%%%%%% frequency_order %%%%%%" << endl;
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
-        cout << (*it)->id << ", " << (*it)->ticket << ", " << (*it)->get_count() << ", " << (*it)->over_estimation << endl;
+        cout << (*it)->id << ", " << TicketUtils::normalize_ticket((*it)->ticket) << ", " << (*it)->get_count() << ", " << (*it)->over_estimation << endl;
     }
     assert(level_1.size() + level_2.size() == this->sample_size());
     assert(frequency_order.size() == this->sample_size());

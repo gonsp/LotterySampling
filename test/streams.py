@@ -101,13 +101,13 @@ class Uniform(Stream):
 
 class Unequal(Stream):
 
-    def __init__(self, N_total, alpha=100, beta=100, N=1000000, seed=None, save=True):
+    def __init__(self, N_total, alpha=100, beta=100, seed=None, save=True):
         super().__init__(N_total, save)
-        self.data = np.zeros(N, dtype=int)
+        self.data = np.zeros(N_total, dtype=int)
         for i in range(alpha):
             for j in range(beta):
                 self.data[i*beta + j] = i
-        for i in range(alpha * beta, N):
+        for i in range(alpha * beta, N_total):
             self.data[i] = i - alpha * (beta - 1)
         np.random.seed(seed)
         self.data = np.random.permutation(self.data)

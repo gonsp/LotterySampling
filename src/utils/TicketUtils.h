@@ -14,7 +14,7 @@ private:
 
 public:
 
-    static const Ticket MAX_TICKET = std::numeric_limits<int>::max();
+    static const Ticket MAX_TICKET = std::numeric_limits<Ticket>::max();
 
     TicketUtils() {}
 

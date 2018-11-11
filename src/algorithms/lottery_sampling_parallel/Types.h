@@ -41,7 +41,7 @@ struct Element {
             return this->ticket < element_instance.ticket;
         }
 
-        TicketOrderLocator ticket_order_locator;
+        TicketOrderLocator ticket_order_locator = -1;
     };
 
     T id;

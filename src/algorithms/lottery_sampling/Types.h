@@ -46,7 +46,7 @@ struct Element {
     }
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;
-    TicketOrderLocator ticket_order_locator;
+    TicketOrderLocator ticket_order_locator = -1;
 };
 
 
