@@ -4,7 +4,6 @@
 #include <chrono>
 #include <ostream>
 #include <algorithms/GenericAlgorithm.h>
-#include <malloc/malloc.h>
 
 
 class Stats {

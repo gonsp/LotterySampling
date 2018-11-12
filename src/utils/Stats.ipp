@@ -28,13 +28,21 @@ void Stats::finish_counting(counter& counter) {
     counter += get_interval(start_time);
 }
 
+#if __APPLE__
+#include <malloc/malloc.h>
+#endif
+
 template<class T>
 void Stats::report(std::ostream& stream, GenericAlgorithmInterface<T>* algorithm) {
     // Python string format to build a dictionary
     stream << "{";
     stream << "'sample_size' : " << algorithm->sample_size() << ",";
     stream << "'threshold' : " << algorithm->get_threshold() << ",";
+#if __APPLE__
     stream << "'memory_usage' : " << mstats().bytes_used << ",";
+#else
+    stream << "'memory_usage' : " << -1 << ",";
+#endif
     stream << "'total_time' : " << get_interval(initial_time) << ",";
     stream << "'process_element_time' : " << process_element_time << ",";
     stream << "'process_element_count' : " << process_element_count << ",";
