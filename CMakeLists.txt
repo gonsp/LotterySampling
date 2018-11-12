@@ -10,8 +10,10 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
 
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O3")
-set(CMAKE_CXX_FLAGS_RELEASEWITHASSERTS "-Wall -O3")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")
+
+#set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O3")
+#set(CMAKE_CXX_FLAGS_RELEASEWITHASSERTS "-Wall -O3")
 
 
 ###################################################
@@ -23,8 +25,8 @@ set(SOURCE_FILES
         src/utils/Stats.h
         src/utils/Stats.ipp
         src/utils/Misc.h
-        src/Utils/TicketUtils.h
-        src/Utils/TicketUtils.cpp
+        src/utils/TicketUtils.h
+        src/utils/TicketUtils.cpp
         src/algorithms/GenericAlgorithm.h
         src/algorithms/GenericAlgorithm.ipp
         src/algorithms/lottery_sampling/Algorithm.h

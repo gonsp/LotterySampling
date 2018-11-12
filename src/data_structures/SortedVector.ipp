@@ -1,5 +1,5 @@
 #include "data_structures/SortedVector.h"
-
+#include <assert.h>
 
 namespace SortedVector {
 

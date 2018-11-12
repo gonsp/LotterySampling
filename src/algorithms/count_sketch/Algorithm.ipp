@@ -1,5 +1,6 @@
 #include "algorithms/count_sketch/Algorithm.h"
 #include <iostream>
+#include <algorithm>
 
 namespace CountSketch {
 

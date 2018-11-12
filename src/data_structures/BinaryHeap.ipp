@@ -1,5 +1,5 @@
 #include "data_structures/BinaryHeap.h"
-
+#include <assert.h>
 
 namespace BinaryHeap {
 

@@ -1,5 +1,5 @@
 #include "data_structures/SortedList.h"
-
+#include <assert.h>
 
 namespace SortedList {
 
