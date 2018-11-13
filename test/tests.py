@@ -42,17 +42,17 @@ class Test:
             # (old_version,    '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (old_version,    '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed)),
 
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -h 1 -seed ' + str(seed)),
-            # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -h 1 -seed ' + str(seed)),
-            # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -h 100 -seed ' + str(seed))
+            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
+            # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
             (self.exec_path, '-a space_saving -m ' + str(m)),
-            (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
+            # (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
             # (self.exec_path, '-a frequent -m ' + str(m)),
             # (self.exec_path, '-a count_sketch -m ' + str(m) + ' -h 20'),
-            (self.exec_path, '-a count_min -m ' + str(m) + ' -h 20')
+            (self.exec_path, '-a count_min -m ' + str(m) + ' -h 100'),
             # (self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
-            # (self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed))
+            # (self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed)),
+            # (self.exec_path, '-a lottery_sampling_parallel -m ' + str(m) + ' -h 100 -seed ' + str(seed)),
         ]
         return [Instance(instance[0], instance[1], profile=profile) for instance in instances]
 
@@ -213,7 +213,7 @@ class TestAsymptotic(Test):
                 with open(filename + '.tmp', 'r') as csv:
                     with open(filename + '.csv', 'w') as file:
                         instance_names = [instance.name for instance in self.instances]
-                        file.write(',' + ','.join(instance_names) + '\n')
+                        file.write('X,' + ','.join(instance_names) + '\n')
                         for i, line in enumerate(csv):
                             file.write(str(self.X[i]) + ',' + line)
                 os.remove(filename + '.tmp')
