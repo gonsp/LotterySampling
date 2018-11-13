@@ -6,6 +6,7 @@ import argparse
 from abc import abstractmethod, ABCMeta
 import matplotlib.pyplot as plt
 import numpy as np
+from datetime import datetime
 
 import streams
 import metrics
@@ -174,6 +175,13 @@ class TestAsymptotic(Test):
             if self.params.iterations is not None:
                 self.get_metrics(iteration)
 
+        self.X = np.array(self.X)
+        self.Y_left = np.array(self.Y_left)
+        self.Y_right = np.array(self.Y_right)
+
+        self.test_name = self.test_command + ', ' + self.stream.get_name()
+
+        self.store_results()
         self.plot_results()
 
 
@@ -193,11 +201,25 @@ class TestAsymptotic(Test):
         self.Y_right.append(Y_right_results)
 
 
-    def plot_results(self):
-        X = np.array(self.X)
-        Y_left = np.array(self.Y_left)
-        Y_right = np.array(self.Y_right)
+    def store_results(self):
+        print('Storing results')
+        if not os.path.exists('results'):
+            os.makedirs('results')
+        time_preffix = datetime.now().strftime('%Y-%m-%d-%H:%M')
+        for Y, metrics in [(self.Y_left, self.metrics_left), (self.Y_right, self.metrics_right)]:
+            for metric_index, metric in enumerate(metrics):
+                filename = 'results/' + time_preffix + '-' + self.test_name + '-' + metric
+                np.savetxt(filename + '.tmp', Y[:, :, metric_index], delimiter=',')
+                with open(filename + '.tmp', 'r') as csv:
+                    with open(filename + '.csv', 'w') as file:
+                        instance_names = [instance.name for instance in self.instances]
+                        file.write(',' + ','.join(instance_names) + '\n')
+                        for i, line in enumerate(csv):
+                            file.write(str(self.X[i]) + ',' + line)
+                os.remove(filename + '.tmp')
 
+
+    def plot_results(self):
         print('Showing results')
         _, axes_left = plt.subplots()
         axes_right = axes_left.twinx()
@@ -215,12 +237,12 @@ class TestAsymptotic(Test):
                 return '--'
         ##################################################
 
-        for Y, metrics, axes in [(Y_left, self.metrics_left, axes_left), (Y_right, self.metrics_right, axes_right)]:
+        for Y, metrics, axes in [(self.Y_left, self.metrics_left, axes_left), (self.Y_right, self.metrics_right, axes_right)]:
             for metric_index, metric in enumerate(metrics):
                 axes.set_prop_cycle(None)
                 for i, instance in enumerate(self.instances):
                     line_format = get_line_format(axes, metric_index)
-                    axes.plot(X, Y[:, i, metric_index], line_format, label=metrics[metric_index] + ' ' + instance.name)
+                    axes.plot(self.X, Y[:, i, metric_index], line_format, label=metrics[metric_index] + ' ' + instance.name)
 
         box = axes_left.get_position()
         axes_left.set_position([box.x0, box.y0, box.width, box.height * 0.9])
@@ -235,7 +257,7 @@ class TestAsymptotic(Test):
         axes_right.set_ylabel(self.y_right_label)
 
         self.full_screen_plot()
-        plt.title(self.test_command + ', ' + self.stream.get_name())
+        plt.title(self.test_name)
         plt.show()
         # self.stream.show()
 

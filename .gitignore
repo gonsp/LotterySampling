@@ -51,3 +51,6 @@ __pycache__/
 # Valgrind
 massif.out.*
 callgrind.out.*
+
+# Test output
+test/results
