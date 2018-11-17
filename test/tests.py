@@ -411,7 +411,8 @@ class TestAsymptoticAccuracy(TestAsymptotic):
         else:
             self.alpha = 1.0 + iteration * 0.00001
 
-        self.stream = streams.Zipf(N, self.alpha, self.generate_seed(), save=True)
+        self.stream = streams.File(N, 'real_streams/stream_M', seed=self.generate_seed())
+        # self.stream = streams.Zipf(N, self.alpha, self.generate_seed(), save=True)
         # self.stream = streams.Uniform(N, 3*self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
         # self.stream = streams.Unequal(N, alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=True)
         # self.stream = streams.MultiZipf(N, [1.00001, 1.0001, 1.00002, 1.00001], seed=self.generate_seed(), save=True)

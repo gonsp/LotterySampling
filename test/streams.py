@@ -136,3 +136,27 @@ class MultiZipf(Stream):
         element = str(int(element) + 1000000 * (i + 1))
         super()._next_element(element)
         return element
+
+
+class File(Stream):
+
+    def __init__(self, N_total, file_path, shuffle=True, repetitions=1, seed=None):
+        self.data = []
+        with open(file_path, 'r') as file:
+            for line in file:
+                element = line[:-1]
+                self.data.append(element)
+        self.data *= repetitions
+        if shuffle:
+            np.random.seed(seed)
+            self.data = np.random.permutation(self.data)
+        if N_total == -1 or N_total > len(self.data):
+            N_total = len(self.data)
+        super().__init__(N_total, True)
+        self.name = file_path.split('/')[-1] + ',shuffle=' + str(shuffle) + ',repetitions=' + str(repetitions) + ',N=' + str(N_total)
+
+
+    def next_element(self):
+        element = self.data[self.N]
+        super()._next_element(element)
+        return element

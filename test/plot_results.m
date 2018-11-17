@@ -1,7 +1,7 @@
 % clear all
 % close all
 
-results = dir('../test/compare/*.csv');
+results = dir('../test/results/*.csv');
 
 
 first = true;
