@@ -42,14 +42,14 @@ class Test:
             # (old_version,    '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (old_version,    '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed)),
 
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
+            (self.exec_path, '-a lottery_sampling -m ' + str(110) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
-            (self.exec_path, '-a space_saving -m ' + str(m)),
+            (self.exec_path, '-a space_saving -m ' + str(1000)),
             # (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
             # (self.exec_path, '-a frequent -m ' + str(m)),
-            # (self.exec_path, '-a count_sketch -m ' + str(m) + ' -h 20'),
-            (self.exec_path, '-a count_min -m ' + str(m) + ' -h 100'),
+            (self.exec_path, '-a count_sketch -m ' + str(100) + ' -q 120 -h 120'),
+            (self.exec_path, '-a count_min -m ' + str(100) + ' -q 120 -h 120'),
             # (self.exec_path, '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_parallel -m ' + str(m) + ' -h 100 -seed ' + str(seed)),
@@ -168,16 +168,14 @@ class TestAsymptotic(Test):
                 element = self.stream.next_element()
                 for instance in self.instances:
                     instance.process_element(str(element))
-                if self.params.iterations is None and i % (self.stream.N_total // 100) == 0:
+                if i % (self.stream.N_total // 100) == 0:
                     print(i * 100 / self.stream.N_total, '%')
-                    self.get_metrics(i)
+                    if self.params.iterations is None:
+                        self.get_metrics(i)
 
             if self.params.iterations is not None:
                 self.get_metrics(iteration)
 
-        self.X = np.array(self.X)
-        self.Y_left = np.array(self.Y_left)
-        self.Y_right = np.array(self.Y_right)
 
         self.test_name = self.test_command + ', ' + self.stream.get_name()
 
@@ -202,24 +200,32 @@ class TestAsymptotic(Test):
 
 
     def store_results(self):
+        X = np.array(self.X)
+        Y_left = np.array(self.Y_left)
+        Y_right = np.array(self.Y_right)
+
         print('Storing results')
         if not os.path.exists('results'):
             os.makedirs('results')
-        time_preffix = datetime.now().strftime('%Y-%m-%d-%H:%M')
-        for Y, metrics in [(self.Y_left, self.metrics_left), (self.Y_right, self.metrics_right)]:
+        time_preffix = datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+        for Y, metrics in [(Y_left, self.metrics_left), (Y_right, self.metrics_right)]:
             for metric_index, metric in enumerate(metrics):
-                filename = 'results/' + time_preffix + '-' + self.test_name + '-' + metric
+                filename = 'results/' + time_preffix + '-' + metric + '-' + self.test_name
                 np.savetxt(filename + '.tmp', Y[:, :, metric_index], delimiter=',')
                 with open(filename + '.tmp', 'r') as csv:
                     with open(filename + '.csv', 'w') as file:
-                        instance_names = [instance.name for instance in self.instances]
+                        instance_names = ['xxx_' + instance.algorithm + '_xxx-' + instance.name for instance in self.instances]
                         file.write('X,' + ','.join(instance_names) + '\n')
                         for i, line in enumerate(csv):
-                            file.write(str(self.X[i]) + ',' + line)
+                            file.write(str(X[i]) + ',' + line)
                 os.remove(filename + '.tmp')
 
 
     def plot_results(self):
+        X = np.array(self.X)
+        Y_left = np.array(self.Y_left)
+        Y_right = np.array(self.Y_right)
+
         print('Showing results')
         _, axes_left = plt.subplots()
         axes_right = axes_left.twinx()
@@ -237,12 +243,12 @@ class TestAsymptotic(Test):
                 return '--'
         ##################################################
 
-        for Y, metrics, axes in [(self.Y_left, self.metrics_left, axes_left), (self.Y_right, self.metrics_right, axes_right)]:
+        for Y, metrics, axes in [(Y_left, self.metrics_left, axes_left), (Y_right, self.metrics_right, axes_right)]:
             for metric_index, metric in enumerate(metrics):
                 axes.set_prop_cycle(None)
                 for i, instance in enumerate(self.instances):
                     line_format = get_line_format(axes, metric_index)
-                    axes.plot(self.X, Y[:, i, metric_index], line_format, label=metrics[metric_index] + ' ' + instance.name)
+                    axes.plot(X, Y[:, i, metric_index], line_format, label=metrics[metric_index] + ' ' + instance.name)
 
         box = axes_left.get_position()
         axes_left.set_position([box.x0, box.y0, box.width, box.height * 0.9])
@@ -381,7 +387,7 @@ class TestAsymptoticAccuracy(TestAsymptotic):
     
     def __init__(self):
         extra_args = [('k', False), ('freq', False), ('iterating_over', False)]
-        super().__init__(extra_args=extra_args, metrics_left=['recall', 'precision'], metrics_right=['threshold'], y_left_label='Accuracy', y_right_label='Threshold')
+        super().__init__(extra_args=extra_args, metrics_left=['recall', 'precision'], metrics_right=['memory', 'error'], y_left_label='Accuracy', y_right_label='Miscellaneous')
         if self.params.iterating_over is None:
             self.params.iterating_over = 'm'
         elif self.params.iterating_over == 'alpha':
@@ -403,7 +409,8 @@ class TestAsymptoticAccuracy(TestAsymptotic):
             self.m = iteration * self.m
             self.alpha = 1.00001
         else:
-            self.alpha = 1.0 + iteration * 0.001
+            self.alpha = 1.0 + iteration * 0.00001
+
         self.stream = streams.Zipf(N, self.alpha, self.generate_seed(), save=True)
         # self.stream = streams.Uniform(N, 3*self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
         # self.stream = streams.Unequal(N, alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=True)
@@ -426,7 +433,8 @@ class TestAsymptoticAccuracy(TestAsymptotic):
 
 
     def get_metrics_right(self, instance):
-        return [instance.get_stats()['threshold']]
+        return [instance.get_stats()['memory_usage'], metrics.get_squared_error(instance, self.stream, self.query_name, self.query_param)]
+        # return [instance.get_stats()['threshold']]
         # return [metrics.get_squared_error(instance, self.stream, self.query_name, self.query_param)]
 
 
