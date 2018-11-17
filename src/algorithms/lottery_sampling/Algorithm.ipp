@@ -40,7 +40,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 
     if(this->sample_size() < m) {
         frequency_order.insert_element(&element);
-        element.over_estimation = 0;
+//        element.over_estimation = 0;
         if(this->sample_size() < k) {
             ticket_order.push(&element);
         } else if(element.ticket > ticket_order.top()->ticket) {
@@ -60,7 +60,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         }
         this->remove_element(removed_element->id);
 
-        element.over_estimation = element.get_count();
+//        element.over_estimation = element.get_count();
         frequency_order.increment_key(&element);
     }
     return true;

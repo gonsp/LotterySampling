@@ -25,7 +25,7 @@ struct Element {
 
     T id;
     Ticket ticket;
-    unsigned int over_estimation;
+//    unsigned int over_estimation;
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;
 

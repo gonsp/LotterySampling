@@ -32,7 +32,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 
     if(this->sample_size() < m) {
         frequency_order.insert_element(&element);
-        element.over_estimation = 0;
+//        element.over_estimation = 0;
     } else { // Max number of monitored elements is reached. This new one may replace the one with less hits
         Element<T>* removed_element = *prev(frequency_order.end());
         bool is_inserted = element.ticket >= removed_element->ticket || element.ticket >= mean_ticket;
@@ -41,7 +41,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
             TicketUtils::decremental_averaging(mean_ticket, removed_element->ticket, this->sample_size());
             this->remove_element(removed_element->id);
 
-            element.over_estimation = element.get_count();
+//            element.over_estimation = element.get_count();
             frequency_order.increment_key(&element);
         } else {
             return false;
@@ -71,7 +71,7 @@ template<class T>
 void Algorithm<T>::print_state() {
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         Element<T>* element = *it;
-        cout << element->id << ", " << element->get_count() << ", " << element->over_estimation << endl;
+        cout << element->id << ", " << element->get_count() << ", " << endl; // << element->over_estimation << endl;
     }
     assert(frequency_order.size() == this->sample_size());
 }

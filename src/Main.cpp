@@ -44,7 +44,7 @@ int main(int num_args, char* args[]) {
 
     InputParser params(num_args, args);
 
-    GenericAlgorithmInterface<int>* algorithm = create_algorithm_instance<int>(params);
+    GenericAlgorithmInterface<long long int>* algorithm = create_algorithm_instance<long long int>(params);
 
     Stats stats;
     string s;
@@ -71,7 +71,7 @@ int main(int num_args, char* args[]) {
             algorithm->print_state();
             cout << ":end" << endl;
         } else { // It's a new element in the data stream
-            int element = stoll(s);
+            long long int element = stoll(s);
 //          string element = s;
             stats.start_counting(stats.process_element_count);
             algorithm->process_element(element);
