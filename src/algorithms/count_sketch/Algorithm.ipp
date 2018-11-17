@@ -12,12 +12,13 @@ Algorithm<T>::Algorithm(const InputParser& parameters, bool count_min) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
     this->set_monitored_size(m);
     h = (unsigned int) stoul(parameters.get_parameter("-h"));
+    q = (unsigned int) stoul(parameters.get_parameter("-q"));
     if(h % 2 == 1) {
         cerr << "h needs to be even" << endl;
         exit(1);
     }
     this->count_min = count_min;
-    counters = Counters(h, vector<int>(m, 0));
+    counters = Counters(h, vector<int>(q, 0));
 }
 
 template<class T>
@@ -30,7 +31,7 @@ int Algorithm<T>::update_count(Element<T>& element) {
     vector<int> element_counters = vector<int>(h);
     size_t id_hash = element_hasher(element.id);
     for(int i = 0; i < h; ++i) {
-        unsigned int index = hash_hasher(id_hash + i) % m;
+        unsigned int index = hash_hasher(id_hash + i) % q;
         int increment;
         if(count_min) {
             increment = 1;
@@ -41,10 +42,10 @@ int Algorithm<T>::update_count(Element<T>& element) {
         element_counters[i] = counters[i][index];
     }
     if(count_min) {
+        return *std::min_element(element_counters.begin(), element_counters.end());
+    } else {
         std::nth_element(element_counters.begin(), element_counters.begin() + h/2, element_counters.end());
         return element_counters[h/2];
-    } else {
-        return *std::min_element(element_counters.begin(), element_counters.end());
     }
 }
 
@@ -81,7 +82,7 @@ void Algorithm<T>::print_state() {
     }
     assert(frequency_order.size() == this->sample_size());
     for(int i = 0; i < h; ++i) {
-        for(int j = 0; j < m; ++j) {
+        for(int j = 0; j < q; ++j) {
             cout << counters[i][j] << ", ";
         }
         cout << endl;

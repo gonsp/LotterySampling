@@ -17,6 +17,7 @@ private:
     FrequencyOrder<Element<T>> frequency_order;
     unsigned int m;
     unsigned int h;
+    unsigned int q;
     Counters counters;
     Hasher<T> element_hasher;
     Hasher<size_t> hash_hasher;
