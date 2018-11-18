@@ -515,13 +515,13 @@ impact in $R$ if the algorithm missed less frequent elements
 (albeit among the most frequent). The same is true for $R'$.
 
 Another measure is \emph{(weighted) precision}, which gives us an indication
-of the quality of the reported elements:
+of the quality of the sampled elements:
 \[
-P = \frac{p_1 Y_1+\cdots+p_n Y_n}{p_1+\cdots+p_k}
+P = \frac{p_1 Y_1+\cdots+p_n Y_n}{p_1+\cdots+p_m}
 \]
-The numerator sums the weights of all reported elements; since exactly
-$k$ elements are reported $0 < P\le 1$. The proxy $P'$ for $P$
-needs a different ``normalizing'' denominator:
+The numerator sums the weights of all sampled elements. The algorithms
+report always $k$ elements, but this measure will reward using a small memory.
+The proxy $P'$ for $P$ uses $Y'_i$'s instead of $Y_i$:
 \[
 P' = \frac{p_1 Y'_1+\cdots+p_n Y'_n}{p_1+\cdots+p_m}
 \]
@@ -540,8 +540,43 @@ and the approximations (actually, upper bounds)
   P'_u &= \frac{Y'_1+\ldots+Y'_k}{m}.
 \end{align*}
 
-Besides the measures of ``recall'' and ``precision'' we also consider
-measures for the quality of the estimated frequencies.
+\begin{comment}
+  Estas definiciones todavía podrían estar sujetas a algunos
+  cambios. Hay que experimentar con ellas. Y las que no funcionen las
+  vamos a descartar.  Para la implementación, aunque no es muy
+  eficiente, supongo que se puede proceder del siguiente modo: 1) se
+  recolectan \textbf{todos} los elementos distintos del stream y sus
+  frecuencias reales; 2) se ordenan por frecuencia decreciente,
+  obteniéndose de este modo el rango de cada elemento; 3) se almacenan
+  los elementos, junto con su frecuencia y su rango, en una estructura
+  de datos alternativa, tipo tabla de hash o \emph{map}, de manera que
+  obtener $p(z)=f(z)/N$ o $\text{rank}(z)$ sea eficiente dado $z$.
+  Por otro lado la tabla ordenada por frecuencia decreciente obtenida
+  en el paso (2) nos da eficientemente $p_i$ o $x_i$ dado el rango
+  $i$.
+\end{comment}
+
+We now consider several metrics which
+measure the quality of the reported solutions, both
+in terms of the ``relevance'' and of the order. According to our conventions
+the $k$ top most frequents elements are $x_1$, \ldots, $x_k$. Let
+$\text{rank}(x)$ be the number of elements with frequency smaller or equal to
+the frequency of $x$. Hence\footnote{Assuming all frequencies
+  are distinct, for simplicity.}, $\text{rank}(x_i)=i$.
+Let $y_i$ be the element reported by the algorithm as $i$-th most frequent
+(ideally, $y_i = x_i$, but in general $\texttt{rank}(y_i)\not= i$).
+Then we have the following definitions
+\begin{align}
+  e &= \sum_{1\le i\le k} p_i \text{rank}(y_i)
+  e' &= \sum_{1\le i\le k} p_i (1-p_{\text{rank}(y_i)})
+  IC_u &= \sum_{1\le i\le k} (\text{rank}(y_i)-i)^2
+  IC &= \sum_{1\le i\le k} p_i (\text{rank}(y_i)-i)^2
+\end{align}
+
+
+
+Finally we consider
+metrics which measure the quality of the estimated frequencies.
 
 Error type I $\epsilon_1$ measures the deviation of the estimated
 frequencies for the frequent elements:
