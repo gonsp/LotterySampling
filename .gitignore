@@ -55,4 +55,5 @@ callgrind.out.*
 # Test output
 test/results
 test/real_streams
+test/synthetic_streams
 *.csv

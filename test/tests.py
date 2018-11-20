@@ -207,10 +207,10 @@ class TestAsymptotic(Test):
         print('Storing results')
         if not os.path.exists('results'):
             os.makedirs('results')
-        time_preffix = datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+        time_prefix = datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
         for Y, metrics in [(Y_left, self.metrics_left), (Y_right, self.metrics_right)]:
             for metric_index, metric in enumerate(metrics):
-                filename = 'results/' + time_preffix + '-' + metric + '-' + self.test_name
+                filename = 'results/' + time_prefix + '-' + metric + '-' + self.test_name
                 np.savetxt(filename + '.tmp', Y[:, :, metric_index], delimiter=',')
                 with open(filename + '.tmp', 'r') as csv:
                     with open(filename + '.csv', 'w') as file:
@@ -387,7 +387,7 @@ class TestAsymptoticAccuracy(TestAsymptotic):
     
     def __init__(self):
         extra_args = [('k', False), ('freq', False), ('iterating_over', False)]
-        super().__init__(extra_args=extra_args, metrics_left=['recall', 'precision'], metrics_right=['memory', 'error'], y_left_label='Accuracy', y_right_label='Miscellaneous')
+        super().__init__(extra_args=extra_args, metrics_left=['recall', 'precision'], metrics_right=['memory', 'squarederror', 'sortingerror'], y_left_label='Accuracy', y_right_label='Miscellaneous')
         if self.params.iterating_over is None:
             self.params.iterating_over = 'm'
         elif self.params.iterating_over == 'alpha':
@@ -434,29 +434,8 @@ class TestAsymptoticAccuracy(TestAsymptotic):
 
 
     def get_metrics_right(self, instance):
-        return [instance.get_stats()['memory_usage'], metrics.get_squared_error(instance, self.stream, self.query_name, self.query_param)]
+        return [instance.get_stats()['memory_usage'],
+                metrics.get_squared_error(instance, self.stream, self.query_name, self.query_param),
+                metrics.get_sorting_error(instance, self.stream, self.query_name, self.query_param)]
         # return [instance.get_stats()['threshold']]
         # return [metrics.get_squared_error(instance, self.stream, self.query_name, self.query_param)]
-
-
-class TestAsymptoticThreshold(TestAsymptotic):
-    # Test to inspect how the threshold evolves
-
-    def __init__(self):
-        super().__init__(metrics_left=[], metrics_right=['threshold'], y_left_label='void', y_right_label='Threshold')
-
-
-    def new_iteration(self, iteration):
-        N = int(self.params.N)
-        self.m = iteration * int(self.params.initial_m)
-        self.stream = streams.Zipf(N, 1.00001, self.generate_seed(), save=False)
-        # self.stream = streams.Uniform(N, 2*self.m, self.generate_seed(), save=False)  # In expectation there will be N/2 inserts and N/2 updates.
-        # self.stream = streams.Unequal(N, alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=False)
-        # self.stream = streams.MultiZipf(N, [1.0001, 1.0001, 1.0001, 1.0001, 1.5], seed=self.generate_seed(), save=False)
-
-
-    def get_metrics_left(self, instance):
-        return []
-
-    def get_metrics_right(self, instance):
-        return [instance.get_stats()['threshold']]

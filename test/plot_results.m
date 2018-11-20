@@ -1,5 +1,5 @@
-% clear all
-% close all
+clear all
+close all
 
 results = dir('../test/results/*.csv');
 
@@ -49,7 +49,6 @@ function [date, metric, data] = get_experiment_data(result)
 end
 
 function [name] = get_algorithm_name(column_name)
-    column_name{1}
     name = extractBetween(column_name{1}, 'xxx_', '_xxx');
     name = strrep(name, '_', ' ');
     name = regexprep(lower(name), '(\<[a-z])', '${upper($1)}');
