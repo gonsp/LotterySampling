@@ -140,7 +140,7 @@ Moreover, in both problems, we might want that the algorithm
 
 We will concentrate in algorithms for
 top $k$ most frequent elements. Notice that there can be at most
-$\lceil 1/c\rceil$ heavy hitters in a data stream, and thus an algorithm
+$\lfloor 1/c\rfloor$ heavy hitters in a data stream, and thus an algorithm
 that retrieves the top $k^\ast=\lfloor 1/c\rfloor$ most frequent elements will
 obtain all the heavy hitters.
 
@@ -475,26 +475,71 @@ the trivial situation when $m\ge n$. Hence we will assume in waht follows
 that $m\ll n$, and we would like that
 our algorithms return good approximations: elements that are
 the most frequent or close to that, and good estimations of their respective
-frequencies. 
-To measure the quality of the different algorithm
-we introduce several measures, in which
-two random variables will be essential:
+frequencies.
+Likewise, when the task at hand is to report heavy hitters, i.e., elements
+with relative frequency above a given threshold $c$, we might not report
+some heavy hitters (or even report non-heavy hitters as if they were;
+this might happen for algorithms working with overestimations
+of the real frequencies).
+
+In order to measure the quality of our algorithms and other contenders, we will
+introduce several metrics. The first two metrics which we will introduce
+are inspired by the very well known
+\emph{recall} and \emph{precision} from Information Retrieval (IR), and
+we will use the same names. These two metrics measure the quality of
+the answer to a query to an IR system. Some of the documents retrieved
+by the system will not be ``relevant'' to the user, whereas some
+of the relevant documents will not be retrieved. Then
+\begin{align*}
+\texttt{recall} &= \frac{\text{\# of retrieved relevant documents}}
+       {\text{\# of relevant documents}} \\
+\texttt{precision} &= \frac{\text{\# of retrieved relevant documents}}
+       {\text{\# of retrieved documents}}
+\end{align*}
+
+In what follows we discuss the metrics that we have used to measure the
+quality of the results of the algorithms introduced here and compare it
+with the quality of competitors such as SpaceSaving.
+The following random variables will be essential for our definitions below:
 \begin{enumerate}
-\item The indicator variable $Y'_i$ tells us whether $x_i$
-  has been sampled or not: $Y'_i=1$
-  if $x_i\in\mathcal{S}$ and $Y'_i=0$, otherwise. Notice that the $Y'_i$'s
-  are not independent and $Y'_1+\cdots+Y'_n=m$.
-\item Since $m\ge k$, the algorithm has to choose $k$ out of the $m$
-  elements to report them as the top $k$ most frequent elements.
-  Quite naturally, in all our algorithms the $k$ elements with largest
-  frequency counter will be the ones to be reported and their estimated
-  frequencies will be those collected by the algorithm. The indicator
-  variable $Y_i=1$ if $x_i$ is reported, $Y_i=0$ otherwise
-  (either because $x_i\not\in\mathcal{S}$ or because
-  $f(x_i)$ is not among the largest
-  $k$ values of $f$ in $\mathcal{S}$). Like the $Y'_i$'s, the $Y_i$'s
-  are not independent; and $Y_1+\cdots+Y_n=k$.
+\item The indicator random variables $Y_i$, $1\le i\le n$, telling us whether
+  $x_i$ is returned as a result or not, that is, $Y_i=1$ if $x_i$ is returned as
+  a result of the algorithm (as a potential top-$k$ most frequent or a
+  heavy hitter), and $y_i=0$ otherwise.
+\item For top-$k$ queries, $R_i$ will denote
+  the \emph{rank} of the element that
+  the algorithm reports as $i$-th most frequent. For any element $x$,
+  $\text{rank}(x)$ is efined as 1 plus the number of elements in the stream
+  with frequency strictly larger than $x$. Thus, if all frequencies
+  were distinct, $\text{rank}(x_i)=i$, for all $i$, $1\le i\le n$.
+  We also introduce
+  $\rho_i$, the actual relative frequency of the element reported as $i$-th
+  most frequent by the algorithm. Notice that $\rho_i = p_{R_i}$.
+\item For any element $x_i$, we denote $f'_i$ the estimated absolute frequency
+  of $x_i$ (by convention, w set $f'_i=0$ if $x_i$ is not in the sample).
+  Likewise, $p'_i=f'_i/N$ will denote the estimated relative
+  frequency of $x_i$.
 \end{enumerate}
+
+%% To measure the quality of the different algorithm
+%% we introduce several measures, in which
+%% two random variables will be essential:
+%% \begin{enumerate}
+%% \item The indicator variable $Y'_i$ tells us whether $x_i$
+%%   has been sampled or not: $Y'_i=1$
+%%   if $x_i\in\mathcal{S}$ and $Y'_i=0$, otherwise. Notice that the $Y'_i$'s
+%%   are not independent and $Y'_1+\cdots+Y'_n=m$.
+%% \item Since $m\ge k$, the algorithm has to choose $k$ out of the $m$
+%%   elements to report them as the top $k$ most frequent elements.
+%%   Quite naturally, in all our algorithms the $k$ elements with largest
+%%   frequency counter will be the ones to be reported and their estimated
+%%   frequencies will be those collected by the algorithm. The indicator
+%%   variable $Y_i=1$ if $x_i$ is reported, $Y_i=0$ otherwise
+%%   (either because $x_i\not\in\mathcal{S}$ or because
+%%   $f(x_i)$ is not among the largest
+%%   $k$ values of $f$ in $\mathcal{S}$). Like the $Y'_i$'s, the $Y_i$'s
+%%   are not independent; and $Y_1+\cdots+Y_n=k$.
+%% \end{enumerate}
 
 Our first measure, \emph{(weighted) recall}, measures the proportion of
 top frequent elements actually found by the algorithm:
