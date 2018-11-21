@@ -532,7 +532,8 @@ name serves):
 R_u = \frac{Y_1+Y_2+\cdots+Y_k}{k}.
 \]
 Indeed, the top-$k$ most frequent (relevant) elements are $x_1$, $x_2$,
-\ldots, $x_k$ and $Y_1+Y_2+\cdots+Y_k$ is the number of returned elements which are among the top-$k$ most frequent.
+\ldots, $x_k$ and $Y_1+Y_2+\cdots+Y_k$ is the number of
+returned elements which are among the top-$k$ most frequent.
 
 One drawback of this metric is that it penalizes in exactly the same amount the
 miss of $x_i$, $1\le i\le k$; however, it is reasonable that we consider as
@@ -544,6 +545,11 @@ R = \frac{p_1Y_1+\cdots+p_kY_k}{p_1+\cdots+p_k};
 \]
 our first metric $R_u$ will be called \emph{unweighted recall}.
 
+% R_u = P_u
+% R != P
+%
+% P = (p_1Y_1+...+p_kY_k)/(p_1Y_1+...+p_nY_n)
+%
 \bigskip
 
 In heavy hitter queries with threshold $c$, $0 < c < 1$,
@@ -553,7 +559,7 @@ number of relevant elements are different. The first is given by
 Y_1+\cdots+Y_n,
 \]
 whereas the second is $k^\ast$, the largest index such that $p_{k^\ast} \ge c$.
-Hence the recall metrics (unweighted and weighted) are
+The recall metrics (unweighted and weighted) are
 \begin{align*}
   R_u &= \frac{Y_1+\cdots+Y_{k^\ast}}{k^\ast} \\
   R   &= \frac{p_1Y_1+\cdots+p_{k^\ast}Y_{k^\ast}}{p_1+\cdots+p_{k^\ast}}
@@ -593,7 +599,13 @@ where $w\ge 0$ is the sum of the relative frequencies of the other $k'-k''$
 returned elements which are not heavy hitters. If $k'=k''$ then $w=0$
 and the precision is 1: all reported elements are heavy hitters. However, the
 recall $R$ might be less than 1 as some heavy hitters might have
-not been reported, i.e., $k''\not= k^\ast$.
+not been reported, i.e., $k''\not= k^\ast$. This also shows that
+this definition is somewhat problematic: if two algorithms report the same
+relevant elements ($v$ will be the same for both)
+but they also report irrelevant elemnts ($w > 0$)
+then the algorithm retrieving less relevant elemnts (smaller $w$)
+will get higher precision than the algorithm that retrieves more relevant
+elements---albeit they are not hevay hitters.
 
 We also remark here that in heavy hitter queries, since all relevant elements
 have relative frequency $\ge c$ by definition, there will be many
@@ -602,9 +614,20 @@ the weighted recall and weighted precision metrics might be of lesser interest
 in those cases.
 
 \subsection{Precision-like Metrics}
+From our discussion above about the weighted precision of heavy
+hitter queries, it follows that the natural generalization from unweighted
+to weighted precision renders a metric which is not matching well our
+intuition. We should assign more precision to an algorithm which retrieves
+the same relevant elements as another one, but the irrelevant elements are
+closer to be heavy hitters than in the other algorithm. On the other hand,
+the ``redefined weighted precision'' should enjoy the properties that we
+would expect from a useful metric: it is equal to 1 if all retrieved elements
+are relevant, it is equal to 0 if no relevant element is retrieved,its value
+is always between 0 and 1, etc.
+
 \begin{comment}
   La métrica que has venido denominando ``discrete precision'' es el
-  \emph{unweighted recall} explicado en el apartado anterior? En caso
+  \emph{unweighted recall} explicado en el apartado anterior, verdad? En caso
   contrario, qué otras métricas has usado en los estudios de top-$k$
   most frequent? Completar esta subsección o eliminarla, según proceda.
 \end{comment}
