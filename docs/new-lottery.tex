@@ -140,7 +140,7 @@ Moreover, in both problems, we might want that the algorithm
 
 We will concentrate in algorithms for
 top $k$ most frequent elements. Notice that there can be at most
-$\lceil 1/c\rceil$ heavy hitters in a data stream, and thus an algorithm
+$\lfloor 1/c\rfloor$ heavy hitters in a data stream, and thus an algorithm
 that retrieves the top $k^\ast=\lfloor 1/c\rfloor$ most frequent elements will
 obtain all the heavy hitters.
 
@@ -475,133 +475,226 @@ the trivial situation when $m\ge n$. Hence we will assume in waht follows
 that $m\ll n$, and we would like that
 our algorithms return good approximations: elements that are
 the most frequent or close to that, and good estimations of their respective
-frequencies. 
-To measure the quality of the different algorithm
-we introduce several measures, in which
-two random variables will be essential:
+frequencies.
+Likewise, when the task at hand is to report heavy hitters, i.e., elements
+with relative frequency above a given threshold $c$, we might not report
+some heavy hitters (or even report non-heavy hitters as if they were;
+this might happen for algorithms working with overestimations
+of the real frequencies).
+
+In order to measure the quality of our algorithms and other contenders, we will
+introduce several metrics. The first two metrics which we will introduce
+are inspired by the very well known
+\emph{recall} and \emph{precision} from Information Retrieval (IR), and
+we will use the same names. These two metrics measure the quality of
+the answer to a query to an IR system. Some of the documents retrieved
+by the system will not be ``relevant'' to the user, whereas some
+of the relevant documents will not be retrieved. Then
+\begin{align*}
+\texttt{recall} &= \frac{\text{\# of retrieved relevant documents}}
+       {\text{\# of relevant documents}} \\
+\texttt{precision} &= \frac{\text{\# of retrieved relevant documents}}
+       {\text{\# of retrieved documents}}
+\end{align*}
+
+In what follows we discuss the metrics that we have used to measure the
+quality of the results of the algorithms introduced here and compare it
+with the quality of competitors such as SpaceSaving.
+The following random variables will be essential for our definitions below:
 \begin{enumerate}
-\item The indicator variable $Y'_i$ tells us whether $x_i$
-  has been sampled or not: $Y'_i=1$
-  if $x_i\in\mathcal{S}$ and $Y'_i=0$, otherwise. Notice that the $Y'_i$'s
-  are not independent and $Y'_1+\cdots+Y'_n=m$.
-\item Since $m\ge k$, the algorithm has to choose $k$ out of the $m$
-  elements to report them as the top $k$ most frequent elements.
-  Quite naturally, in all our algorithms the $k$ elements with largest
-  frequency counter will be the ones to be reported and their estimated
-  frequencies will be those collected by the algorithm. The indicator
-  variable $Y_i=1$ if $x_i$ is reported, $Y_i=0$ otherwise
-  (either because $x_i\not\in\mathcal{S}$ or because
-  $f(x_i)$ is not among the largest
-  $k$ values of $f$ in $\mathcal{S}$). Like the $Y'_i$'s, the $Y_i$'s
-  are not independent; and $Y_1+\cdots+Y_n=k$.
+\item The indicator random variables $Y_i$, $1\le i\le n$, telling us whether
+  $x_i$ is returned as a result or not, that is, $Y_i=1$ if $x_i$ is returned as
+  a result of the algorithm (as a potential top-$k$ most frequent or a
+  heavy hitter), and $y_i=0$ otherwise.
+\item For top-$k$ queries, $R_i$ will denote
+  the \emph{rank} of the element that
+  the algorithm reports as $i$-th most frequent. For any element $x$,
+  $\text{rank}(x)$ is defined as 1 plus the number of elements in the stream
+  with frequency strictly larger than $x$. Thus, if all frequencies
+  were distinct, $\text{rank}(x_i)=i$, for all $i$, $1\le i\le n$.
+  We also introduce
+  $\rho_i$ and $F_i$, the actual relative and absolute frequency, respetively,
+  of the element reported as the $i$-th
+  most frequent by the algorithm. Notice that $\rho_i = p_{R_i}$, and
+  $F_i = f_{R_i}$.
+\item For any element $x_i$, we denote $f'_i$ the estimated absolute frequency
+  of $x_i$ (by convention, we set $f'_i=0$ if $x_i$ is not in the sample).
+  Likewise, $p'_i=f'_i/N$ will denote the estimated relative
+  frequency of $x_i$.
 \end{enumerate}
 
-Our first measure, \emph{(weighted) recall}, measures the proportion of
-top frequent elements actually found by the algorithm:
+\subsection{Recall \& Precision}
+In the case of top-$k$ queries, since the number of returned elements and
+the number of relevant elements are both equal to $k$, recall and precision
+are identical. We will hence only work with recall (or precision, whatever
+name serves):
 \[
-R = \frac{p_1 Y_1+\cdots+p_k Y_k}{p_1+\cdots+p_k}
+R_u = \frac{Y_1+Y_2+\cdots+Y_k}{k}.
 \]
-A proxy for $R$ is given by
-\[
-R' = \frac{p_1 Y'_1+\cdots+p_k Y'_k}{p_1+\cdots+p_k}, 
-\]
-which is always an upper boud for $R$, since $Y_i \le Y'_i$ for all $i$,
-$1\le i\le n$.
-Notice that, in all cases, $0\le R\le 1$: $R=0$ if no true frequent element
-is reported, and $R=1$ if exactly the top $k$ most frequent elements
-are reported. The weights $p_i$ will penalize more algorithms that miss
-the most frequent elements among the top frequent, and will lessen the
-impact in $R$ if the algorithm missed less frequent elements
-(albeit among the most frequent). The same is true for $R'$.
+Indeed, the top-$k$ most frequent (relevant) elements are $x_1$, $x_2$,
+\ldots, $x_k$ and $Y_1+Y_2+\cdots+Y_k$ is the number of
+returned elements which are among the top-$k$ most frequent.
 
-Another measure is \emph{(weighted) precision}, which gives us an indication
-of the quality of the sampled elements:
+One drawback of this metric is that it penalizes in exactly the same amount the
+miss of $x_i$, $1\le i\le k$; however, it is reasonable that we consider as
+a better algorithm one that misses $x_k$ (the $k$-th most frequent element)
+than one that missed $x_1$ (the most frequent element). Hence we introduce
+weighted recall:
 \[
-P = \frac{p_1 Y_1+\cdots+p_n Y_n}{p_1+\cdots+p_m}
+R = \frac{p_1Y_1+\cdots+p_kY_k}{p_1+\cdots+p_k};
 \]
-The numerator sums the weights of all sampled elements. The algorithms
-report always $k$ elements, but this measure will reward using a small memory.
-The proxy $P'$ for $P$ uses $Y'_i$'s instead of $Y_i$:
+our first metric $R_u$ will be called \emph{unweighted recall}.
+
+% R_u = P_u
+% R != P
+%
+% P = (p_1Y_1+...+p_kY_k)/(p_1Y_1+...+p_nY_n)
+%
+\bigskip
+
+In heavy hitter queries with threshold $c$, $0 < c < 1$,
+the number of returned elements and the
+number of relevant elements are different. The first is given by
 \[
-P' = \frac{p_1 Y'_1+\cdots+p_n Y'_n}{p_1+\cdots+p_m}
+Y_1+\cdots+Y_n,
+\]
+whereas the second is $k^\ast$, the largest index such that $p_{k^\ast} \ge c$.
+The recall metrics (unweighted and weighted) are
+\begin{align*}
+  R_u &= \frac{Y_1+\cdots+Y_{k^\ast}}{k^\ast} \\
+  R   &= \frac{p_1Y_1+\cdots+p_{k^\ast}Y_{k^\ast}}{p_1+\cdots+p_{k^\ast}}
+\end{align*}
+The (unweighted) precision is
+\[
+P_u = \frac{Y_1+\cdots+Y_{k^\ast}}{Y_1+\cdots+Y_n},
+\]
+and a weighted precision can also be introduced as
+\[
+P  = \frac{p_1Y_1+\cdots+p_kY_{k^\ast}}{p_1Y_1+\cdots+p_nY_n}.
 \]
 
-We can also use the ``ordinary'' measures of unweighted recall $R_u$ and
-unweighted precision $P_u$ used in most of the literatire (e.g. in the
-experimental study of SS \cite{}). In terms of our indicator random iables
-we have
-\begin{align*}
-  R_u &= \frac{Y_1+\ldots+Y_k}{k} \\
-  P_u &= \frac{Y_1+\ldots+Y_k}{m},
-\end{align*}
-and the approximations (actually, upper bounds)
-\begin{align*}
-  R'_u &= \frac{Y'_1+\ldots+Y'_k}{k} \\
-  P'_u &= \frac{Y'_1+\ldots+Y'_k}{m}.
-\end{align*}
+Notice that in all cases the metrics adopt values in $[0,1]$; lower
+values indicate poorer quality of the returned results, with relevant
+elements missing in the result and/or irrelevant elements (not among
+the top-$k$ most frequent, not heavy hitters) reported as
+``relevant''. Values near 1 correspond to very good approximations to
+the exact answer. Take for instance $P$. Since
+\[
+p_1Y_1+\cdots+p_kY_{k^\ast} \le p_1Y_1+\cdots+p_nY_n,
+\]
+it is clear that its value will be always $P\le 1$. If no heavy hitter
+were reported then $p_1Y_1+\cdots+p_kY_{k^\ast}=0$ and $P=0$. Suppose
+that some algorithm $A$ reports $k'$ elements, of which
+only $k''\le k^\ast$ are heavy hitters, say
+$x_{i_1}, \ldots,
+x_{i_{k''}}$, with $1\le i_1\le i_2\le i_{k''}\le k^\ast$. Then if 
+\[
+v = p_{i_|}+\cdots+p_{i_{k''}}
+\]
+we will have
+\[
+P = \frac{v}{v+w},
+\]
+where $w\ge 0$ is the sum of the relative frequencies of the other $k'-k''$
+returned elements which are not heavy hitters. If $k'=k''$ then $w=0$
+and the precision is 1: all reported elements are heavy hitters. However, the
+recall $R$ might be less than 1 as some heavy hitters might have
+not been reported, i.e., $k''\not= k^\ast$. This also shows that
+this definition is somewhat problematic: if two algorithms report the same
+relevant elements ($v$ will be the same for both)
+but they also report irrelevant elemnts ($w > 0$)
+then the algorithm retrieving less relevant elemnts (smaller $w$)
+will get higher precision than the algorithm that retrieves more relevant
+elements---albeit they are not hevay hitters.
+
+We also remark here that in heavy hitter queries, since all relevant elements
+have relative frequency $\ge c$ by definition, there will be many
+applications where all elements will be considered equally relevant. Hence,
+the weighted recall and weighted precision metrics might be of lesser interest
+in those cases.
+
+\subsection{Precision-like Metrics}
+From our discussion above about the weighted precision of heavy
+hitter queries, it follows that the natural generalization from unweighted
+to weighted precision renders a metric which is not matching well our
+intuition. We should assign more precision to an algorithm which retrieves
+the same relevant elements as another one, but the irrelevant elements are
+closer to be heavy hitters than in the other algorithm. On the other hand,
+the ``redefined weighted precision'' should enjoy the properties that we
+would expect from a useful metric: it is equal to 1 if all retrieved elements
+are relevant, it is equal to 0 if no relevant element is retrieved,its value
+is always between 0 and 1, etc.
 
 \begin{comment}
-  Estas definiciones todavía podrían estar sujetas a algunos
-  cambios. Hay que experimentar con ellas. Y las que no funcionen las
-  vamos a descartar.  Para la implementación, aunque no es muy
-  eficiente, supongo que se puede proceder del siguiente modo: 1) se
-  recolectan \textbf{todos} los elementos distintos del stream y sus
-  frecuencias reales; 2) se ordenan por frecuencia decreciente,
-  obteniéndose de este modo el rango de cada elemento; 3) se almacenan
-  los elementos, junto con su frecuencia y su rango, en una estructura
-  de datos alternativa, tipo tabla de hash o \emph{map}, de manera que
-  obtener $p(z)=f(z)/N$ o $\text{rank}(z)$ sea eficiente dado $z$.
-  Por otro lado la tabla ordenada por frecuencia decreciente obtenida
-  en el paso (2) nos da eficientemente $p_i$ o $x_i$ dado el rango
-  $i$.
+  La métrica que has venido denominando ``discrete precision'' es el
+  \emph{unweighted recall} explicado en el apartado anterior, verdad? En caso
+  contrario, qué otras métricas has usado en los estudios de top-$k$
+  most frequent? Completar esta subsección o eliminarla, según proceda.
 \end{comment}
 
-We now consider several metrics which
-measure the quality of the reported solutions, both
-in terms of the ``relevance'' and of the order. According to our conventions
-the $k$ top most frequents elements are $x_1$, \ldots, $x_k$. Let
-$\text{rank}(x)$ be the number of elements with frequency smaller or equal to
-the frequency of $x$. Hence\footnote{Assuming all frequencies
-  are distinct, for simplicity.}, $\text{rank}(x_i)=i$.
-Let $y_i$ be the element reported by the algorithm as $i$-th most frequent
-(ideally, $y_i = x_i$, but in general $\texttt{rank}(y_i)\not= i$).
-Then we have the following definitions
+\subsection{Order}
+In the top-$k$ most frequent problem, it might be often the case that
+the order in which elements are reported matters. So we will have metrics to
+measure how different is the real rank $R_i$ of the $i$-th reported element
+from the pretended rank ($i$).
+Notice that the errors in the ordering typically come from bad estimates of
+the actual frequencies of the elements. Most algorithms top-$k$
+will keep a ``sample'' of $m \le k$ elemnts from the stream,
+gather statistics for the sampled elements, and report
+the first $k$ elements of the sample when sorted
+in non-increasing order of \textbf{estimated}
+frequencies. But it makes sense to consider metrics which take
+into account only the order induced by the estimated frequencies and not
+the estimated frequencies themselves (see the subsection below).
+For instance an algorithm might
+systematically and grossly overestimate the real frequencies of
+the sample elements, but these estimates might ``preserve'' well enough
+the real relative ordering of the elements. 
+
+\begin{comment}
+  Ninguna de estas medidas esta normalizada. Habra que estudiar cuales son
+  ``relevantes'' (tienden a 0 en algoritmos malos, tienden a
+  1 en algoritmos buenos, discriminan entre algoritmos diferentes),
+  y cuales no. Hay que agregar tambien la variante que propones.
+  A continuacion, las metricas, a palo seco.
+\end{comment}
+
 \begin{align}
-  e &= \sum_{1\le i\le k} p_i \text{rank}(y_i)
-  e' &= \sum_{1\le i\le k} p_i (1-p_{\text{rank}(y_i)})
-  IC_u &= \sum_{1\le i\le k} (\text{rank}(y_i)-i)^2
-  IC &= \sum_{1\le i\le k} p_i (\text{rank}(y_i)-i)^2
+  e &= \sum_{1\le i\le k} p_i R_i
+  e' &= \sum_{1\le i\le k} p_i \left(1-p_{R_i}\right)
+  IC_u &= \sum_{1\le i\le k} (R_i-i)^2
+  IC &= \sum_{1\le i\le k} p_i (R_i-i)^2
 \end{align}
 
 
-
+\subsection{Estimated frequencies}
 Finally we consider
-metrics which measure the quality of the estimated frequencies.
+metrics which measure the quality of the estimated frequencies. We discuss
+first these metrics in the context of top-$k$ most frequent queries.
 
 Error type I $\epsilon_1$ measures the deviation of the estimated
 frequencies for the frequent elements:
 \[
-\epsilon_I = \frac{\sum_{1\le i\le k} (f_i-\hat{f}_i)^2}{\sum_{1\le i\le k} f_i^2},
+\epsilon_I = \frac{\sum_{1\le i\le k} (f_i-f'_i)^2}{\sum_{1\le i\le k} f_i^2}.
 \]
-where $\hat{f}_i=f(x_i)$ if $x_i\in\mathcal{S}$ and $\hat{f}_i=0$, otherwise.
 For reasons that will be discussed later we might also take
-$\hat{f}_i=\min\{f(x_i),2f_\text{obs}(x_i)\}$. Since $f_\text{obs}(x_i)\le f_i$
+$f'_i:=\min\{f'_i,2f_\text{obs}(x_i)\}$. Since $f_\text{obs}(x_i)\le f_i$
 for all $i$, the numerator in $\epsilon_I$ cannot exceed the denominator
 and thus $\epsilon_I$ will range between 0 (perfect estimation and all frequent
 elements in the sample) and 1 (all frequent elements missing and/or
 grossly overestimated). This meaure does not take into account what are
-the non-frequent elements that get sampel or how good or bad are the
-estimates of their frequencies. For that we have a second measure,
+the non-frequent elements that are reported, or how good or bad are the
+estimates of their corresponding frequencies. For that we have a second measure,
 error type II. In this case the absolute errors in the estimates are
 not that useful; we should penalize more severely the errors in the
 estimation of elements of very low frequency since that might
-imply reporting them as frequent element and they are not even close. On the
+imply reporting them as frequent elements and they are not even close. On the
 other hand, no penalty should be added if the element is not sample.
 Hence for the definition of error type II we will be doing better using relative
-errors, and weighting respect their presence or not in the sample:
+errors, and weighting respect their presence or not in the result:
 \[
-\epsilon_{II}=\frac{1}{m}
-\sum_{i\ge k} Y'_i\left(\frac{\hat{f}_i-f_i}{f_i}\right)^2.
+\epsilon_{II}=\frac{1}{k}
+\sum_{i\ge k} Y_i\left(\frac{\hat{f}_i-f_i}{f_i}\right)^2.
 \]
 Since each term in the sum above is at most 1 and there are at most $m$
 non-null terms, $\epsilon_{II}$ also ranges between 0 (no mistakes in the
@@ -623,6 +716,7 @@ a gross overestimation of their frequencies).
   que se usan y estara bien hacer la comparativa en base a estas dos
   medidas tambien.
 \end{comment}
+
 
 \section{Analysis of the Algorithms}
 
