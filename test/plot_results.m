@@ -2,12 +2,15 @@ clear all
 close all
 
 results = dir('../test/results/*.csv');
+results = dir('../test/keep/little_memory_changing_alpha/*.csv');
 
 
 first = true;
 for result = fliplr(results')
     
     [date, metric, data] = get_experiment_data(result);
+    
+    bar_plot = contains(result.name, '-iterating_over alpha');
 
     if first
         date_last_experiment = date;
@@ -17,28 +20,37 @@ for result = fliplr(results')
     if ~strcmp(date, date_last_experiment)
         break
     end
-%     figure('units','normalized','outerposition',[0 0 1 1])
+    
     figure();
     plots = [];
     algorithm_names = {};
     line_styles = {'.', '+', 'o', 'x', '*', 'square', 'diamond', 'pentagram', 'hexagram', 'none'};
     hold on
     for algorithm_index = 2 : size(data, 2)
-        algorithm_plot = plot(data.X, data{:, algorithm_index}, 'marker', line_styles{algorithm_index-1});
+        if ~bar_plot
+            algorithm_plot = plot(data.X, data{:, algorithm_index}, 'marker', line_styles{algorithm_index-1});
+            plots = [plots; algorithm_plot];
+        end
         algorithm_name = get_algorithm_name(data.Properties.VariableNames(algorithm_index));
-        plots = [plots; algorithm_plot];
         algorithm_names(end + 1) = algorithm_name;
     end
     hold off
-    legend(plots, algorithm_names);
+    
+    if bar_plot
+        plots = bar(categorical(data.X), data{:, 2:end});
+    end
+    
+    legend_plots = legend(plots, algorithm_names);
+    legend_plots.Location = 'southeast';
+    
     title(result.name)
     ylabel(metric)
     if strcmp(metric, 'recall') || strcmp(metric, 'precision')
         ylim([0, 1])
     end
+    
     set(findall(gca, 'Type', 'Line'),'LineWidth',1);
-    
-    
+    'Next plot'    
 end
 
 function [date, metric, data] = get_experiment_data(result)
