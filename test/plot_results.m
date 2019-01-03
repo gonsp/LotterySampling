@@ -1,9 +1,8 @@
-clear all
-close all
+% clear all
+% close all
 
 results = dir('../test/results/*.csv');
-results = dir('../test/keep/little_memory_changing_alpha/*.csv');
-
+% results = dir('../test/keep/little_memory_changing_alpha/active/*.csv');
 
 first = true;
 for result = fliplr(results')
@@ -38,6 +37,7 @@ for result = fliplr(results')
     
     if bar_plot
         plots = bar(categorical(data.X), data{:, 2:end});
+        plots = bar(categorical({'1.00001', '1.0001', '1.001', '1.01', '1.1'}), data{:, 2:end});
     end
     
     legend_plots = legend(plots, algorithm_names);
@@ -50,7 +50,6 @@ for result = fliplr(results')
     end
     
     set(findall(gca, 'Type', 'Line'),'LineWidth',1);
-    'Next plot'    
 end
 
 function [date, metric, data] = get_experiment_data(result)

@@ -28,7 +28,11 @@ averaged_max_tickets = mean(max_tickets, 2);
 variance_max_tickets = std(max_tickets, 0, 2);
 
 hold on
-plot(expected_tickets)
-plot(averaged_max_tickets)
-plot(variance_max_tickets)
+plot(expected_tickets, 'b')
+plot(averaged_max_tickets, 'r')
+% plot(variance_max_tickets, 'y')
 % plot(max_tickets, 'r')
+
+legend('Expected ticket', 'Mean ticket')
+ylabel('Ticket value')
+xlabel('Apparition index')

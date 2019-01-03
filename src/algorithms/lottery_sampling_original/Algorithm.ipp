@@ -62,23 +62,20 @@ template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
 
     element.ticket = ticket_generator.generate_ticket();
+    element.over_estimation = 0;
+    element.count = 1;
 
     if(this->sample_size() < m) {
-        element.count = 1;
-        element.over_estimation = 0;
         insert_level_1(element);
     } else {
         if(element.ticket > level_1.top()->ticket) {
-            element.count = TicketUtils::estimate_count_geometric(level_1.top()->ticket);
             insert_level_1(element);
         } else if(!level_2.empty() && element.ticket > level_2.top()->ticket) {
-            element.count = TicketUtils::estimate_count_geometric(level_2.top()->ticket);
             insert_level_2(element);
         } else {
             // New element didn't get a good enough ticket to get sampled, so it's discarded
             return false;
         }
-        element.over_estimation = element.count - 1;
     }
 
     frequency_order.insert_element(&element);

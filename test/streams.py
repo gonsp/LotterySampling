@@ -1,5 +1,7 @@
 import heapq
 from abc import abstractmethod
+from io import TextIOWrapper
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -69,15 +71,18 @@ class Stream():
 
 class Zipf(Stream):
 
-    def __init__(self, N_total, alpha=1.5, seed=None, save=True):
+    def __init__(self, N_total, alpha=1.5, offset=-1, seed=None, save=True):
         super().__init__(N_total, save)
         self.alpha = alpha
+        self.offset = offset
         np.random.seed(seed)
-        self.name = 'Zipf,alpha=' + str(alpha) + ',seed=' + str(seed)
+        self.name = 'Zipf,alpha=' + str(alpha) + ',offset=' + str(offset) + ',seed=' + str(seed)
 
 
     def next_element(self):
         element = np.random.zipf(self.alpha)
+        while element < self.offset:
+            element = np.random.zipf(self.alpha)
         element = str(element)
         super()._next_element(element)
         return element
@@ -141,22 +146,28 @@ class MultiZipf(Stream):
 class File(Stream):
 
     def __init__(self, N_total, file_path, shuffle=True, repetitions=1, seed=None):
-        self.data = []
-        with open(file_path, 'r') as file:
-            for line in file:
-                element = line[:-1]
-                self.data.append(element)
-        self.data *= repetitions
-        if shuffle:
-            np.random.seed(seed)
-            self.data = np.random.permutation(self.data)
-        if N_total == -1 or N_total > len(self.data):
-            N_total = len(self.data)
+        if shuffle or repetitions > 1:
+            self.data = []
+            with open(file_path, 'r') as file:
+                for line in file:
+                    element = line[:-1]
+                    self.data.append(element)
+            self.data *= repetitions
+            if N_total == -1 or N_total > len(self.data):
+                N_total = len(self.data)
+            if shuffle:
+                np.random.seed(seed)
+                self.data = np.random.permutation(self.data)
+        else:
+            self.data = open(file_path, 'r')
         super().__init__(N_total, True)
         self.name = file_path.split('/')[-1] + ',shuffle=' + str(shuffle) + ',repetitions=' + str(repetitions) + ',N=' + str(N_total)
 
 
     def next_element(self):
-        element = self.data[self.N]
+        if isinstance(self.data, TextIOWrapper):
+            element = self.data.readline()[:-1]
+        else:
+            element = self.data[self.N]
         super()._next_element(element)
         return element
