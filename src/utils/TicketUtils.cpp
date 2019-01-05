@@ -31,7 +31,9 @@ unsigned int TicketUtils::estimate_count(const Ticket& ticket) {
 
 unsigned int TicketUtils::estimate_count_geometric(const Ticket& min_ticket) {
     // TODO Protect from infinity
-    return static_cast<unsigned int>(1 / (1 - min_ticket / double(MAX_TICKET)));
+    double normalized_min_ticket = TicketUtils::normalize_ticket(min_ticket);
+    unsigned int estimated_count = 1 / (1 - normalized_min_ticket);
+    return estimated_count;
 }
 
 // n is the number of elements TO BE aggregated in mean (after calling the function)

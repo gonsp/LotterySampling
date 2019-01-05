@@ -30,7 +30,6 @@ FrequencyOrder<Element<T>>& Algorithm<T>::get_frequency_order() {
 template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
     element.observed_count = 0;
-    element.mean_ticket = 0;
 
     frequency_order.insert_element(&element);
 
@@ -45,10 +44,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
-    element.observed_count++;
-
-    Ticket new_mean_ticket = 0;
-    Ticket estimated_ticket = TicketUtils::estimate_ticket(element.observed_count);
+    frequency_order.update_key(&element, &Element<T>::observed_count, element.observed_count + 1);
 
     for(int i = 0; i < instances.size(); ++i) {
 
@@ -71,9 +67,6 @@ void Algorithm<T>::update_element(Element<T>& element) {
                         this->remove_element(replaced_element.id);
                     }
                 }
-            } else {
-                // TODO consider max(estimated_ticket, ticket)
-                ticket = estimated_ticket;
             }
 
         } else { // element was being sampled in instance i
@@ -81,15 +74,9 @@ void Algorithm<T>::update_element(Element<T>& element) {
             if(element_instance.ticket < ticket) {
                 element_instance.ticket = ticket;
                 instances[i].key_updated(&element_instance);
-            } else {
-                ticket = element_instance.ticket;
             }
         }
-
-        TicketUtils::incremental_averaging(new_mean_ticket, ticket, i + 1);
     }
-
-    frequency_order.update_key(&element, &Element<T>::mean_ticket, new_mean_ticket);
 }
 
 template<class T>
@@ -101,21 +88,17 @@ template<class T>
 void Algorithm<T>::print_state() {
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         Element<T>& element = *(*it);
-        cout << element.id << ", " << element.get_count() << ", " << TicketUtils::normalize_ticket(element.mean_ticket) << ", " << element.observed_count << endl;
+        cout << element.id << ", " << element.get_count() << endl;
 
-        Ticket mean_ticket = 0;
-        Ticket estimated_ticket = TicketUtils::estimate_ticket(element.observed_count);
         for(int i = 0; i < instances.size(); ++i) {
             Ticket ticket;
             if(element.instances.count(i) == 0) {
-                ticket = estimated_ticket;
+                ticket = 0;
             } else {
                 ticket = element.instances.find(i)->second.ticket;
             }
             cout << TicketUtils::normalize_ticket(ticket) << " ";
-            mean_ticket += ticket / instances.size();
         }
-        cout << endl << TicketUtils::normalize_ticket(mean_ticket) << endl;
     }
 }
 

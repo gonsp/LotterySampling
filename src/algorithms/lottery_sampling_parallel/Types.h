@@ -45,7 +45,6 @@ struct Element {
     };
 
     T id;
-    Ticket mean_ticket;
     unsigned int observed_count;
     unordered_map<int, ElementInstance> instances;
 
@@ -54,11 +53,11 @@ struct Element {
     }
 
     unsigned int get_count() const {
-        return TicketUtils::estimate_count(mean_ticket);
+        return observed_count;
     }
 
     bool compare_freq(const Element<T>& element) const {
-        return this->mean_ticket < element.mean_ticket;
+        return this->observed_count < element.observed_count;
     }
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;
