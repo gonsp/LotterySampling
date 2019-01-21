@@ -442,7 +442,7 @@ class TestAsymptoticAccuracy(TestAsymptotic):
         self.m = int(self.params.initial_m)
         if self.params.iterating_over is 'm':
             self.m = iteration * self.m
-            self.alpha = 1.00001
+            self.alpha = 1.0001
         else:
             self.alpha = 1.0 + iteration * 0.00001
 
