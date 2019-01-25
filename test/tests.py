@@ -42,44 +42,12 @@ class Test:
             # (old_version,    '-a lottery_cache_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (old_version,    '-a lottery_space_saving -m ' + str(m) + ' -seed ' + str(seed)),
 
-            # (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
+            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
-
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(1)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(2)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(3)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(4)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(5)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(6)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(7)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(8)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(9)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(10)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(11)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(12)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(13)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(14)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(15)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(16)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(17)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(18)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(19)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(20)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(21)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(22)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(23)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(24)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(25)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(26)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(27)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(28)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(29)),
-            (self.exec_path, '-a lottery_sampling -m ' + str(m) + ' -seed ' + str(30)),
-
             # (self.exec_path, '-a lottery_sampling -m ' + str(m*5) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -seed ' + str(seed)),
             # (self.exec_path, '-a lottery_sampling_original -m ' + str(m) + ' -multilevel' + ' -seed ' + str(seed)),
-            # (self.exec_path, '-a space_saving -m ' + str(m)),
+            (self.exec_path, '-a space_saving -m ' + str(m)),
             # (self.exec_path, '-a space_saving -m ' + str(m) + ' -threshold 0.998 ' + ' -seed ' + str(seed)),
             # (self.exec_path, '-a frequent -m ' + str(m)),
             # (self.exec_path, '-a count_sketch -m ' + str(100) + ' -q 120 -h 120'),
@@ -405,7 +373,7 @@ class TestAsymptoticTimeMemory(TestAsymptotic):
     def new_iteration(self, iteration):
         N = int(self.params.N)
         self.m = iteration * int(self.params.initial_m)
-        self.stream = streams.Zipf(N, 1.00001, seed=self.generate_seed(), save=False)
+        self.stream = streams.Zipf(N, 1.0001, seed=self.generate_seed(), save=False)
         # self.stream = streams.Uniform(2 * self.m, self.generate_seed(), save=False) # In expectation there will be N/2 inserts and N/2 updates.
 
 
@@ -446,8 +414,8 @@ class TestAsymptoticAccuracy(TestAsymptotic):
         else:
             self.alpha = 1.0 + iteration * 0.00001
 
-        self.stream = streams.File(N, 'synthetic_streams/zipf_0.00001', shuffle=False, seed=self.generate_seed())
-        # self.stream = streams.Zipf(N, self.alpha, seed=self.generate_seed(), save=True)
+        # self.stream = streams.File(N, 'synthetic_streams/zipf_0.00001', shuffle=False, seed=self.generate_seed())
+        self.stream = streams.Zipf(N, self.alpha, seed=self.generate_seed(), save=True)
         # self.stream = streams.Uniform(N, 3*self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
         # self.stream = streams.Unequal(N, alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=True)
         # self.stream = streams.MultiZipf(N, [1.00001, 1.0001, 1.00002, 1.00001], seed=self.generate_seed(), save=True)

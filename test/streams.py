@@ -145,7 +145,7 @@ class MultiZipf(Stream):
 
 class File(Stream):
 
-    def __init__(self, N_total, file_path, shuffle=True, repetitions=1, seed=None):
+    def __init__(self, N_total, file_path, shuffle=True, repetitions=1, seed=None, save=True):
         if shuffle or repetitions > 1:
             self.data = []
             with open(file_path, 'r') as file:
@@ -160,7 +160,7 @@ class File(Stream):
                 self.data = np.random.permutation(self.data)
         else:
             self.data = open(file_path, 'r')
-        super().__init__(N_total, True)
+        super().__init__(N_total, save)
         self.name = file_path.split('/')[-1] + ',shuffle=' + str(shuffle) + ',repetitions=' + str(repetitions) + ',N=' + str(N_total)
 
 
