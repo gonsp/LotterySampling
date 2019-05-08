@@ -54,15 +54,15 @@ int main(int num_args, char* args[]) {
             if(s == ":f") { // "More frequent than f" query
                 float freq;
                 cin >> freq;
-                stats.start_counting(stats.frequent_query_count);
+                stats.start_frequent_query();
                 algorithm->frequent_query(freq, cout);
-                stats.finish_counting(stats.frequent_query_time);
+                stats.end_frequent_query();
             } else if(s == ":k") { // k-top frequent elements query
                 int k;
                 cin >> k;
-                stats.start_counting(stats.k_top_query_count);
+                stats.start_k_top_query();
                 algorithm->k_top_query(k, cout);
-                stats.finish_counting(stats.k_top_query_time);
+                stats.end_k_top_query();
             }
             cout << ":end" << endl;
         } else if(s == ":s") {
@@ -73,9 +73,9 @@ int main(int num_args, char* args[]) {
         } else { // It's a new element in the data stream
             long long int element = stoll(s);
 //          string element = s;
-            stats.start_counting(stats.process_element_count);
+            stats.start_process_element();
             algorithm->process_element(element);
-            stats.finish_counting(stats.process_element_time);
+            stats.end_process_element();
         }
     }
 

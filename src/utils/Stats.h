@@ -18,6 +18,10 @@ private:
 
     counter get_interval(time_point from);
 
+    void start_counting();
+
+    void finish_counting(counter& counter);
+
 public:
 
     counter frequent_query_time;
@@ -29,9 +33,17 @@ public:
 
     Stats();
 
-    void start_counting(counter& counter);
+    void start_frequent_query();
 
-    void finish_counting(counter& counter);
+    void end_frequent_query();
+
+    void start_k_top_query();
+
+    void end_k_top_query();
+
+    void start_process_element();
+
+    void end_process_element();
 
     template<class T>
     void report(std::ostream& stream, GenericAlgorithmInterface<T>* algorithm);

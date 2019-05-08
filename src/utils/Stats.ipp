@@ -19,9 +19,8 @@ Stats::counter Stats::get_interval(time_point from) {
     return duration_cast<nanoseconds>(to - from).count();
 }
 
-void Stats::start_counting(counter& counter) {
+void Stats::start_counting() {
     start_time = high_resolution_clock::now();
-    ++counter;
 }
 
 void Stats::finish_counting(counter& counter) {
@@ -51,4 +50,31 @@ void Stats::report(std::ostream& stream, GenericAlgorithmInterface<T>* algorithm
     stream << "'k_top_query_time' : " << k_top_query_time << ",";
     stream << "'k_top_query_count' : " << k_top_query_count;
     stream << "}" << std::endl;
+}
+
+void Stats::start_frequent_query() {
+    frequent_query_count++;
+    start_counting();
+}
+
+void Stats::end_frequent_query() {
+    finish_counting(frequent_query_time);
+}
+
+void Stats::start_k_top_query() {
+    k_top_query_count++;
+    start_counting();
+}
+
+void Stats::end_k_top_query() {
+    finish_counting(k_top_query_count);
+}
+
+void Stats::start_process_element() {
+    process_element_count++;
+    start_counting();
+}
+
+void Stats::end_process_element() {
+    finish_counting(process_element_time);
 }

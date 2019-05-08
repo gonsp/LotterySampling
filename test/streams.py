@@ -57,7 +57,7 @@ class Stream():
 
 
     def show(self, threshold=100):
-        elements = [(int(element), freq) for element, freq in self.elements.items()]
+        elements = [(int(element), freq/self.N) for element, freq in self.elements.items()]
         if threshold is not None:
             elements = filter(lambda element: element[0] < threshold, elements)
         filtered = list(zip(*elements))

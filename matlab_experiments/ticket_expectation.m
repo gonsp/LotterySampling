@@ -36,3 +36,8 @@ plot(averaged_max_tickets, 'r')
 legend('Expected ticket', 'Mean ticket')
 ylabel('Ticket value')
 xlabel('Apparition index')
+
+function [expected_ticket] = get_expected_ticket(count)
+    expected_ticket = count / (count + 1);
+end
+

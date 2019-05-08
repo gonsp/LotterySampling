@@ -146,7 +146,7 @@ class TestAsymptotic(Test):
 
 
     def run(self):
-
+        start_time = datetime.now()
         self.seed = self.generate_seed()
 
         if self.params.iterations is not None:
@@ -201,7 +201,7 @@ class TestAsymptotic(Test):
         self.Y_right.append(Y_right_results)
 
 
-    def store_results(self):
+    def store_results(self, time):
         X = np.array(self.X)
         Y_left = np.array(self.Y_left)
         Y_right = np.array(self.Y_right)
@@ -209,7 +209,7 @@ class TestAsymptotic(Test):
         print('Storing results')
         if not os.path.exists('results'):
             os.makedirs('results')
-        time_prefix = datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+        time_prefix = time.strftime('%Y-%m-%d-%H:%M:%S')
         for Y, metrics in [(Y_left, self.metrics_left), (Y_right, self.metrics_right)]:
             for metric_index, metric in enumerate(metrics):
                 filename = 'results/' + time_prefix + '-' + metric + '-' + self.test_name
@@ -267,7 +267,6 @@ class TestAsymptotic(Test):
         self.full_screen_plot()
         plt.title(self.test_name)
         plt.show()
-        # self.stream.show()
 
 
     @abstractmethod
@@ -317,7 +316,7 @@ class TestAsymptoticMemory(TestAsymptotic):
         self.m = iteration * int(self.params.initial_m)
         self.stream = streams.Zipf(N, 1.00001, seed=self.generate_seed(), save=False)
 
- 
+
     def get_metrics_left(self, instance):
         return [instance.get_stats()['memory_usage']]
 
@@ -387,7 +386,7 @@ class TestAsymptoticTimeMemory(TestAsymptotic):
 
 class TestAsymptoticAccuracy(TestAsymptotic):
     # Test to inspect how the precision and recall metrics variate
-    
+
     def __init__(self):
         extra_args = [('k', False), ('freq', False), ('iterating_over', False)]
         super().__init__(extra_args=extra_args, metrics_left=['recall', 'precision'], metrics_right=['memory', 'squarederror', 'sortingerror'], y_left_label='Accuracy', y_right_label='Miscellaneous')
@@ -412,12 +411,13 @@ class TestAsymptoticAccuracy(TestAsymptotic):
             self.m = iteration * self.m
             self.alpha = 1.0001
         else:
-            self.alpha = 1.0 + iteration * 0.00001
+            self.alpha = 1.0 + 10**iteration * 0.00001
 
         # self.stream = streams.File(N, 'synthetic_streams/zipf_0.00001', shuffle=False, seed=self.generate_seed())
+        # self.stream = streams.File(N, 'real_streams/cm-2018_start-entity.csv.gz000', shuffle=False, seed=self.generate_seed())
         self.stream = streams.Zipf(N, self.alpha, seed=self.generate_seed(), save=True)
         # self.stream = streams.Uniform(N, 3*self.m, self.generate_seed(), save=True)  # In expectation there will be N/2 inserts and N/2 updates.
-        # self.stream = streams.Unequal(N, alpha=100, beta=1000, N=self.N, seed=self.generate_seed(), save=True)
+        # self.stream = streams.Unequal(N, alpha=100, beta=1000, seed=self.generate_seed(), save=True)
         # self.stream = streams.MultiZipf(N, [1.00001, 1.0001, 1.00002, 1.00001], seed=self.generate_seed(), save=True)
 
 
@@ -433,7 +433,7 @@ class TestAsymptoticAccuracy(TestAsymptotic):
         # query_param = self.m
         return [metrics.get_weighted_recall(instance, self.stream, self.query_name, query_param),
                 metrics.get_precision(instance, self.stream, self.query_name, query_param)]
-                # metrics.get_weighted_precision(instance, self.stream, self.query_name, self.query_param)]
+        # metrics.get_weighted_precision(instance, self.stream, self.query_name, self.query_param)]
 
 
     def get_metrics_right(self, instance):
