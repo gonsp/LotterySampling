@@ -4,6 +4,7 @@
 #include <random>
 
 typedef uint64_t Ticket;
+typedef uint64_t Token;
 
 class TicketUtils {
 
@@ -20,7 +21,7 @@ public:
 
     TicketUtils(int seed);
 
-    Ticket generate_ticket();
+    Token generate_token();
 
     static double normalize_ticket(const Ticket& ticket);
 

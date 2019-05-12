@@ -36,7 +36,7 @@ const string InputParser::get_parameter(const string& parameter_name) const {
 }
 
 void InputParser::error() const {
-    cerr << "Incorrect number of parameters." << endl;
-    cerr << "Usage: k-hitting [-a {lottery_sampling, space_saving, lottery_sampling_original, lottery_cache_sampling, lottery_space_saving}] [params]" << endl;
+    cerr << "Incorrect parameters." << endl;
+    cerr << "Usage: k-hitting [-a algorithm] [params]" << endl;
     exit(1);
 }

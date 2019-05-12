@@ -23,10 +23,11 @@ private:
     float threshold;
     TicketUtils ticket_generator;
 
-
     bool insert_element(Element<T>& element) override;
 
     void update_element(Element<T>& element) override;
+
+    float get_frequency_threshold(float f) const override;
 
 public:
 
@@ -34,7 +35,7 @@ public:
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
 
-    float get_threshold() const override;
+    double get_threshold() const override;
 
     void print_state() override;
 };

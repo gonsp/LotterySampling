@@ -28,8 +28,6 @@ public:
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
 
-    float get_threshold() const override;
-
     void print_state() override;
 };
 

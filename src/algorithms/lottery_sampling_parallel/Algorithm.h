@@ -2,7 +2,6 @@
 #define _LotterySamplingParallel_Algorithm_H_
 
 #include "algorithms/GenericAlgorithm.h"
-#include "algorithms/lottery_sampling_original/Algorithm.h"
 #include "algorithms/lottery_sampling_parallel/Types.h"
 #include "utils/InputParser.h"
 #include "utils/TicketUtils.h"
@@ -29,8 +28,6 @@ public:
     Algorithm(const InputParser& parameters);
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
-
-    float get_threshold() const override;
 
     void print_state() override;
 

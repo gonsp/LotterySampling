@@ -10,9 +10,9 @@ TicketUtils::TicketUtils(int seed) {
     dist = uniform_int_distribution<Ticket>(0, MAX_TICKET);
 }
 
-Ticket TicketUtils::generate_ticket() {
-    Ticket ticket = dist(random_state);
-    return ticket;
+Token TicketUtils::generate_token() {
+    Token token = dist(random_state);
+    return token;
 }
 
 double TicketUtils::normalize_ticket(const Ticket& ticket) {
@@ -29,6 +29,7 @@ unsigned int TicketUtils::estimate_count(const Ticket& ticket) {
     return estimated_count;
 }
 
+// Deprecated
 unsigned int TicketUtils::estimate_count_geometric(const Ticket& min_ticket) {
     // TODO Protect from infinity
     double normalized_min_ticket = TicketUtils::normalize_ticket(min_ticket);

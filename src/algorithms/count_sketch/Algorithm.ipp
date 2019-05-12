@@ -89,10 +89,5 @@ void Algorithm<T>::print_state() {
     }
 }
 
-template<class T>
-float Algorithm<T>::get_threshold() const {
-    return 0;
-}
-
 
 }

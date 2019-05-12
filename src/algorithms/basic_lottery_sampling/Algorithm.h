@@ -1,13 +1,12 @@
-#ifndef _LotteryCacheSampling_Algorithm_H_
-#define _LotteryCacheSampling_Algorithm_H_
+#ifndef _BasicLotterySampling_Algorithm_H_
+#define _BasicLotterySampling_Algorithm_H_
 
 #include "algorithms/GenericAlgorithm.h"
-#include "algorithms/lottery_cache_sampling/Types.h"
+#include "algorithms/basic_lottery_sampling/Types.h"
 #include "utils/InputParser.h"
 #include "utils/TicketUtils.h"
 
-
-namespace LotteryCacheSampling {
+namespace BasicLotterySampling {
 
 
 template<class T>
@@ -15,16 +14,23 @@ class Algorithm : public GenericAlgorithm<Element, T, FrequencyOrder<Element<T>>
 
 private:
 
+    TicketOrder<Element<T>> level_1;
+    TicketOrder<Element<T>> level_2;
+
     FrequencyOrder<Element<T>> frequency_order;
-    CacheOrder<Element<T>> cache_order;
 
     unsigned int m;
+    bool multilevel;
+
     TicketUtils ticket_generator;
-    Ticket mean_ticket;
 
     bool insert_element(Element<T>& element) override;
 
     void update_element(Element<T>& element) override;
+
+    void insert_level_1(Element<T>& element);
+
+    void insert_level_2(Element<T>& element);
 
 public:
 
@@ -32,14 +38,12 @@ public:
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
 
-    float get_threshold() const override;
-
-    void print_state() override;
+    double get_threshold() const override;
 };
 
 
 }
 
-#include "algorithms/lottery_cache_sampling/Algorithm.ipp"
+#include "algorithms/basic_lottery_sampling/Algorithm.ipp"
 
-#endif //_LotteryCacheSampling_Algorithm_H_
+#endif //_BasicLotterySampling_Algorithm_H_

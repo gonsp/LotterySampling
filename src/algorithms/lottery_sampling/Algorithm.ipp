@@ -28,7 +28,7 @@ FrequencyOrder<Element<T>>& Algorithm<T>::get_frequency_order() {
 
 template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
-    element.ticket = ticket_generator.generate_ticket();
+    element.ticket = ticket_generator.generate_token();
 
     if(this->sample_size() < m) {
         frequency_order.insert_element(&element);
@@ -52,15 +52,15 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.increment_key(&element);
-    Ticket ticket = ticket_generator.generate_ticket();
-    if(ticket > element.ticket) {
-        element.ticket = ticket;
+    Token token = ticket_generator.generate_token();
+    if(token > element.ticket) {
+        element.ticket = token;
         ticket_order.key_updated(&element);
     }
 }
 
 template<class T>
-float Algorithm<T>::get_threshold() const {
+double Algorithm<T>::get_threshold() const {
     return TicketUtils::normalize_ticket(ticket_order.top()->ticket);
 }
 

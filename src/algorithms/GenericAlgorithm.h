@@ -14,15 +14,15 @@ public:
 
     virtual void frequent_query(float f, std::ostream& stream) = 0;
 
-    virtual void k_top_query(int k, std::ostream& stream) = 0;
+    virtual void top_k_query(int k, std::ostream& stream) = 0;
 
     virtual void process_element(const T& element_id) = 0;
 
     virtual unsigned int sample_size() const = 0;
 
-    virtual float get_threshold() const = 0;
+    virtual double get_threshold() const { return 0; };
 
-    virtual void print_state() = 0; // For debugging purposes
+    virtual void print_state() {}; // For debugging purposes
 
     virtual ~GenericAlgorithmInterface() {};
 
@@ -40,13 +40,13 @@ private:
 
 protected:
 
-    int N = 0;
-
     virtual bool insert_element(Element<T>& element) = 0;
 
     virtual void update_element(Element<T>& element) = 0;
 
     virtual FrequencyOrder& get_frequency_order() = 0;
+
+    virtual float get_frequency_threshold(float f) const { return f; }
 
     void remove_element(const T& element_id);
 
@@ -54,13 +54,15 @@ protected:
 
 public:
 
+    int N = 0;
+
     void process_element(const T& element_id) override;
 
     unsigned int sample_size() const override;
 
     void frequent_query(float f, std::ostream& stream) override;
 
-    void k_top_query(int k, std::ostream& stream) override;
+    void top_k_query(int k, std::ostream& stream) override;
 
 };
 

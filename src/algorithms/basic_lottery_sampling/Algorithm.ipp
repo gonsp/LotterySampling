@@ -1,9 +1,9 @@
-#include "algorithms/lottery_sampling_original/Algorithm.h"
+#include "algorithms/basic_lottery_sampling/Algorithm.h"
 #include "utils/InputParser.h"
 #include "utils/TicketUtils.h"
 #include <stack>
 
-namespace LotterySamplingOriginal {
+namespace BasicLotterySampling {
 
 
 using namespace std;
@@ -61,7 +61,7 @@ void Algorithm<T>::insert_level_2(Element<T>& element) {
 template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
 
-    element.ticket = ticket_generator.generate_ticket();
+    element.ticket = ticket_generator.generate_token();
     element.over_estimation = 0;
     element.count = 1;
 
@@ -88,9 +88,9 @@ void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.update_key(&element, &Element<T>::count, element.count + 1);
 
     // Updating ticket
-    Ticket ticket = ticket_generator.generate_ticket();
-    if(ticket > element.ticket) { // The new ticket is better than the old one
-        element.ticket = ticket; // Updating (the better) ticket
+    Token token = ticket_generator.generate_token();
+    if(token > element.ticket) { // The new ticket is better than the old one
+        element.ticket = token; // Updating (the better) ticket
         if(element.level == 2 && level_1.top()->ticket < ticket) {
             // element is moving from level_2 to level_1, so we kick out the lowest ticket from level_1 to level_2
             level_2.remove_element(&element);
@@ -102,40 +102,8 @@ void Algorithm<T>::update_element(Element<T>& element) {
 }
 
 template<class T>
-float Algorithm<T>::get_threshold() const {
+double Algorithm<T>::get_threshold() const {
     return TicketUtils::normalize_ticket(level_1.top()->ticket);
-}
-
-template<class T>
-void Algorithm<T>::print_level(TicketOrder<Element<T>>& level) {
-    TicketOrder<Element<T>> aux = level;
-    stack<Element<T>*> s;
-    while(!aux.empty()) {
-        Element<T>* element = aux.pop();
-        s.push(element);
-    }
-    while(!s.empty()) {
-        Element<T>* element = s.top();
-        s.pop();
-        cout << element->id << ", " << TicketUtils::normalize_ticket(element->ticket) << ", " << element->get_count() << ", " << element->over_estimation << endl;
-    }
-}
-
-template<class T>
-void Algorithm<T>::print_state() {
-    cout << "-----------------------" << endl;
-    cout << "%%%%%% level_1 %%%%%%" << endl;
-    print_level(level_1);
-    cout << "-----------------------" << endl;
-    cout << "%%%%%% level_2 %%%%%%" << endl;
-    print_level(level_2);
-    cout << "-----------------------" << endl;
-    cout << "%%%%%% frequency_order %%%%%%" << endl;
-    for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
-        cout << (*it)->id << ", " << TicketUtils::normalize_ticket((*it)->ticket) << ", " << (*it)->get_count() << ", " << (*it)->over_estimation << endl;
-    }
-    assert(level_1.size() + level_2.size() == this->sample_size());
-    assert(frequency_order.size() == this->sample_size());
 }
 
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(Lottery_Sampling)
+project(LotterySampling)
 
 
 ###################################################
@@ -32,18 +32,15 @@ set(SOURCE_FILES
         src/algorithms/lottery_sampling/Algorithm.h
         src/algorithms/lottery_sampling/Algorithm.ipp
         src/algorithms/lottery_sampling/Types.h
-        src/algorithms/lottery_sampling_original/Algorithm.h
-        src/algorithms/lottery_sampling_original/Algorithm.ipp
-        src/algorithms/lottery_sampling_original/Types.h
+        src/algorithms/basic_lottery_sampling/Algorithm.h
+        src/algorithms/basic_lottery_sampling/Algorithm.ipp
+        src/algorithms/basic_lottery_sampling/Types.h
+        src/algorithms/basic_lottery_sampling_hh/Algorithm.h
+        src/algorithms/basic_lottery_sampling_hh/Algorithm.ipp
+        src/algorithms/basic_lottery_sampling_hh/Types.h
         src/algorithms/lottery_sampling_parallel/Algorithm.h
         src/algorithms/lottery_sampling_parallel/Algorithm.ipp
         src/algorithms/lottery_sampling_parallel/Types.h
-        src/algorithms/lottery_cache_sampling/Algorithm.h
-        src/algorithms/lottery_cache_sampling/Algorithm.ipp
-        src/algorithms/lottery_cache_sampling/Types.h
-        src/algorithms/lottery_space_saving/Algorithm.h
-        src/algorithms/lottery_space_saving/Algorithm.ipp
-        src/algorithms/lottery_space_saving/Types.h
         src/algorithms/space_saving/Algorithm.h
         src/algorithms/space_saving/Algorithm.ipp
         src/algorithms/space_saving/Types.h

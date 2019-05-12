@@ -1,11 +1,11 @@
-#ifndef _LotterySamplingOriginal_Types_H_
-#define _LotterySamplingOriginal_Types_H_
+#ifndef _BasicLotterySampling_Types_H_
+#define _BasicLotterySampling_Types_H_
 
 #include "data_structures/BinaryHeap.h"
 #include "data_structures/SortedTree.h"
 #include "utils/TicketUtils.h"
 
-namespace LotterySamplingOriginal {
+namespace BasicLotterySampling {
 
     
 using namespace std;
@@ -61,4 +61,4 @@ struct Element {
 
 }
 
-#endif //_LotterySamplingOriginal_Types_H_
+#endif //_BasicLotterySampling_Types_H_

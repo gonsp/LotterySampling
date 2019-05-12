@@ -26,8 +26,8 @@ public:
 
     counter frequent_query_time;
     counter frequent_query_count;
-    counter k_top_query_time;
-    counter k_top_query_count;
+    counter top_k_query_time;
+    counter top_k_query_count;
     counter process_element_time;
     counter process_element_count;
 
@@ -37,9 +37,9 @@ public:
 
     void end_frequent_query();
 
-    void start_k_top_query();
+    void start_top_k_query();
 
-    void end_k_top_query();
+    void end_top_k_query();
 
     void start_process_element();
 

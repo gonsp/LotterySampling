@@ -2,10 +2,9 @@
 #include "utils/Stats.h"
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling/Algorithm.h"
-#include "algorithms/lottery_sampling_original/Algorithm.h"
+#include "algorithms/basic_lottery_sampling/Algorithm.h"
+#include "algorithms/basic_lottery_sampling_hh/Algorithm.h"
 #include "algorithms/lottery_sampling_parallel/Algorithm.h"
-#include "algorithms/lottery_cache_sampling/Algorithm.h"
-#include "algorithms/lottery_space_saving/Algorithm.h"
 #include "algorithms/space_saving/Algorithm.h"
 #include "algorithms/frequent/Algorithm.h"
 #include "algorithms/count_sketch/Algorithm.h"
@@ -16,23 +15,21 @@ using namespace std;
 
 template<class T>
 GenericAlgorithmInterface<T>* create_algorithm_instance(const InputParser& params) {
-    if(!params.has_parameter("-a") || params.get_parameter("-a") == "lottery_sampling") {
+    if(!params.has_parameter("-a") || params.get_parameter("-a") == "LotterySampling") {
         return new LotterySampling::Algorithm<T>(params);
-    } else if(params.get_parameter("-a") == "space_saving") {
+    } else if(params.get_parameter("-a") == "SpaceSaving") {
         return new SpaceSaving::Algorithm<T>(params);
-    } else if(params.get_parameter("-a") == "lottery_sampling_original") {
-        return new LotterySamplingOriginal::Algorithm<T>(params);
-    } else if(params.get_parameter("-a") == "lottery_sampling_parallel") {
+    } else if(params.get_parameter("-a") == "BasicLotterySampling") {
+        return new BasicLotterySampling::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "BasicLotterySamplingHH") {
+        return new BasicLotterySamplingHH::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "LotterySamplingParallel") {
         return new LotterySamplingParallel::Algorithm<T>(params);
-    } else if(params.get_parameter("-a") == "lottery_cache_sampling") {
-        return new LotteryCacheSampling::Algorithm<T>(params);
-    } else if(params.get_parameter("-a") == "lottery_space_saving") {
-        return new LotterySpaceSaving::Algorithm<T>(params);
-    } else if(params.get_parameter("-a") == "frequent") {
+    } else if(params.get_parameter("-a") == "Frequent") {
         return new Frequent::Algorithm<T>(params);
-    } else if(params.get_parameter("-a") == "count_sketch") {
+    } else if(params.get_parameter("-a") == "CountSketch") {
         return new CountSketch::Algorithm<T>(params);
-    } else if(params.get_parameter("-a") == "count_min") {
+    } else if(params.get_parameter("-a") == "CountMin") {
         return new CountSketch::Algorithm<T>(params, true);
     } else {
         params.error();
@@ -51,7 +48,7 @@ int main(int num_args, char* args[]) {
     while(cin >> s) {
         if(s == ":q") { // It's a query over the sampled elements
             cin >> s;
-            if(s == ":f") { // "More frequent than f" query
+            if(s == ":f") { // Heavy hitters query
                 float freq;
                 cin >> freq;
                 stats.start_frequent_query();
@@ -60,9 +57,9 @@ int main(int num_args, char* args[]) {
             } else if(s == ":k") { // k-top frequent elements query
                 int k;
                 cin >> k;
-                stats.start_k_top_query();
-                algorithm->k_top_query(k, cout);
-                stats.end_k_top_query();
+                stats.start_top_k_query();
+                algorithm->top_k_query(k, cout);
+                stats.end_top_k_query();
             }
             cout << ":end" << endl;
         } else if(s == ":s") {

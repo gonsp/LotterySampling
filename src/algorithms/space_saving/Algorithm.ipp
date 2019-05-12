@@ -13,7 +13,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     if(parameters.has_parameter("-threshold")) {
         threshold = stof(parameters.get_parameter("-threshold"));
     } else {
-        threshold = -1;
+        threshold = 0;
     }
     int seed;
     if(parameters.has_parameter("-seed")) {
@@ -35,8 +35,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         frequency_order.insert_element(&element);
 //        element.over_estimation = 0;
     } else { // Max number of monitored elements is reached. This new one will replace the one with less hits
-        bool is_inserted = threshold == -1 || ticket_generator.generate_ticket() >= threshold * TicketUtils::MAX_TICKET;
-        if(!is_inserted) {
+        if(ticket_generator.generate_token() < threshold * TicketUtils::MAX_TICKET) {
             return false;
         }
         Element<T>* removed_element = frequency_order.pop_and_push(&element);
@@ -63,12 +62,15 @@ void Algorithm<T>::print_state() {
 }
 
 template<class T>
-float Algorithm<T>::get_threshold() const {
-    if(threshold == -1) {
-        return 0;
-    } else {
-        return threshold;
-    }
+double Algorithm<T>::get_threshold() const {
+    return threshold;
+}
+
+template<class T>
+float Algorithm<T>::get_frequency_threshold(float f) const {
+    float error = 1 / m;
+    assert(error < f / 2);
+    return f - error;
 }
 
 

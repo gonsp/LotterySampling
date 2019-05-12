@@ -48,13 +48,13 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
     for(int i = 0; i < instances.size(); ++i) {
 
-        Ticket ticket = ticket_generator.generate_ticket();
+        Token token = ticket_generator.generate_token();
 
         if(element.instances.count(i) == 0) { // element wasn't sampled in instance i
 
-            bool is_inserted = instances[i].size() < m or instances[i].top()->ticket < ticket;
+            bool is_inserted = instances[i].size() < m or instances[i].top()->ticket < token;
             if(is_inserted) {
-                ElementInstance<T>& element_instance = element.instances.emplace(i, ElementInstance<T>(&element, ticket)).first->second;
+                ElementInstance<T>& element_instance = element.instances.emplace(i, ElementInstance<T>(&element, token)).first->second;
                 if(instances[i].size() < m) {
                     instances[i].push(&element_instance);
                 } else {
@@ -71,17 +71,12 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
         } else { // element was being sampled in instance i
             ElementInstance<T>& element_instance = element.instances.find(i)->second;
-            if(element_instance.ticket < ticket) {
-                element_instance.ticket = ticket;
+            if(element_instance.ticket < token) {
+                element_instance.ticket = token;
                 instances[i].key_updated(&element_instance);
             }
         }
     }
-}
-
-template<class T>
-float Algorithm<T>::get_threshold() const {
-    return 0;
 }
 
 template<class T>
