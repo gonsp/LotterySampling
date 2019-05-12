@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 import sys
+import json
+from test.experiment import Experiment
 
 
 def main():
+    experiment_config_path = sys.argv[1]
+    with open(experiment_config_path) as config_file:
+        configuration = json.loads(config_file.read())
 
-    test_name = sys.argv[1]
-    test_name = 'Test' + test_name
-
-    mod = __import__('tests', fromlist=[test_name])
-    test = getattr(mod, test_name)()
-
-    test.run()
-    exit(0)
+    experiment = Experiment(configuration)
+    experiment.run()
 
 if __name__ == '__main__':
     main()

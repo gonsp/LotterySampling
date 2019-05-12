@@ -13,11 +13,11 @@ class Instance:
         command = [exec_path] + params
         error_pipe = None
         if profile is not None:
-            if profile is 'memory_usage':
+            if profile is 'memory_usage_profiler':
                 tool = 'massif'
-            elif profile is 'memory_leak':
+            elif profile is 'memory_leak_profiler':
                 tool = 'memcheck'
-            elif profile is 'exec_time':
+            elif profile is 'average_cost_profiler':
                 tool = 'callgrind'
             else:
                 exit(1)
@@ -56,7 +56,7 @@ class Instance:
         return self.process_query_output()
 
 
-    def k_top_query(self, k):
+    def top_k_query(self, k):
         command = ':q' + '\n' + ':k' + '\n' + str(int(k)) + '\n'
         self.process.stdin.write(command)
 
@@ -89,11 +89,10 @@ class Instance:
         self.finished = True
         if self.profile is not None:
             time.sleep(2)
-        if self.profile is 'memory_usage':
-            self.end_stats['memory_usage_peak_profiler'] = profiler_utils.get_peak_memory(self.pid)
-        elif self.profile is 'memory_leak':
-            self.end_stats['memory_leak_profiler'] = profiler_utils.get_leak_memory(self.process.stderr)
-        elif self.profile is 'exec_time':
+        if self.profile is 'memory_usage_profiler':
+            self.end_stats['memory_usage_profiler'] = profiler_utils.get_peak_memory(self.pid)
+        elif self.profile is 'memory_leak_profiler':
+            self.end_stats['memory_leak_profiler'] = profiler_utils.get_leaked_memory(self.process.stderr)
+        elif self.profile is 'average_cost_profiler':
             cost_total, cost_process_element = profiler_utils.get_cost(self.pid)
-            self.end_stats['total_cost_profiler'] = cost_total
-            self.end_stats['process_element_cost_profiler'] = cost_process_element
+            self.end_stats['average_cost_profiler'] = cost_process_element

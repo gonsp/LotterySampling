@@ -52,8 +52,11 @@ __pycache__/
 massif.out.*
 callgrind.out.*
 
-# Test output
-test/results
+# Test input
 test/real_streams
 test/synthetic_streams
+test/config_files
+
+# Test output
+test/results
 *.csv

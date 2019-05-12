@@ -1,6 +1,3 @@
-import streams
-import instance
-
 def get_squared_error(instance, stream, query_name, parameter):
     reported_elements, real_elements = execute_query(instance, stream, query_name, parameter)
     error = 0

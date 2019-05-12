@@ -1,14 +1,15 @@
 import heapq
+import math
 from abc import abstractmethod
 from io import TextIOWrapper
 
-import matplotlib.pyplot as plt
 import numpy as np
+
 
 class Stream():
 
-    def __init__(self, N_total, save=True):
-        self.N_total = N_total
+    def __init__(self, length, save=True):
+        self.length = length
         self.N = 0
         self.n = 0
         self.save = save
@@ -19,13 +20,15 @@ class Stream():
         self.cache_freq_param = -1
 
 
-    @abstractmethod
-    def next_element(self):
-        pass
+    def __iter__(self):
+        return self
 
 
-    def _next_element(self, element):
+    def __next__(self):
         self.N += 1
+        if self.N > self.length:
+            raise StopIteration
+        element = self.next_element()
         self.cache_k = None
         self.cache_freq = None
         if self.save:  # To speed-up tests in which is not necessary to check accuracy
@@ -34,9 +37,15 @@ class Stream():
             else:
                 self.elements[element] = 1
             self.n = len(self.elements)
+        return element
 
 
-    def k_top_query(self, k):
+    @abstractmethod
+    def next_element(self):
+        pass
+
+
+    def top_k_query(self, k):
         if self.cache_k is None or self.cache_k_param != k:
             self.cache_k = [(element, self.elements[element]/self.N) for element in heapq.nlargest(k, self.elements, key=self.elements.get)]
             self.cache_k_param = k
@@ -56,23 +65,10 @@ class Stream():
         return self.name
 
 
-    def show(self, threshold=100):
-        elements = [(int(element), freq/self.N) for element, freq in self.elements.items()]
-        if threshold is not None:
-            elements = filter(lambda element: element[0] < threshold, elements)
-        filtered = list(zip(*elements))
-        if len(filtered) == 0:
-            return
-        keys, counters = filtered
-        print('Plotted freq sum:', sum(counters) / self.N)
-        plt.bar(keys, counters)
-        plt.show()
-
-
 class Zipf(Stream):
 
-    def __init__(self, N_total, alpha=1.5, offset=-1, seed=None, save=True):
-        super().__init__(N_total, save)
+    def __init__(self, length, alpha=1.5, offset=-1, seed=None, save=True):
+        super().__init__(length, save)
         self.alpha = alpha
         self.offset = offset
         np.random.seed(seed)
@@ -83,69 +79,45 @@ class Zipf(Stream):
         element = np.random.zipf(self.alpha)
         while element < self.offset:
             element = np.random.zipf(self.alpha)
-        element = str(element)
-        super()._next_element(element)
-        return element
+        return str(element)
 
 
 class Uniform(Stream):
 
-    def __init__(self, N_total, max=100000, seed=None, save=True):
-        super().__init__(N_total, save)
+    def __init__(self, length, max=100000, seed=None, save=True):
+        super().__init__(length, save)
         self.max = max
         np.random.seed(seed)
         self.name = 'Uniform,max=' + str(max) + ',seed=' + str(seed)
 
 
     def next_element(self):
-        element = int(np.random.uniform(0, self.max))
-        element = str(element)
-        super()._next_element(element)
-        return element
+        return str(np.random.uniform(0, self.max))
 
 
 class Unequal(Stream):
 
-    def __init__(self, N_total, alpha=100, beta=100, seed=None, save=True):
-        super().__init__(N_total, save)
-        self.data = np.zeros(N_total, dtype=int)
+    def __init__(self, length, alpha=100, beta=100, seed=None, save=True):
+        super().__init__(length, save)
+        self.data = np.zeros(length, dtype=int)
         for i in range(alpha):
             for j in range(beta):
                 self.data[i*beta + j] = i
-        for i in range(alpha * beta, N_total):
+        for i in range(alpha * beta, length):
             self.data[i] = i - alpha * (beta - 1)
         np.random.seed(seed)
         self.data = np.random.permutation(self.data)
-        self.name = 'Unequal,alpha=' + str(alpha) + ',beta=' + str(beta) + ',N=' + str(N_total) + ',seed=' + str(seed)
+        self.name = 'Unequal,alpha=' + str(alpha) + ',beta=' + str(beta) + ',N=' + str(length) + ',seed=' + str(seed)
 
 
     def next_element(self):
         element = str(self.data[self.N])
-        super()._next_element(element)
-        return element
-
-
-class MultiZipf(Stream):
-
-    def __init__(self, N_total, alphas, seed=None, save=True):
-        super().__init__(N_total, save)
-        self.substreams = []
-        for alpha in alphas:
-            self.substreams.append(Zipf(alpha, seed=seed, save=False))
-        self.name = 'MultiZipf,alphas=' + str(alphas) + ',N=' + str(N_total) + ',seed=' + str(seed)
-
-
-    def next_element(self):
-        i = self.N // (self.N_total // len(self.substreams)) % len(self.substreams)
-        element = self.substreams[i].next_element()
-        element = str(int(element) + 1000000 * (i + 1))
-        super()._next_element(element)
         return element
 
 
 class File(Stream):
 
-    def __init__(self, N_total, file_path, shuffle=True, repetitions=1, seed=None, save=True):
+    def __init__(self, file_path, length=math.inf, shuffle=False, repetitions=1, seed=None, save=True):
         if shuffle or repetitions > 1:
             self.data = []
             with open(file_path, 'r') as file:
@@ -153,21 +125,22 @@ class File(Stream):
                     element = line[:-1]
                     self.data.append(element)
             self.data *= repetitions
-            if N_total == -1 or N_total > len(self.data):
-                N_total = len(self.data)
+            if length == -1 or length > len(self.data):
+                length = len(self.data)
             if shuffle:
                 np.random.seed(seed)
                 self.data = np.random.permutation(self.data)
         else:
             self.data = open(file_path, 'r')
-        super().__init__(N_total, save)
-        self.name = file_path.split('/')[-1] + ',shuffle=' + str(shuffle) + ',repetitions=' + str(repetitions) + ',N=' + str(N_total)
+        super().__init__(length, save)
+        self.name = file_path.split('/')[-1] + ',shuffle=' + str(shuffle) + ',repetitions=' + str(repetitions) + ',N=' + str(length)
 
 
     def next_element(self):
         if isinstance(self.data, TextIOWrapper):
             element = self.data.readline()[:-1]
+            if element == '':
+                raise StopIteration
+            return element
         else:
-            element = self.data[self.N]
-        super()._next_element(element)
-        return element
+            return self.data[self.N]
