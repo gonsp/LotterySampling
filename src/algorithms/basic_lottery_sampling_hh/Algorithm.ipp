@@ -41,13 +41,17 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     }
 
     frequency_order.insert_element(&element);
+    ticket_order.push(&element);
 
-    Element<T>* element_min_ticket = ticket_order.top();
-    if(element_min_ticket->ticket < threshold) {
-        frequency_order.remove_element(element_min_ticket);
-        ticket_order.pop();
-        this->remove_element(element_min_ticket->id);
+    if(this->sample_size() > 0) {
+        Element<T>* element_min_ticket = ticket_order.top();
+        if(element_min_ticket->ticket < threshold) {
+            frequency_order.remove_element(element_min_ticket);
+            ticket_order.pop();
+            this->remove_element(element_min_ticket->id);
+        }
     }
+
     return true;
 }
 

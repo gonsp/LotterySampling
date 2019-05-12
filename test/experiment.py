@@ -2,18 +2,22 @@ import copy
 import os
 import random
 import subprocess
+import json
+import shutil
 from datetime import datetime
 
 import numpy as np
 
-from test import metrics
+from test import accuracy_metrics
 from test.instance import Instance
 
 
 class Experiment:
 
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, config_file_path):
+        self.config_file_path = config_file_path
+        with open(config_file_path) as config_file:
+            self.config = json.loads(config_file.read())
 
         self.iterating_over = None
         self.iterations = 1
@@ -81,8 +85,8 @@ class Experiment:
             if "seed" not in params:
                 params["seed"] = self.get_random_seed()
             exec_path = self.default_exec_path if "exec_path" not in algorithm else algorithm["exec_path"]
-            params = ' '.join(["-" + name + " " + str(value) for name, value in params.items()])
-            instances.append(Instance(exec_path, params, profile=self.profile))
+            params = [x for param, value in params.items() for x in ["-" + param, str(value)]]
+            instances.append(Instance(exec_path, algorithm["name"], params, profile=self.profile))
         return instances
 
 
@@ -117,6 +121,7 @@ class Experiment:
                     if self.iterating_over is None:
                         x.append(stream.N)
                         y.append(self.get_metrics(instances, stream))
+                        self.store_results(start_time, x, y)
 
             if self.profile is not None:
                 for instance in instances:
@@ -129,13 +134,11 @@ class Experiment:
                     value = self.config["stream"]["params"][self.iterating_over[1]][iteration]
                 x.append(value)
                 y.append(self.get_metrics(instances, stream))
+                self.store_results(start_time, x, y)
 
             if self.profile is None:
                 for instance in instances:
                     instance.finish()
-
-
-        self.store_results(start_time, x, y)
 
 
     def get_metrics(self, instances, stream):
@@ -143,8 +146,8 @@ class Experiment:
         for instance in instances:
             values = []
             for metric in self.config["metrics"]:
-                if "get_" + metric in dir(metrics):
-                    value = getattr(metrics, "get_" + metric)(instance, stream, self.config["query"] + "_query", self.config["query_param"])
+                if "get_" + metric in dir(accuracy_metrics):
+                    value = getattr(accuracy_metrics, "get_" + metric)(instance, stream, self.config["query"] + "_query", self.config["query_param"])
                 else:
                     value = instance.get_stats()[metric]
                 values.append(value)
@@ -157,18 +160,20 @@ class Experiment:
         y = np.array(y)
 
         print('Storing results')
-        time_prefix = start_time.strftime('%Y-%m-%d-%H:%M:%S')
-        if not os.path.exists('results/' + time_prefix):
-            os.makedirs('results/' + time_prefix)
+        folder = "results/" + start_time.strftime('%Y-%m-%d-%H:%M:%S') + "/"
+        if not os.path.exists(folder):
+            os.makedirs(folder)
 
         for i, metric in enumerate(self.config["metrics"]):
-            filename = 'results/' + time_prefix + '/' + metric + '-' + self.config["name"]
+            filename = folder + metric + '-' + self.config["name"]
             np.savetxt(filename + '.tmp', y[:, :, i], delimiter=',')
             with open(filename + '.tmp', 'r') as csv:
                 with open(filename + '.csv', 'w') as file:
                     algorithms = [algorithm["name"] for algorithm in self.config["algorithms"]]
-                    file.write('X,' + ','.join(algorithms) + '\n')
+                    x_axis_name = "N" if self.iterating_over is None else self.iterating_over[1]
+                    file.write(x_axis_name + ',' + ','.join(algorithms) + '\n')
                     for j, line in enumerate(csv):
                         file.write(str(x[j]) + ',' + line)
             os.remove(filename + '.tmp')
 
+        shutil.copy(self.config_file_path, folder + "config_file.json")

@@ -91,7 +91,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
     Token token = ticket_generator.generate_token();
     if(token > element.ticket) { // The new ticket is better than the old one
         element.ticket = token; // Updating (the better) ticket
-        if(element.level == 2 && level_1.top()->ticket < ticket) {
+        if(element.level == 2 && level_1.top()->ticket < token) {
             // element is moving from level_2 to level_1, so we kick out the lowest ticket from level_1 to level_2
             level_2.remove_element(&element);
             insert_level_1(element);

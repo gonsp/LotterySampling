@@ -38,6 +38,7 @@ build
 CMakeFiles
 CMakeCache.txt
 bin
+*.m~
 
 # IDE
 .idea

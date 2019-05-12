@@ -6,10 +6,8 @@ import profiler_utils
 
 class Instance:
 
-    def __init__(self, exec_path, params, profile=None):
-        params = params.split()
-        self.name = exec_path.split('/')[-1] + ' ' + ' '.join(params[1:])
-        self.algorithm = params[1]
+    def __init__(self, exec_path, algorithm, params, profile=None):
+        self.algorithm = algorithm
         command = [exec_path] + params
         error_pipe = None
         if profile is not None:
