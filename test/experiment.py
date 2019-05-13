@@ -16,8 +16,7 @@ class Experiment:
 
     def __init__(self, config_file_path):
         self.config_file_path = config_file_path
-        with open(config_file_path) as config_file:
-            self.config = json.loads(config_file.read())
+        self.config = self.load_config_file(config_file_path)
 
         self.iterating_over = None
         self.iterations = 1
@@ -38,7 +37,7 @@ class Experiment:
         for name, value in self.config["stream"]["params"].items():
             if isinstance(value, list):
                 if self.iterating_over is None:
-                    self.iterating_over = ("algorithms", name)
+                    self.iterating_over = ("stream", name)
                     self.iterations = len(value)
                 else:
                     print("Iterating over more than one parameter is not possible.")
@@ -56,6 +55,15 @@ class Experiment:
             self.config["stream"]["params"]["save"] = False
 
         self.default_exec_path = self.build_executable()
+
+
+    def load_config_file(self, config_file_path):
+        with open(config_file_path) as config_file:
+            config = ""
+            for line in config_file:
+                if "//" not in line:
+                    config += line
+            return json.loads(config)
 
 
     def build_executable(self):
@@ -106,6 +114,7 @@ class Experiment:
 
         x = []
         y = []
+        self.store_results(start_time, x, y)
         for iteration in range(0, self.iterations):
             print('Iteration:', iteration + 1, '/', self.iterations)
 
@@ -158,6 +167,10 @@ class Experiment:
     def store_results(self, start_time, x, y):
         x = np.array(x)
         y = np.array(y)
+
+        if y.size == 0:
+            x = [0]
+            y = np.zeros((1, len(self.config["algorithms"]), len(self.config["metrics"])))
 
         print('Storing results')
         folder = "results/" + start_time.strftime('%Y-%m-%d-%H:%M:%S') + "/"

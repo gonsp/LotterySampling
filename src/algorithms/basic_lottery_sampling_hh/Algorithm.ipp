@@ -35,7 +35,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     element.ticket = ticket_generator.generate_token();
     element.count = 1;
 
-    Ticket threshold = (Ticket) get_threshold() * TicketUtils::MAX_TICKET;
+    Ticket threshold = (Ticket) (get_threshold() * TicketUtils::MAX_TICKET);
     if(element.ticket < threshold) {
         return false;
     }
@@ -44,11 +44,15 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     ticket_order.push(&element);
 
     if(this->sample_size() > 0) {
-        Element<T>* element_min_ticket = ticket_order.top();
-        if(element_min_ticket->ticket < threshold) {
-            frequency_order.remove_element(element_min_ticket);
-            ticket_order.pop();
-            this->remove_element(element_min_ticket->id);
+        for(int i = 0; i < 2; ++i) {
+            Element<T>* element_min_ticket = ticket_order.top();
+            if(element_min_ticket->ticket < threshold) {
+                frequency_order.remove_element(element_min_ticket);
+                ticket_order.pop();
+                this->remove_element(element_min_ticket->id);
+            } else {
+                break;
+            }
         }
     }
 
@@ -64,12 +68,14 @@ void Algorithm<T>::update_element(Element<T>& element) {
     Token token = ticket_generator.generate_token();
     if(token > element.ticket) {
         element.ticket = token;
+        ticket_order.key_updated(&element);
     }
 }
 
 template<class T>
 double Algorithm<T>::get_threshold() const {
-    return 1 - (1 / ((phi / r) * this->N));
+    double threshold = 1 - (1 / ((phi / r) * this->N));
+    return max(threshold, 0.0);
 }
 
 template<class T>

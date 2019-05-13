@@ -1,7 +1,6 @@
 clear all
-close all
 
-experiment_results = dir('../test/results/*');
+experiment_results = dir('../test/results/');
 last_experiment_results = experiment_results(end);
 path = strcat(last_experiment_results.folder, "/", last_experiment_results.name, "/*.csv");
 
