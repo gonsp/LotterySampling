@@ -1,10 +1,9 @@
 import itertools
-from test.sorted_list import SortedList
-from abc import abstractmethod
-from io import TextIOWrapper
-
 import math
 import numpy as np
+from abc import abstractmethod
+from io import TextIOWrapper
+from sorted_list import SortedList
 
 
 class Stream():

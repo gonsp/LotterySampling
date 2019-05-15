@@ -4,12 +4,11 @@ import random
 import subprocess
 import json
 import shutil
-from datetime import datetime
-
+import itertools
 import numpy as np
-
-from test import accuracy_metrics
-from test.instance import Instance
+import accuracy_metrics
+from instance import Instance
+from datetime import datetime
 
 
 class Experiment:
@@ -121,16 +120,24 @@ class Experiment:
             instances = self.create_instances(iteration)
             stream = self.create_stream(iteration)
 
-            for element in stream:
-                for instance in instances:
-                    instance.process_element(str(element))
+            def chunk_stream(stream, chunk_size):
+                it = iter(stream)
+                while True:
+                    chunk = list(itertools.islice(it, chunk_size))
+                    if len(chunk) > 0:
+                        yield chunk
+                    else:
+                        raise StopIteration
 
-                if stream.N % (stream.length // 100) == 0:
-                    print(stream.N * 100 / stream.length, '%')
-                    if self.iterating_over is None:
-                        x.append(stream.N)
-                        y.append(self.get_metrics(instances, stream))
-                        self.store_results(start_time, x, y)
+            for chunk in chunk_stream(stream, stream.length // 100):
+                chunk_str = '\n'.join(chunk)
+                for instance in instances:
+                    instance.process_element(chunk_str)
+                print(stream.N * 100 / stream.length, '%')
+                if self.iterating_over is None:
+                    x.append(stream.N)
+                    y.append(self.get_metrics(instances, stream))
+                    self.store_results(start_time, x, y)
 
             if self.profile is not None:
                 for instance in instances:

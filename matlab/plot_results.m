@@ -9,8 +9,10 @@ figure_handle = figure('units','normalized','outerposition',[0 0 1 1]);
 metric_result_files = dir(char(path))';
 prev_date = metric_result_files(1).date;
 plots_by_metric = create_plots(metric_result_files);
+pause on
 while true
     while prev_date == metric_result_files(1).date
+        pause(1);
         metric_result_files = dir(char(path))';
         drawnow;
         if ~figure_handle.isvalid()

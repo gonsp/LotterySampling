@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from test.experiment import Experiment
+from experiment import Experiment
 
 
 def main():
