@@ -65,7 +65,7 @@ public:
 
     void replace_element(Element* replaced_element, Element* element);
 
-    void increment_key(Element* element);
+    void increase_key(Element* element);
 
     KeyType get_key(Element* element) const;
 

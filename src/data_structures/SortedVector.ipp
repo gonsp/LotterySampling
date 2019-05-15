@@ -39,7 +39,7 @@ void SortedVector<Element, locator_field>::replace_element(
 }
 
 template<class Element, ClassField<Element, Locator> locator_field>
-void SortedVector<Element, locator_field>::increment_key(Element* element) {
+void SortedVector<Element, locator_field>::increase_key(Element* element) {
     Locator& locator = element->*locator_field;
     bool bucket_has_size_one = is_bucket_size_one(*locator.bucket_iterator);
     int new_key = locator.bucket_iterator->key + 1;

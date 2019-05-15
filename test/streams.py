@@ -1,8 +1,9 @@
-import heapq
-import math
+import itertools
+from test.sorted_list import SortedList
 from abc import abstractmethod
 from io import TextIOWrapper
 
+import math
 import numpy as np
 
 
@@ -13,11 +14,7 @@ class Stream():
         self.N = 0
         self.n = 0
         self.save = save
-        self.elements = {}
-        self.cache_k = None
-        self.cache_freq = None
-        self.cache_k_param = -1
-        self.cache_freq_param = -1
+        self.sorted_list = SortedList()
 
 
     def __iter__(self):
@@ -29,14 +26,9 @@ class Stream():
         if self.N > self.length:
             raise StopIteration
         element = self.next_element()
-        self.cache_k = None
-        self.cache_freq = None
-        if self.save:  # To speed-up tests in which is not necessary to check accuracy
-            if element in self.elements:
-                self.elements[element] += 1
-            else:
-                self.elements[element] = 1
-            self.n = len(self.elements)
+        if self.save:  # To speed-up tests in which it is not necessary to check accuracy
+            self.sorted_list.process_element(element)
+            self.n = self.sorted_list.size()
         return element
 
 
@@ -46,23 +38,11 @@ class Stream():
 
 
     def top_k_query(self, k):
-        if self.cache_k is None or self.cache_k_param != k:
-            self.cache_k = [(element, self.elements[element]/self.N) for element in heapq.nlargest(k, self.elements, key=self.elements.get)]
-            self.cache_k_param = k
-        return self.cache_k
+        return [(id, count/self.N) for id, count in itertools.islice(iter(self.sorted_list), k)]
 
 
     def frequent_query(self, freq):
-        if self.cache_freq is None or self.cache_freq_param != freq:
-            elements = filter(lambda element: element[1] >= self.N * freq, self.elements.items())
-            elements = [(id, count/self.N) for id, count in elements]
-            self.cache_freq = sorted(elements, key=lambda element: -element[1])
-            self.cache_freq_param = freq
-        return self.cache_freq
-
-
-    def get_name(self):
-        return self.name
+        return [(id, count/self.N) for id, count in itertools.takewhile(lambda element: element[1] >= freq * self.N, iter(self.sorted_list))]
 
 
 class Zipf(Stream):
@@ -72,7 +52,6 @@ class Zipf(Stream):
         self.alpha = alpha
         self.offset = offset
         np.random.seed(seed)
-        self.name = 'Zipf,alpha=' + str(alpha) + ',offset=' + str(offset) + ',seed=' + str(seed)
 
 
     def next_element(self):
@@ -88,7 +67,6 @@ class Uniform(Stream):
         super().__init__(length, save)
         self.max = max
         np.random.seed(seed)
-        self.name = 'Uniform,max=' + str(max) + ',seed=' + str(seed)
 
 
     def next_element(self):
@@ -107,7 +85,6 @@ class Unequal(Stream):
             self.data[i] = i - alpha * (beta - 1)
         np.random.seed(seed)
         self.data = np.random.permutation(self.data)
-        self.name = 'Unequal,alpha=' + str(alpha) + ',beta=' + str(beta) + ',N=' + str(length) + ',seed=' + str(seed)
 
 
     def next_element(self):
@@ -133,7 +110,6 @@ class File(Stream):
         else:
             self.data = open(file_path, 'r')
         super().__init__(length, save)
-        self.name = file_path.split('/')[-1] + ',shuffle=' + str(shuffle) + ',repetitions=' + str(repetitions) + ',N=' + str(length)
 
 
     def next_element(self):

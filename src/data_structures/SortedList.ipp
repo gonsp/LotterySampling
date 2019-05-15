@@ -51,7 +51,7 @@ Element* SortedList<Element, locator_field>::pop_and_push(Element* element) {
 }
 
 template<class Element, ClassField<Element, Locator<Element>> locator_field>
-void SortedList<Element, locator_field>::increment_key(Element* element) {
+void SortedList<Element, locator_field>::increase_key(Element* element) {
     Iterator<Element>& iterator = element->*locator_field;
     int new_key = iterator.bucket_iterator->key + 1;
     if(iterator.bucket_iterator == bucket_list.begin() || prev(iterator.bucket_iterator)->key != new_key) { // It is the highest bucket or the next bucket doesn't have the required key

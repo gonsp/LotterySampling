@@ -44,14 +44,14 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         this->remove_element(removed_element->id);
 
 //        element.over_estimation = element.get_count();
-        frequency_order.increment_key(&element);
+        frequency_order.increase_key(&element);
     }
     return true;
 }
 
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
-    frequency_order.increment_key(&element);
+    frequency_order.increase_key(&element);
     Token token = ticket_generator.generate_token();
     if(token > element.ticket) {
         element.ticket = token;

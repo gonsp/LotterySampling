@@ -88,7 +88,7 @@ public:
 
     Element* pop_and_push(Element* element);
 
-    void increment_key(Element* element);
+    void increase_key(Element* element);
 
     KeyType get_key(Element* element) const;
 

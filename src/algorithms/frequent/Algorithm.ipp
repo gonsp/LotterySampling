@@ -31,14 +31,14 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         Element<T>* removed_element = frequency_order.pop_and_push(&element);
         this->remove_element(removed_element->id);
 
-        frequency_order.increment_key(&element);
+        frequency_order.increase_key(&element);
     }
     return true;
 }
 
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
-    frequency_order.increment_key(&element);
+    frequency_order.increase_key(&element);
 }
 
 template<class T>
