@@ -86,13 +86,11 @@ class Experiment:
         instances = []
         for algorithm in self.config["algorithms"]:
             params = copy.deepcopy(algorithm["params"])
-            params["a"] = algorithm["name"]
             if self.iterating_over is not None and self.iterating_over[0] == "algorithms":
                 params[self.iterating_over[1]] = params[self.iterating_over[1]][iteration]
             if "seed" not in params:
                 params["seed"] = self.get_random_seed()
             exec_path = self.default_exec_path if "exec_path" not in algorithm else algorithm["exec_path"]
-            params = [x for param, value in params.items() for x in ["-" + param, str(value)]]
             instances.append(Instance(exec_path, algorithm["name"], params, profile=self.profile))
         return instances
 
@@ -164,6 +162,12 @@ class Experiment:
             for metric in self.config["metrics"]:
                 if "get_" + metric in dir(accuracy_metrics):
                     value = getattr(accuracy_metrics, "get_" + metric)(instance, stream, self.config["query"] + "_query", self.config["query_param"])
+                elif metric == "expected_m^{th}_ticket":
+                    assert(instance.algorithm == "LotterySampling")
+                    elements = stream.top_k_query(instance.params["m"])
+                    freq = elements[-1][1]
+                    expected_ticket = 1 - 1 / (freq * stream.N + 1)
+                    value = expected_ticket
                 else:
                     value = instance.get_stats()[metric]
                 values.append(value)

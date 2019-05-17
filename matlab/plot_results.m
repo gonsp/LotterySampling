@@ -1,8 +1,17 @@
 clear all
 
-experiment_results = dir('../test/results/');
-last_experiment_results = experiment_results(end);
-path = strcat(last_experiment_results.folder, "/", last_experiment_results.name, "/*.csv");
+answer = questdlg('Open experiment', ...
+	'Open experiment', ...
+	'Latest','Choose', 'Latest');
+
+switch answer
+    case 'Latest'
+        experiment_results = dir('../test/results/');
+        last_experiment_results = experiment_results(end);
+        path = strcat(last_experiment_results.folder, "/", last_experiment_results.name, "/*.csv");
+    case 'Choose'
+        path = strcat(uigetdir('../test/results'), "/*.csv");
+end
 
 figure_handle = figure('units','normalized','outerposition',[0 0 1 1]);
 

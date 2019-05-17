@@ -8,7 +8,10 @@ class Instance:
 
     def __init__(self, exec_path, algorithm, params, profile=None):
         self.algorithm = algorithm
-        command = [exec_path] + params
+        self.params = params
+        self.params["a"] = algorithm
+
+        command = [exec_path] + [x for param, value in params.items() for x in ["-" + param, str(value)]]
         error_pipe = None
         if profile is not None:
             if profile is 'memory_usage_profiler':
