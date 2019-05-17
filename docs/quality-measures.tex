@@ -1,0 +1,298 @@
+%&LaTeX   -*-LaTeX-*-
+% $Id$
+
+\documentclass{article}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathbbol}
+\usepackage[latin1]{inputenc}
+\usepackage{float}
+\usepackage{graphicx}
+%\usepackage{algorithms}
+\usepackage[noend]{algpseudocode}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{tikz}
+
+\usepackage{fancybox}
+
+\graphicspath{{figs/}}
+
+\newcommand{\bigOh}{\mathop{\mathcal{O}}\nolimits}  % big O
+\newcommand{\esimo}[1]{\text{${#1}$-th}}              %n-th
+\newcommand{\node}[2]{\langle {#1},{#2}\rangle}
+\newcommand{\Prob}[1]{\Pr\left\{{#1}\right\}}
+\newcommand{\Exp}[1]{\mathop{\mathbb{E}}\left\{{#1}\right\}}
+\newcommand{\Var}[1]{\mathop{\mathbb{V}}\left\{{#1}\right\}}
+\newcommand{\email}[1]{E-mail: \texttt{#1}}
+\newcommand{\hypergeom}[6]{{}_{#1}{#2}_{#3}           %
+\left(\left.\genfrac{}{}{0pt}{}{#4}{#5}\,\right|\, #6\right)} % hipergeometrica
+\newcommand{\Ind}[1]{\mathbb{1}_{{#1}}}
+\newcommand{\eqlaw}{\stackrel{\mathcal{D}}{=}} 
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\U}{\mathcal{U}}
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\sought}[1][(i;j)]{\ensuremath{x^{#1}}}
+\newcommand{\comentario}[1]{\shadowbox{\begin{minipage}{0.8\textwidth}%
+\textbf{#1}\end{minipage}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{defn}{Definition}
+
+\renewcommand\algorithmiccomment[1]{\(\qquad\triangleright\) #1}%
+\newcommand{\Proc}[1]{\text{\textsc{#1}}}
+\newcommand{\To}{\textbf{\ to\ }}
+\newcommand{\swap}{\leftrightarrow}
+\newcommand{\call}[2]{\textsc{#1}({#2})}
+\floatstyle{ruled}
+\newfloat{algorithm}{thp}{loa}
+\floatname{algorithm}{Algorithm}
+
+\hypersetup{%
+colorlinks = true,
+breaklinks = true,
+linkcolor = blue,
+anchorcolor = blue,
+citecolor = magenta,
+pagecolor = blue,
+urlcolor = red,
+filecolor = blue,
+bookmarksopen = true,
+bookmarksnumbered = true,
+backref = true,
+}
+
+\newcommand{\Recordinality}{\textsc{Recordinality}}
+
+\title{On Recall and Precision}
+
+\author{Conrado Mart{\'\i}nez} %[2]
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+Consider a (large) data stream $\mathcal{Z}=z_1,\ldots,z_N$, where each $z_i$ is
+drawn from some domain or \emph{universe} $\mathcal{U}$, and let $n\le N$ 
+be the number of distinct elements in $\mathcal{Z}$. We may thus look at 
+the multiset $X$ underlying $\mathcal{Z}$
+\[
+X = \{x_1^{f_1},\ldots,x_n^{f_n}\}
+\]
+where $x_1$, \ldots, $x_n$ are the $n$ distinct elements that occur 
+in $\mathcal{Z}$ and $f_i$ denotes the number of occurrences (absolute 
+frequency) of $x_i$ in $\mathcal{Z}$.
+We will assume, w.l.o.g., 
+that we index the elements in $X$ in non-increasing order
+of frequency, thus $f_1\ge f_2 \ge \cdots \ge f_{n-1} \ge f_n > 0$.
+We will use $p_i = f_i/N$ to denote the relative frequency of $x_i$.
+
+The two problems that we want to study here are:
+\begin{enumerate}
+\item Top $k$ most frequent elements. Given $\mathcal{Z}$, we want to find 
+$\{x_1,\ldots,x_k\}$ (or any subset of $k$ distinct elements
+with maximal frequencies). 
+\item Heavy hitters. Given $\mathcal{Z}$ and a value $\phi$, $0 < \phi < 1$, 
+  we want to find the $k^\ast=k^\ast(\phi)$ distinct elements
+  in $\mathcal{Z}$ with relative frequency $p_i \ge \phi$.
+Those elements are called \emph{heavy hitters}. 
+Given the data stream and the value $\phi$, 
+the largest index $k^\ast$ such that $p_{k^\ast} \ge \phi$ is the number
+of heavy hitters. It is immediate to see that
+\[
+k^\ast\le\left\lceil\frac{1}{\phi}\right\rceil
+\]
+If no element has relative frequency above $\phi$ ($p_1 < \phi$) then we
+take $k^\ast=0$ by convention.
+\end{enumerate}
+None of these two problems can be solved exactly unless we can 
+keep $\Theta(n)$ elements in memory; thus under the tight memory constraints
+of the data stream model, we must aim at approximate good solutions.
+
+\section{The $(\varepsilon,\delta)$-deficient framework}
+We consider here algorithms (dterministic or randomized) which keep a
+sample $\mathcal{S}$ of distinct elements from the subsequence of the
+data stream seen so far. The algorithms might considerably differ in
+various aspects, but they will all keep record of apparitions in the
+data stream of the elements in the sample. In particular, each element
+kept in the sample will have an associated counter which will be
+increased each time the corresponding element is seen. That is, if the
+current instance/apparition $z$ from the data stream is $x_i$ and
+$x_i$ is currently in the sample the $freq[x_i]$ will be increased by 1.
+The way that the counters are initialized when an element $x$ is added
+to the sample, or other updates to these counters (e.g. decrements), will
+depend on the algorithm. In any case, our algorithms will report
+several elements in the sample as the answer to a heavy hitters/top $k$ queries
+and they will also provide an estimate $f'_i$ of the frequency
+for any of the reported elements $x_i$, based on the counters $freq[.]$
+($f'_i$ is not necessarily $freq[x_i]$, although this is the case
+for many algorithms).
+
+\subsection{Heavy hitters}
+\begin{itemize}
+\item For a deterministic algorithms, we will require that the following
+  conditions are met:
+  \begin{enumerate}
+  \item All $k^\ast$ heavy hitters are reported. That is, if
+    $f_i \ge \phi N$ then $x_i$ is reported as a heavy hitter.
+  \item No element $x_k$ such that $p_k < \phi-\varepsilon$ (i.e., $f_k < (\phi-\varepsilon) N$) is reported.
+  \item For all reported elements $x_i$, $f_i-\varepsilon N \le f'_i\le f_i$.
+  \end{enumerate}
+\item For a randomized algorithm, we have the same conditions
+  happening with high probability (equivalently, the probability that
+  one of the conditions is not met is less than some small $\delta$).
+  Let $Y_i$ denote the indicator random variable for the event ``$x_i$
+  is reported by the algorithm as a heavy hitter'', that is,
+  $Y_i=1$ is $x_i$ is reported by the algorithm and $Y_i=0$,
+  otherwise.  Similarly, let $Y'_i$ be the indicator random variable
+  for the event ``$x_i$ is sampled''. Notice that we have the
+  stochastic inequality $Y_i\le Y'_i$: for any instance $\omega$ of
+  the probability space in which $Y_i$ and $Y'_i$ are defined we have
+  $Y_i(\omega) \le Y'_i(\omega)$ since $x_i$ cannot be reported as a
+  relevant element unless $x_i$ is part of the sample.
+  The conditions we require are then:
+    \begin{enumerate}
+    \item For all $i$,
+      \[
+      \Prob{\text{$x_i$ is reported}\,|\,p_i\ge \phi} \ge 1-\delta.
+      \]
+      That is, $\Exp{Y_i}\ge 1-\delta$ for all $i$, $1\le i\le k^\ast$.
+    \item For all $i$,
+      \[
+      \Prob{\text{$x_i$ is reported}\,|\,p_i< \phi-\varepsilon} < \delta.
+      \]
+      Hence, if $p_i < \phi-\varepsilon$ then $\Exp{Y_i}<\delta$.
+    \item For all $i$,
+      \[
+      \Prob{f'_i\in [f_i-\varepsilon,f_i]\,|\,Y_i=1}\ge 1-\delta
+      \]
+    \end{enumerate}
+\end{itemize}
+\subsection{Top-$k$ most frequent}
+We shall use the same definitions as for heavy hitters,
+taking $\phi:=p_k$, that is,
+the $k$ largest frequency.
+
+
+\section{Precision and recall}
+In Information Retrieval, \emph{recall} and \emph{precision} are the
+two most used measures of quality. Recall is the ratio
+of the number of ``relevant'' retrieved (=reported) elements to the
+number of ``relevant'' elements. Thus, using the indicator variables
+of the previous section, we will have
+\begin{equation}
+\mathcal{R} = \frac{Y_1+\cdots+Y_h}{h},
+\label{eq:unweighted-recall}
+\end{equation}
+where $h=k$ (top-$k$ queries) or $h=k^\ast$ (heavy hitters).
+Likewise, precision is the ratio
+of the number of ``relevant'' retrieved elements to the number
+of retrieved elements. Hence
+\begin{equation}
+\mathcal{P} = \frac{Y_1+\cdots+Y_h}{Y_1+\ldots+Y_n}.
+\label{eq:unweighted-precision}
+\end{equation}
+
+When the algorithms are randomized $\mathcal{R}$ and $\mathcal{P}$ are random variables, where
+the probability space is that induced by the random choices of the algorithm.
+
+These two mesures have been used in the literature in context of the
+top-$k$ most frequent and heavy hitters; good algorithms for these
+problems should exhibit good recall and precison---both close to 1.
+However, in this context there are two fundamental differences with the
+typical application in Information Retrieval. In most scenarios of
+Information Retrieval 1) all elements
+in the data set are distinct; 2) an element from the data set
+is either ``relevant'' or ``not relevant''.
+
+However, in the problems that we are considering here, the $N$
+apparitions in the data stream aren't distinct (at least they are not
+in the interesting cases!) and not all elements are equally relevant (irrelevant):
+we should consider an element $x_i$
+more ``relevant'' than another $x_j$ if $f_i\gg f_j$; in other words, if both
+elements should be reported in the result of a query, an algorithm missing
+$x_j$ and reporting $x_i$ should score much better than algorithm
+missing $x_i$ and reporting $x_j$ (and of course both should score
+worse than an algorithm reporting both!).
+Moreover, in top-$k$ most frequent queries the algorithm will report $k$ elements from the sample, and thus
+the number of retrieved elements coincides with the number of relevant documents, i.e.,
+$\mathcal{R}=\mathcal{P}$.
+
+Hence, we will generalize of definition of recall and precision as follows.
+Pick one element $z$ from the data stream $\mathcal{Z}$ at random,
+that is, with identical probability $1/N$.
+\begin{enumerate}
+\item Recall:
+  \[
+  R := \Prob{\text{$z$ is retrieved}\,|\,\text{$z$ is relevant}}
+  \]
+\item Precision:
+  \[
+  P := \Prob{\text{$z$ is relevant}\,|\,\text{$z$ is retrieved}}
+  \]
+\end{enumerate}
+Notice that $R$ and $P$ are now conditional probabilities, not random variables.
+
+If $h$ is the largest index of a relevant element ($h=k$ for top-$k$,
+$h=k^\ast$ for heavy hitters) then the numerator is
+\begin{multline*}
+\Prob{\text{$z$ is relevant and retrieved}} =
+\sum_{i=1}^{n}p_i \Prob{\text{$z$ is relevant and retrieved}\,|\,z=x_i} \\
+= \sum_{i=1}^{h}p_i \Prob{\text{$x_i$ is retrieved}} =
+\sum_{i=1}^{h}p_i \Exp{Y_i} = \Exp{\sum_{i=1}^{h}p_i Y_i},
+\end{multline*}
+whereas for the denominators we have
+\begin{gather*}
+  \Prob{\text{$z$ is relevant}} = p_1+\cdots+p_h, \\
+  \Prob{\text{$z$ is retrieved}} = \Exp{\sum_{i=1}^{n}p_i Y_i},
+\end{gather*}
+and thus
+\begin{align*}
+  R &= \frac{\Exp{\sum_{i=1}^{h}p_i Y_i}}{p_1+\cdots+p_h}, \\
+  P &= \frac{\Exp{\sum_{i=1}^{h}p_i Y_i}}{\Exp{\sum_{i=1}^{n}p_i Y_i}}.
+\end{align*}
+Notice that the definition of recall here coincides with the expected value of $\mathcal{R}$ in
+equation~\eqref{eq:unweighted-recall} if we set $p_1=\cdots=p_n=1/n$ (that is, all elements are considered
+equally relevant). This is not the case for $\mathcal{P}$; even if we set $p_i=1/n$ for all $i$,
+\[
+\frac{\Exp{\sum_{1\le i\le h}Y_i}}{\Exp{\sum_{1\le i\le n}Y_i}}\not=\Exp{\mathcal{P}}=
+\Exp{\frac{\sum_{1\le i\le h}Y_i}{\sum_{1\le i\le n}Y_i}}.
+\]
+
+It is also possible to consider slightly different definitions of $P$ and $R$
+to take into account that the algorithms answer top-$k$/heavy hitters
+queries by selecting a subset of the elements in the sample. The formulas above
+for $P$ and $R$ do not ``penalize'' using a lot of extra memory, while
+they penalize not reporting an element irrespective of whether
+the element is sampled or not. The alternative formul{\ae} below
+for $R'$ and $P'$ use the indicators $Y'_i$'s instead of the $Y_i$'s, that is, they correspond to the definition
+of recall and precision as conditional probabilities replacing ``retrieved''(=''reported'') by ``sampled''.
+\begin{align*}
+  R' &= \frac{\Exp{\sum_{i=1}^{h}p_i Y'_i}}{p_1+\cdots+p_h} \\
+  P' &= \frac{\Exp{\sum_{i=1}^{h}p_i Y'_i}}{\Exp{\sum_{i=1}^{n}p_i Y'_i}}
+\end{align*}
+
+Let us consider now an algorithm that is $(\varepsilon,\delta)$-deficient (we may
+view deterministic algorithms as $(\varepsilon,0)$-deficient algorithms). A direct consequence of
+the definition of $(\varepsilon,\delta)$-deficiency is that $R\ge 1-\delta$. It's also true that
+$\Exp{\mathcal{R}}\ge 1-\delta$, where $\mathcal{R}$ is the recall as defined by~\eqref{eq:unweighted-recall}.
+However, the $(\varepsilon,\delta)$-deficient framework does not provide useful guarantees for the precision.
+
+%% The numerator in $P$ is $\ge h(1-\delta)$. If we focus on heavy hitters the denominator
+%% is $\le\lceil 1/(\phi-\varepsilon)\rceil$, but such bound isn't useful at all.
+%% If the number of items with
+%% relative frequency $\ge \phi-\varepsilon=\phi(1-\epsilon)$ is $k^{\ast\ast}\ge k^\ast$
+%%   then
+%% \[
+%% \Exp{\mathcal{P}}\ge (1-\delta)\frac{k^\ast}{k^{\ast\ast}}.
+%% \]
+%% Likewise for our novel definition of precision,
+%% we have
+%% \begin{multline*}
+%% \sum_{i=1}^{n} p_i \Exp{Y_i} \le \sum_{i=1}^{k^{\ast\ast}}p_i\Exp{Y_i}
+%% \sum_{i=k^{\ast\ast}+1}^{n}p_i\delta \\
+%% = \sum_{i=1}^{k^{\ast}}p_i\Exp{Y_i}+(k^{\ast\ast}-k^\ast)\phi+(n-k^{\ast\ast})(\phi-\epsilon)\delta \\
+
+\end{document}
+
