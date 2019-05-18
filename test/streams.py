@@ -13,7 +13,7 @@ class Stream():
         self.N = 0
         self.n = 0
         self.save = save
-        self.sorted_list = SortedList()
+        self.elements = SortedList()
 
 
     def __iter__(self):
@@ -26,8 +26,8 @@ class Stream():
             raise StopIteration
         element = self.next_element()
         if self.save:  # To speed-up tests in which it is not necessary to check accuracy
-            self.sorted_list.process_element(element)
-            self.n = self.sorted_list.size()
+            self.elements.process_element(element)
+            self.n = self.elements.size()
         return element
 
 
@@ -37,11 +37,11 @@ class Stream():
 
 
     def top_k_query(self, k):
-        return [(id, count/self.N) for id, count in itertools.islice(iter(self.sorted_list), k)]
+        return [(id, count/self.N) for id, count in itertools.islice(iter(self.elements), k)]
 
 
     def frequent_query(self, freq):
-        return [(id, count/self.N) for id, count in itertools.takewhile(lambda element: element[1] >= freq * self.N, iter(self.sorted_list))]
+        return [(id, count/self.N) for id, count in itertools.takewhile(lambda element: element[1] >= freq * self.N, iter(self.elements))]
 
 
 class Zipf(Stream):

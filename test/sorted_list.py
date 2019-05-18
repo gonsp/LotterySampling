@@ -10,9 +10,13 @@ class Bucket:
 class SortedList:
 
     def __init__(self):
-        self.elements = {}
+        self.element_to_bucket = {}
         self.first_bucket = None
         self.last_bucket = None
+
+
+    def __getitem__(self, id):
+        return self.element_to_bucket[id].freq
 
 
     def __iter__(self):
@@ -24,7 +28,7 @@ class SortedList:
 
 
     def process_element(self, id):
-        if id not in self.elements:
+        if id not in self.element_to_bucket:
             self.add(id)
         else:
             self.increase_freq(id)
@@ -43,11 +47,11 @@ class SortedList:
             bucket = self.last_bucket
 
         bucket.elements.add(id)
-        self.elements[id] = bucket
+        self.element_to_bucket[id] = bucket
 
 
     def increase_freq(self, id):
-        current_bucket = self.elements[id]
+        current_bucket = self.element_to_bucket[id]
         current_bucket.elements.remove(id)
 
         prev_bucket = current_bucket.prev_bucket
@@ -67,7 +71,7 @@ class SortedList:
             new_bucket = prev_bucket
 
         new_bucket.elements.add(id)
-        self.elements[id] = new_bucket
+        self.element_to_bucket[id] = new_bucket
 
         if len(current_bucket.elements) == 0:
             if self.last_bucket == current_bucket:
@@ -79,4 +83,4 @@ class SortedList:
 
 
     def size(self):
-        return len(self.elements)
+        return len(self.element_to_bucket)
