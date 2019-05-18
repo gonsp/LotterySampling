@@ -7,6 +7,7 @@
 #include "algorithms/lottery_sampling_parallel/Algorithm.h"
 #include "algorithms/space_saving/Algorithm.h"
 #include "algorithms/frequent/Algorithm.h"
+#include "algorithms/lossy_counting/Algorithm.h"
 #include "algorithms/count_sketch/Algorithm.h"
 #include <iostream>
 #include <string>
@@ -27,6 +28,8 @@ GenericAlgorithmInterface<T>* create_algorithm_instance(const InputParser& param
         return new LotterySamplingParallel::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "Frequent") {
         return new Frequent::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "LossyCounting") {
+        return new LossyCounting::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "CountSketch") {
         return new CountSketch::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "CountMin") {

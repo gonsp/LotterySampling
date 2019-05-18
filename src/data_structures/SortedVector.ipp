@@ -31,8 +31,7 @@ Element* SortedVector<Element, locator_field>::pop_and_push(Element* element) {
 }
 
 template<class Element, ClassField<Element, Locator> locator_field>
-void SortedVector<Element, locator_field>::replace_element(
-        Element* replaced_element, Element* element) {
+void SortedVector<Element, locator_field>::replace_element(Element* replaced_element, Element* element) {
     assert(!bucket_list.empty());
     element->*locator_field = replaced_element->*locator_field;
     v[(element->*locator_field).pos] = element;

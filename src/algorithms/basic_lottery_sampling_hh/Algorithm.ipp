@@ -33,7 +33,6 @@ template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
 
     element.ticket = ticket_generator.generate_token();
-    element.count = 1;
 
     Ticket threshold = (Ticket) (get_threshold() * TicketUtils::MAX_TICKET);
     if(element.ticket < threshold) {
@@ -62,7 +61,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     // Updating frequency
-    frequency_order.update_key(&element, &Element<T>::count, element.count + 1);
+    frequency_order.increase_key(&element);
 
     // Updating ticket
     Token token = ticket_generator.generate_token();

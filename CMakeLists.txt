@@ -32,6 +32,9 @@ set(SOURCE_FILES
         src/algorithms/lottery_sampling/Algorithm.h
         src/algorithms/lottery_sampling/Algorithm.ipp
         src/algorithms/lottery_sampling/Types.h
+        src/algorithms/lottery_sampling_lof/Algorithm.h
+        src/algorithms/lottery_sampling_lof/Algorithm.ipp
+        src/algorithms/lottery_sampling_lof/Types.h
         src/algorithms/basic_lottery_sampling/Algorithm.h
         src/algorithms/basic_lottery_sampling/Algorithm.ipp
         src/algorithms/basic_lottery_sampling/Types.h
@@ -44,6 +47,9 @@ set(SOURCE_FILES
         src/algorithms/space_saving/Algorithm.h
         src/algorithms/space_saving/Algorithm.ipp
         src/algorithms/space_saving/Types.h
+        src/algorithms/lossy_counting/Algorithm.h
+        src/algorithms/lossy_counting/Algorithm.ipp
+        src/algorithms/lossy_counting/Types.h
         src/algorithms/frequent/Algorithm.h
         src/algorithms/frequent/Algorithm.ipp
         src/algorithms/frequent/Types.h
@@ -58,8 +64,7 @@ set(SOURCE_FILES
         src/data_structures/SortedList.ipp
         src/data_structures/SortedVector.h
         src/data_structures/SortedVector.ipp
-        src/data_structures/List.h
-        src/data_structures/List.ipp)
+        )
 
 
 ###################################################
