@@ -15,8 +15,6 @@ using FrequencyOrder = SortedTree::SortedTree<Element, &Element::compare_freq, &
 template<class Element>
 using FrequencyOrderLocator = SortedTree::Locator<Element, &Element::compare_freq>;
 
-template<class Element>
-using FrequencyOrderIterator = SortedTree::Iterator<Element, &Element::compare_freq>;
 
 template<class T>
 struct Element {

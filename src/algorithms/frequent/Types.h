@@ -8,16 +8,11 @@ namespace Frequent {
 
 
 template<class Element>
-//using FrequencyOrder = SortedList::SortedList<Element, &Element::frequency_order_locator>;
 using FrequencyOrder = SortedVector::SortedVector<Element, &Element::frequency_order_locator>;
 
 template<class Element>
-//using FrequencyOrderLocator = SortedList::Locator<Element>;
 using FrequencyOrderLocator = SortedVector::Locator;
 
-template<class Element>
-//using FrequencyOrderIterator = SortedList::Iterator<Element>;
-using FrequencyOrderIterator = SortedVector::Iterator<Element>;
 
 template<class T>
 struct Element {

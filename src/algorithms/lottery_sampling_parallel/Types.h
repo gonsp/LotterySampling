@@ -22,8 +22,6 @@ using FrequencyOrderLocator = SortedTree::Locator<Element, &Element::compare_fre
 
 using TicketOrderLocator = BinaryHeap::Locator;
 
-template<class Element>
-using FrequencyOrderIterator = SortedTree::Iterator<Element, &Element::compare_freq>;
 
 template<class T>
 struct Element {

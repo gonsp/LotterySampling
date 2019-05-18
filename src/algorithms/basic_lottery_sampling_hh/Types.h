@@ -21,8 +21,6 @@ using FrequencyOrderLocator = SortedList::Locator<Element>;
 
 using TicketOrderLocator = BinaryHeap::Locator;
 
-template<class Element>
-using FrequencyOrderIterator = SortedList::Iterator<Element>;
 
 template<class T>
 struct Element {

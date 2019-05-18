@@ -61,7 +61,7 @@ public:
 
     void insert_element(Element* element);
 
-    Element* pop_and_push(Element* element);
+    Element* replace_last(Element* element);
 
     void replace_element(Element* replaced_element, Element* element);
 

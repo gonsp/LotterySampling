@@ -39,7 +39,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
             return false;
         }
 
-        Element<T>* removed_element = frequency_order.pop_and_push(&element);
+        Element<T>* removed_element = frequency_order.replace_last(&element);
         ticket_order.pop_and_push(removed_element, &element);
         this->remove_element(removed_element->id);
 

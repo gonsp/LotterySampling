@@ -28,7 +28,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
             ++offset;
             return false;
         }
-        Element<T>* removed_element = frequency_order.pop_and_push(&element);
+        Element<T>* removed_element = frequency_order.replace_last(&element);
         this->remove_element(removed_element->id);
 
         frequency_order.increase_key(&element);

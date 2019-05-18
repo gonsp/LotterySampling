@@ -31,7 +31,7 @@ void SortedList<Element, locator_field>::remove_element(Element* element) {
 };
 
 template<class Element, ClassField<Element, Locator<Element>> locator_field>
-Element* SortedList<Element, locator_field>::pop_and_push(Element* element) {
+Element* SortedList<Element, locator_field>::replace_last(Element* element) {
     assert(!bucket_list.empty());
     Iterator<Element>& iterator = element->*locator_field;
     iterator.bucket_iterator = prev(bucket_list.end());

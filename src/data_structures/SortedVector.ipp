@@ -23,7 +23,7 @@ void SortedVector<Element, locator_field>::insert_element(Element* element) {
 }
 
 template<class Element, ClassField<Element, Locator> locator_field>
-Element* SortedVector<Element, locator_field>::pop_and_push(Element* element) {
+Element* SortedVector<Element, locator_field>::replace_last(Element* element) {
     assert(!bucket_list.empty());
     Element* removed_element = v[v.size() - 1];
     replace_element(removed_element, element);
