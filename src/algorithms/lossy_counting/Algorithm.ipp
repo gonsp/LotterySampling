@@ -7,7 +7,7 @@ using namespace std;
 
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
-    error = stof(parameters.get_parameter("-error"));
+    error = stod(parameters.get_parameter("-error"));
 }
 
 template<class T>
@@ -43,7 +43,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
 }
 
 template<class T>
-float Algorithm<T>::get_frequency_threshold(float f) const {
+double Algorithm<T>::get_frequency_threshold(double f) const {
     assert(error < f / 2);
     return f - error;
 }

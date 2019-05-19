@@ -60,7 +60,7 @@ int main(int num_args, char* args[]) {
         if(s == ":q") { // It's a query over the sampled elements
             cin >> s;
             if(s == ":f") { // Heavy hitters query
-                float freq;
+                double freq;
                 cin >> freq;
                 stats.start_frequent_query();
                 print_results(algorithm->frequent_query(freq, cout));

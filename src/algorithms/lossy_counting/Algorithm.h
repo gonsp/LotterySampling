@@ -18,13 +18,13 @@ private:
     FrequencyOrder<Element<T>> frequency_order;
     EstimatedFrequencyOrder<Element<T>>  estimated_frequency_order;
 
-    float error;
+    double error;
 
     bool insert_element(Element<T>& element) override;
 
     void update_element(Element<T>& element) override;
 
-    float get_frequency_threshold(float f) const override;
+    double get_frequency_threshold(double f) const override;
 
 public:
 

@@ -11,9 +11,9 @@ using namespace std;
 
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
-    phi = stof(parameters.get_parameter("-phi"));
-    delta = stof(parameters.get_parameter("-delta"));
-    error = stof(parameters.get_parameter("-error"));
+    phi = stod(parameters.get_parameter("-phi"));
+    delta = stod(parameters.get_parameter("-delta"));
+    error = stod(parameters.get_parameter("-error"));
     r = phi/error * log(1/(phi * delta));
     int seed;
     if(parameters.has_parameter("-seed")) {
@@ -78,7 +78,7 @@ double Algorithm<T>::get_threshold() const {
 }
 
 template<class T>
-float Algorithm<T>::get_frequency_threshold(float f) const {
+double Algorithm<T>::get_frequency_threshold(double f) const {
     assert(f == phi);
     return phi - error;
 }

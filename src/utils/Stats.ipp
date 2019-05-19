@@ -38,7 +38,7 @@ void Stats::report(std::ostream& stream, GenericAlgorithmInterface<T>* algorithm
     stream << "'sample_size': " << algorithm->sample_size() << ",";
     stream << "'threshold': " << algorithm->get_threshold() << ",";
     stream << "'total_exec_time': " << process_element_time << ",";
-    stream << "'average_exec_time': " << float(process_element_time) / process_element_count << ",";
+    stream << "'average_exec_time': " << double(process_element_time) / process_element_count << ",";
     stream << "'N': " << process_element_count << ",";
     stream << "'frequent_query_time': " << frequent_query_time << ",";
     stream << "'frequent_query_count': " << frequent_query_count << ",";

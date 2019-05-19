@@ -17,10 +17,10 @@ private:
     TicketOrder<Element<T>> ticket_order;
     FrequencyOrder<Element<T>> frequency_order;
 
-    float phi;
-    float error;
-    float delta;
-    float r;
+    double phi;
+    double error;
+    double delta;
+    double r;
 
     TicketUtils ticket_generator;
 
@@ -28,7 +28,7 @@ private:
 
     void update_element(Element<T>& element) override;
 
-    float get_frequency_threshold(float f) const override;
+    double get_frequency_threshold(double f) const override;
 
 public:
 

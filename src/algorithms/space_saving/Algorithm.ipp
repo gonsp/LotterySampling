@@ -11,7 +11,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
     this->set_monitored_size(m);
     if(parameters.has_parameter("-threshold")) {
-        threshold = stof(parameters.get_parameter("-threshold"));
+        threshold = stod(parameters.get_parameter("-threshold"));
     } else {
         threshold = 0;
     }

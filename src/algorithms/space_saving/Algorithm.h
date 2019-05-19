@@ -20,7 +20,7 @@ private:
     unsigned int m;
 
     // For the new version with fixed threshold
-    float threshold;
+    double threshold;
     TicketUtils ticket_generator;
 
     bool insert_element(Element<T>& element) override;

@@ -16,7 +16,7 @@ class GenericAlgorithmInterface {
 
 public:
 
-    virtual QueryResults<T> frequent_query(float f, std::ostream& stream) = 0;
+    virtual QueryResults<T> frequent_query(double f, std::ostream& stream) = 0;
 
     virtual QueryResults<T> top_k_query(int k, std::ostream& stream) = 0;
 
@@ -50,7 +50,7 @@ protected:
 
     virtual FrequencyOrder& get_frequency_order() = 0;
 
-    virtual float get_frequency_threshold(float f) const { return f; }
+    virtual double get_frequency_threshold(double f) const { return f; }
 
     void remove_element(const T& element_id);
 
@@ -64,7 +64,7 @@ public:
 
     unsigned int sample_size() const override;
 
-    QueryResults<T> frequent_query(float f, std::ostream& stream) override;
+    QueryResults<T> frequent_query(double f, std::ostream& stream) override;
 
     QueryResults<T> top_k_query(int k, std::ostream& stream) override;
 
