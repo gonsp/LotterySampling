@@ -128,9 +128,8 @@ class Experiment:
                         raise StopIteration
 
             for chunk in chunk_stream(stream, stream.length // 100):
-                chunk_str = '\n'.join(chunk)
                 for instance in instances:
-                    instance.process_element(chunk_str)
+                    instance.process_stream_chunk(chunk)
                 print(stream.N * 100 / stream.length, '%')
                 if self.iterating_over is None:
                     x.append(stream.N)

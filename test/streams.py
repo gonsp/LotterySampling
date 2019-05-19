@@ -57,19 +57,19 @@ class Zipf(Stream):
         element = np.random.zipf(self.alpha)
         while element < self.offset:
             element = np.random.zipf(self.alpha)
-        return str(element)
+        return element
 
 
 class Uniform(Stream):
 
-    def __init__(self, length, max=100000, seed=None, save=True):
+    def __init__(self, length, n_max, seed=None, save=True):
         super().__init__(length, save)
-        self.max = max
+        self.n_max = n_max
         np.random.seed(seed)
 
 
     def next_element(self):
-        return str(np.random.uniform(0, self.max))
+        return np.random.randint(0, self.n_max)
 
 
 class Unequal(Stream):
@@ -87,8 +87,7 @@ class Unequal(Stream):
 
 
     def next_element(self):
-        element = str(self.data[self.N])
-        return element
+        return self.data[self.N]
 
 
 class File(Stream):

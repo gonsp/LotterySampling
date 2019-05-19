@@ -32,9 +32,9 @@ class Instance:
         self.N = 0
 
 
-    def process_element(self, element):
-        self.N += 1
-        self.process.stdin.write(element + '\n')
+    def process_stream_chunk(self, elements):
+        self.N += len(elements)
+        self.process.stdin.write('\n'.join(str(element) for element in elements) + '\n')
 
 
     def process_query_output(self):

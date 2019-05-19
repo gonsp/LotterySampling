@@ -5,7 +5,7 @@ def get_squared_error(instance, stream, query_name, parameter):
         error += (reported_elements[element] - real_elements[element])**2
     for element in reported_elements.keys() ^ real_elements.keys():
         if element in reported_elements:
-            error += (reported_elements[element] - stream.elements[element]/stream.N)**2
+            error += (reported_elements[element] - stream.elements[element])**2
         else:
             error += real_elements[element]**2
     return error
@@ -32,7 +32,7 @@ def get_weighted_precision(instance, stream, query_name, parameter):
         reported_elements[element] = 1 - reported_elements[element]
     for element in real_elements:
         real_elements[element] = 1 - real_elements[element]
-    real_freq_sum_reported_elements = sum([1 - stream.elements[element] / stream.N for element in reported_elements.keys()])
+    real_freq_sum_reported_elements = sum([1 - stream.elements[element] for element in reported_elements.keys()])
     if real_freq_sum_reported_elements == 0:
         return 1
     return get_intersection_sum(reported_elements, real_elements) / real_freq_sum_reported_elements
@@ -40,7 +40,7 @@ def get_weighted_precision(instance, stream, query_name, parameter):
 
 def get_weighted_precision_2(instance, stream, query_name, parameter):
     reported_elements, real_elements = execute_query(instance, stream, query_name, parameter)
-    real_freq_sum_reported_elements = sum([stream.elements[element] / stream.N for element in reported_elements.keys()])
+    real_freq_sum_reported_elements = sum([stream.elements[element] for element in reported_elements.keys()])
     return real_freq_sum_reported_elements / sum(freq for freq in real_elements.values())
 
 
@@ -49,7 +49,7 @@ def get_sorting_error(instance, stream, query_name, k):
     reported_elements, _ = execute_query(instance, stream, query_name, k, original_order=True)
     error = 0
     for i, element in enumerate(reported_elements):
-        error += (k - i) * (1 - (stream.elements[element[0]] / stream.N))
+        error += (k - i) * (1 - (stream.elements[element[0]]))
     return error
 
 
@@ -57,7 +57,7 @@ def execute_query(instance, stream, query_name, parameter, original_order=False)
     query = getattr(instance, query_name)
     reported_elements = query(parameter)
     query = getattr(stream, query_name)
-    real_elements = query(parameter)
+    real_elements = [(str(id), freq) for id, freq in query(parameter)]
     if not original_order:
         reported_elements = dict(reported_elements)
         real_elements = dict(real_elements)

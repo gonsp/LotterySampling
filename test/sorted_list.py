@@ -13,10 +13,11 @@ class SortedList:
         self.element_to_bucket = {}
         self.first_bucket = None
         self.last_bucket = None
+        self.N = 0
 
 
     def __getitem__(self, id):
-        return self.element_to_bucket[id].freq
+        return self.element_to_bucket[id].freq / self.N
 
 
     def __iter__(self):
@@ -28,6 +29,7 @@ class SortedList:
 
 
     def process_element(self, id):
+        self.N += 1
         if id not in self.element_to_bucket:
             self.add(id)
         else:
