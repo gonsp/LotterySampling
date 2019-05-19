@@ -29,9 +29,11 @@ class Instance:
         self.process = subprocess.Popen(command, bufsize=1, universal_newlines=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=error_pipe)
         self.pid = self.process.pid
         self.finished = False
+        self.N = 0
 
 
     def process_element(self, element):
+        self.N += 1
         self.process.stdin.write(element + '\n')
 
 
@@ -43,7 +45,7 @@ class Instance:
                 break
             elif len(output) > 0:
                 output = output.split()
-                element = (output[0], float(output[1]))
+                element = (output[0], int(output[1]) / float(self.N))
                 elements.append(element)
             else:
                 exit(1)

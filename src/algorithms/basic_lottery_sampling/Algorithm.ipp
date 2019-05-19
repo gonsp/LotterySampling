@@ -62,8 +62,7 @@ template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
 
     element.ticket = ticket_generator.generate_token();
-    element.over_estimation = 0;
-    element.count = 1;
+    element.freq = 1;
 
     if(this->sample_size() < m) {
         insert_level_1(element);
@@ -85,7 +84,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     // Updating frequency
-    frequency_order.update_key(&element, &Element<T>::count, element.count + 1);
+    frequency_order.update_key(&element, &Element<T>::freq, element.freq + 1);
 
     // Updating ticket
     Token token = ticket_generator.generate_token();

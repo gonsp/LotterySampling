@@ -29,7 +29,7 @@ FrequencyOrder<Element<T>>& Algorithm<T>::get_frequency_order() {
 
 template<class T>
 bool Algorithm<T>::insert_element(Element<T>& element) {
-    element.observed_count = 0;
+    element.freq = 0;
 
     frequency_order.insert_element(&element);
 
@@ -44,7 +44,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
-    frequency_order.update_key(&element, &Element<T>::observed_count, element.observed_count + 1);
+    frequency_order.update_key(&element, &Element<T>::freq, element.freq + 1);
 
     for(int i = 0; i < instances.size(); ++i) {
 
@@ -83,7 +83,7 @@ template<class T>
 void Algorithm<T>::print_state() {
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         Element<T>& element = *(*it);
-        cout << element.id << ", " << element.get_count() << endl;
+        cout << element.id << ", " << element.get_freq() << endl;
 
         for(int i = 0; i < instances.size(); ++i) {
             Ticket ticket;

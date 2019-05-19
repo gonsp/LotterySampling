@@ -40,11 +40,19 @@ GenericAlgorithmInterface<T>* create_algorithm_instance(const InputParser& param
     }
 }
 
+template<class T>
+void print_results(QueryResults<T> results) {
+    for(auto it = results.begin(); it != results.end(); ++it) {
+        cout << it->first << " " << it->second << endl;
+    }
+}
+
 int main(int num_args, char* args[]) {
 
     InputParser params(num_args, args);
 
-    GenericAlgorithmInterface<long long int>* algorithm = create_algorithm_instance<long long int>(params);
+    typedef long long int T;
+    GenericAlgorithmInterface<T>* algorithm = create_algorithm_instance<T>(params);
 
     Stats stats;
     string s;
@@ -55,13 +63,13 @@ int main(int num_args, char* args[]) {
                 float freq;
                 cin >> freq;
                 stats.start_frequent_query();
-                algorithm->frequent_query(freq, cout);
+                print_results(algorithm->frequent_query(freq, cout));
                 stats.end_frequent_query();
             } else if(s == ":k") { // k-top frequent elements query
                 int k;
                 cin >> k;
                 stats.start_top_k_query();
-                algorithm->top_k_query(k, cout);
+                print_results(algorithm->top_k_query(k, cout));
                 stats.end_top_k_query();
             }
             cout << ":end" << endl;
@@ -71,8 +79,8 @@ int main(int num_args, char* args[]) {
             algorithm->print_state();
             cout << ":end" << endl;
         } else { // It's a new element in the data stream
-            long long int element = stoll(s);
-//          string element = s;
+            T element = stoll(s);
+//          T element = s;
             stats.start_process_element();
             algorithm->process_element(element);
             stats.end_process_element();
@@ -83,4 +91,3 @@ int main(int num_args, char* args[]) {
 
     return 0;
 }
-

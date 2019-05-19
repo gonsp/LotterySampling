@@ -43,19 +43,19 @@ struct Element {
     };
 
     T id;
-    unsigned int observed_count;
+    unsigned int freq;
     unordered_map<int, ElementInstance> instances;
 
     Element(const T& id) {
         this->id = id;
     }
 
-    unsigned int get_count() const {
-        return observed_count;
+    unsigned int get_freq() const {
+        return freq;
     }
 
     bool compare_freq(const Element<T>& element) const {
-        return this->observed_count < element.observed_count;
+        return this->freq < element.freq;
     }
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;

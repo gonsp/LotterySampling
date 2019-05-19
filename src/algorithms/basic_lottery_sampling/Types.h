@@ -27,33 +27,28 @@ struct Element {
 
     T id;
     Ticket ticket;
-    unsigned int count;
-    unsigned int over_estimation;
+    unsigned int freq;
 
     Element(const T& id) {
         this->id = id;
     }
 
     bool compare_freq(const Element<T>& element) const {
-        if(this->count != element.count) {
-            return this->count < element.count;
-        } else {
-            return this->over_estimation > element.over_estimation;
-        }
+        return this->freq < element.freq;
     }
 
     bool compare_ticket(const Element<T>& element) const {
         return this->ticket < element.ticket;
     }
 
+    unsigned int get_freq() const {
+        return freq;
+    }
+
     TicketOrderLocator ticket_order_locator = -1;
     int level;
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;
-
-    unsigned int get_count() const {
-        return count;
-    }
 };
 
 

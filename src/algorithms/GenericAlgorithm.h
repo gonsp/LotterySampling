@@ -3,6 +3,10 @@
 
 #include <ostream>
 #include <unordered_map>
+#include <list>
+
+template<class T>
+using QueryResults = std::list<std::pair<T, unsigned int>>;
 
 // This interface is needed so it's possible to create a pointer
 // to a GenericAlgorithm, since GenericAlgorithm is a template class
@@ -12,9 +16,9 @@ class GenericAlgorithmInterface {
 
 public:
 
-    virtual void frequent_query(float f, std::ostream& stream) = 0;
+    virtual QueryResults<T> frequent_query(float f, std::ostream& stream) = 0;
 
-    virtual void top_k_query(int k, std::ostream& stream) = 0;
+    virtual QueryResults<T> top_k_query(int k, std::ostream& stream) = 0;
 
     virtual void process_element(const T& element_id) = 0;
 
@@ -60,9 +64,9 @@ public:
 
     unsigned int sample_size() const override;
 
-    void frequent_query(float f, std::ostream& stream) override;
+    QueryResults<T> frequent_query(float f, std::ostream& stream) override;
 
-    void top_k_query(int k, std::ostream& stream) override;
+    QueryResults<T> top_k_query(int k, std::ostream& stream) override;
 
 };
 

@@ -27,8 +27,6 @@ private:
 
     void update_element(Element<T>& element) override;
 
-    float get_frequency_threshold(float f) const override;
-
 public:
 
     Algorithm(const InputParser& parameters);

@@ -24,19 +24,23 @@ void GenericAlgorithm<Element, T, FrequencyOrder>::process_element(const T& elem
 }
 
 template<template<typename> class Element, class T, class FrequencyOrder>
-void GenericAlgorithm<Element, T, FrequencyOrder>::frequent_query(float f, std::ostream& stream) {
-    for(auto it = get_frequency_order().begin(); it != get_frequency_order().end() && (*it)->get_count() >= floor(get_frequency_threshold(f) * N); ++it) {
+QueryResults<T> GenericAlgorithm<Element, T, FrequencyOrder>::frequent_query(float f, std::ostream& stream) {
+    QueryResults<T> results;
+    for(auto it = get_frequency_order().begin(); it != get_frequency_order().end() && (*it)->get_freq() >= get_frequency_threshold(f) * N; ++it) {
         Element<T>* element = *it;
-        stream << element->id << " " << element->get_count() / float(N) << std::endl;
+        results.push_back(std::make_pair(element->id, element->get_freq()));
     }
+    return results;
 };
 
 template<template<typename> class Element, class T, class FrequencyOrder>
-void GenericAlgorithm<Element, T, FrequencyOrder>::top_k_query(int k, std::ostream& stream) {
+QueryResults<T> GenericAlgorithm<Element, T, FrequencyOrder>::top_k_query(int k, std::ostream& stream) {
+    QueryResults<T> results;
     for(auto it = get_frequency_order().begin(); it != get_frequency_order().end() && k-- > 0; ++it) {
         Element<T>* element = *it;
-        stream << element->id << " " << element->get_count() / float(N) << std::endl;
+        results.push_back(std::make_pair(element->id, element->get_freq()));
     }
+    return results;
 };
 
 template<template<typename> class Element, class T, class FrequencyOrder>

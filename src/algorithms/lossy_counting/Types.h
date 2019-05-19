@@ -23,7 +23,7 @@ template<class T>
 struct Element {
 
     T id;
-    unsigned int count;
+    unsigned int freq;
     unsigned int over_estimation;
 
     Element(const T& id) {
@@ -31,11 +31,11 @@ struct Element {
     }
 
     bool compare_freq(const Element<T>& element) const {
-        return this->count + this->over_estimation < element.count + element.over_estimation;
+        return this->freq + this->over_estimation < element.freq + element.over_estimation;
     }
 
-    unsigned int get_count() const {
-        return count;
+    unsigned int get_freq() const {
+        return freq;
     }
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;

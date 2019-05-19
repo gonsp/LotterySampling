@@ -33,7 +33,6 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     if(this->sample_size() < m) {
         frequency_order.insert_element(&element);
         ticket_order.push(&element);
-//        element.over_estimation = 0;
     } else { // Max number of monitored elements is reached. This new one may replace the one with less hits
         if(element.ticket < ticket_order.top()->ticket) {
             return false;
@@ -43,7 +42,6 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         ticket_order.pop_and_push(removed_element, &element);
         this->remove_element(removed_element->id);
 
-//        element.over_estimation = element.get_count();
         frequency_order.increase_key(&element);
     }
     return true;
@@ -68,7 +66,7 @@ template<class T>
 void Algorithm<T>::print_state() {
     for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
         Element<T>* element = *it;
-        cout << element->id << ", " << element->get_count() << ", " << TicketUtils::normalize_ticket(element->ticket);
+        cout << element->id << ", " << element->get_freq() << ", " << TicketUtils::normalize_ticket(element->ticket);
         if(ticket_order.is_inside(element)) {
             cout << "*" << endl;
         } else {

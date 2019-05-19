@@ -2,7 +2,6 @@
 #define _LotterySamplingLOF_Types_H_
 
 #include "data_structures/BinaryHeap.h"
-#include "data_structures/SortedList.h"
 #include "data_structures/SortedVector.h"
 #include "utils/TicketUtils.h"
 
@@ -26,13 +25,12 @@ struct Element {
 
     T id;
     Ticket ticket;
-//    unsigned int over_estimation;
 
     Element(const T& id) {
         this->id = id;
     }
 
-    unsigned int get_count() const {
+    unsigned int get_freq() const {
         return frequency_order_locator.bucket_iterator->key;
     }
 

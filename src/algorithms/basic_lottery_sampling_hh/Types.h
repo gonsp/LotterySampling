@@ -2,6 +2,7 @@
 #define _BasicLotterySamplingHH_Types_H_
 
 #include "data_structures/BinaryHeap.h"
+#include <data_structures/SortedList.h>
 #include "data_structures/SortedTree.h"
 #include "utils/TicketUtils.h"
 
@@ -32,7 +33,7 @@ struct Element {
         this->id = id;
     }
 
-    unsigned int get_count() const {
+    unsigned int get_freq() const {
         return frequency_order_locator.bucket_iterator->key;
     }
 

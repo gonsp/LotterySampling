@@ -22,7 +22,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 
     if(this->sample_size() > 0) {
         Element<T>* element_min_freq = *prev(estimated_frequency_order.end());
-        if(element_min_freq->count + element_min_freq->over_estimation < window) {
+        if(element_min_freq->freq + element_min_freq->over_estimation < window) {
             frequency_order.remove_element(element_min_freq);
             estimated_frequency_order.remove_element(element_min_freq);
             this->remove_element(element_min_freq->id);
@@ -30,7 +30,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     }
 
     element.over_estimation = window - 1;
-    element.count = 1;
+    element.freq = 1;
     frequency_order.insert_element(&element);
     estimated_frequency_order.insert_element(&element);
     return true;
@@ -39,7 +39,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.increase_key(&element);
-    estimated_frequency_order.update_key(&element, &Element<T>::count, element.count + 1);
+    estimated_frequency_order.update_key(&element, &Element<T>::freq, element.freq + 1);
 }
 
 template<class T>
