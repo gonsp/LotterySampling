@@ -9,6 +9,14 @@
       }
     },
     {
+      "name": "SpaceSaving",
+      // A commit can be chosen to do the experiment with that version
+      "commit": "548e68808ad40907a38d13bf7d4834a0624bae70",
+      "params": {
+        "m": 100000
+      }
+    },
+    {
       "name": "BasicLotterySamplingHH",
       "params": {
         // The seed can be overwritten

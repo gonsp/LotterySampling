@@ -2,14 +2,16 @@ import subprocess
 import ast
 import time
 import profiler_utils
+from binary_builder import BinaryBuilder
 
 
 class Instance:
 
-    def __init__(self, exec_path, algorithm, params, profile=None):
+    def __init__(self, algorithm, params, commit=None, profile=None):
         self.algorithm = algorithm
         self.params = params
         self.params["a"] = algorithm
+        exec_path = BinaryBuilder().build(commit, profile)
 
         command = [exec_path] + [x for param, value in params.items() for x in ["-" + param, str(value)]]
         error_pipe = None
@@ -23,7 +25,7 @@ class Instance:
             else:
                 print("Unknown profiler metric")
                 exit(1)
-            command = ['valgrind', '--tool=' + tool] + command
+            command = ['valgrind', '--tool=' + tool, '--' + tool + '-out-file=.tmp/' + tool + '.out.%p'] + command
             error_pipe = subprocess.PIPE
         self.profile = profile
         self.command = ' '.join(command)
@@ -94,10 +96,10 @@ class Instance:
         self.finished = True
         if self.profile is not None:
             time.sleep(2)
-        if self.profile is 'memory_usage_profiler':
+        if self.profile == 'memory_usage_profiler':
             self.end_stats['memory_usage_profiler'] = profiler_utils.get_peak_memory(self.pid)
-        elif self.profile is 'memory_leak_profiler':
+        elif self.profile == 'memory_leak_profiler':
             self.end_stats['memory_leak_profiler'] = profiler_utils.get_leaked_memory(self.process.stderr)
-        elif self.profile is 'average_cost_profiler':
+        elif self.profile == 'average_cost_profiler':
             cost_total, cost_process_element = profiler_utils.get_cost(self.pid)
             self.end_stats['average_cost_profiler'] = cost_process_element

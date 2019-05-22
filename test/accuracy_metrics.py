@@ -18,6 +18,8 @@ def get_recall(instance, stream, query_name, parameter):
 
 def get_precision(instance, stream, query_name, parameter):
     reported_elements, real_elements = execute_query(instance, stream, query_name, parameter)
+    if len(reported_elements) == 0:
+        return 1
     return len(reported_elements.keys() & real_elements.keys()) / len(reported_elements)
 
 

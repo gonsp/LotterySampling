@@ -44,6 +44,15 @@ class Stream():
         return [(id, count/self.N) for id, count in itertools.takewhile(lambda element: element[1] >= freq * self.N, iter(self.elements))]
 
 
+def chunk_stream(stream, chunk_size):
+    it = iter(stream)
+    while True:
+        chunk = list(itertools.islice(it, chunk_size))
+        if len(chunk) > 0:
+            yield chunk
+        else:
+            raise StopIteration
+
 class Zipf(Stream):
 
     def __init__(self, length, alpha=1.5, offset=-1, seed=None, save=True):

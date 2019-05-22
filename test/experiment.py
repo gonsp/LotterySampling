@@ -1,12 +1,11 @@
 import copy
 import os
 import random
-import subprocess
 import json
 import shutil
-import itertools
 import numpy as np
 import accuracy_metrics
+from streams import chunk_stream
 from instance import Instance
 from datetime import datetime
 
@@ -53,8 +52,6 @@ class Experiment:
         if "save" not in self.config["stream"]["params"]:
             self.config["stream"]["params"]["save"] = False
 
-        self.default_exec_path = self.build_executable()
-
 
     def load_config_file(self, config_file_path):
         with open(config_file_path) as config_file:
@@ -63,19 +60,6 @@ class Experiment:
                 if "//" not in line:
                     config += line
             return json.loads(config)
-
-
-    def build_executable(self):
-        compilation_config = "release" if self.profile is None else "debug"
-        print('BUILDING EXECUTABLE')
-        directory = '../cmake-build-' + compilation_config
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        command = 'cd ' + directory + ' && cmake -DCMAKE_BUILD_TYPE=' + compilation_config + ' .. && make'
-        process = subprocess.Popen(command, shell=True)
-        process.communicate()
-        assert(process.returncode == 0)
-        return directory + '/heavy_hitters'
 
 
     def get_random_seed(self):
@@ -90,8 +74,8 @@ class Experiment:
                 params[self.iterating_over[1]] = params[self.iterating_over[1]][iteration]
             if "seed" not in params:
                 params["seed"] = self.get_random_seed()
-            exec_path = self.default_exec_path if "exec_path" not in algorithm else algorithm["exec_path"]
-            instances.append(Instance(exec_path, algorithm["name"], params, profile=self.profile))
+            commit = algorithm["commit"] if "commit" in algorithm else None
+            instances.append(Instance(algorithm["name"], params, commit=commit, profile=self.profile))
         return instances
 
 
@@ -118,15 +102,6 @@ class Experiment:
             instances = self.create_instances(iteration)
             stream = self.create_stream(iteration)
 
-            def chunk_stream(stream, chunk_size):
-                it = iter(stream)
-                while True:
-                    chunk = list(itertools.islice(it, chunk_size))
-                    if len(chunk) > 0:
-                        yield chunk
-                    else:
-                        raise StopIteration
-
             for chunk in chunk_stream(stream, stream.length // 100):
                 for instance in instances:
                     instance.process_stream_chunk(chunk)
@@ -152,6 +127,7 @@ class Experiment:
             if self.profile is None:
                 for instance in instances:
                     instance.finish()
+        shutil.rmtree(".tmp/", ignore_errors=True)
 
 
     def get_metrics(self, instances, stream):
@@ -182,7 +158,6 @@ class Experiment:
             x = [0]
             y = np.zeros((1, len(self.config["algorithms"]), len(self.config["metrics"])))
 
-        print('Storing results')
         folder = "results/" + start_time.strftime('%Y-%m-%d-%H:%M:%S') + "/"
         if not os.path.exists(folder):
             os.makedirs(folder)
@@ -200,3 +175,4 @@ class Experiment:
             os.remove(filename + '.tmp')
 
         shutil.copy(self.config_file_path, folder + "config_file.json")
+

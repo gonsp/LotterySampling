@@ -11,10 +11,10 @@ def get_peak_memory(pid):
             elif 'algorithm = new' in line:
                 instantiation_lines.append(line_number + 1)
 
-    massif_file = 'massif.out.' + str(pid)
+    massif_file = '.tmp/massif.out.' + str(pid)
 
-    peak = 0
     with open(massif_file) as f:
+        peak = 0
         used_memory = 0
         for line in f:
             if 'snapshot=' in line:
@@ -24,11 +24,7 @@ def get_peak_memory(pid):
                 any(['Main.cpp:' + str(line_number) in line for line_number in instantiation_lines]):
                 used_memory += int(line.split()[1])
 
-    peak = max(used_memory, peak)
-
-    os.remove(massif_file)
-
-    return peak
+    return max(used_memory, peak)
 
 
 def get_leaked_memory(pipe):
@@ -40,7 +36,7 @@ def get_leaked_memory(pipe):
 
 def get_cost(pid):
 
-    callgrind_file = 'callgrind.out.' + str(pid)
+    callgrind_file = '.tmp/callgrind.out.' + str(pid)
     id_main = None
     id_process_element = None
 
@@ -79,7 +75,5 @@ def get_cost(pid):
 
             if cost_main is not None and cost_process_element is not None:
                 break
-
-    os.remove(callgrind_file)
 
     return cost_main, cost_process_element
