@@ -14,13 +14,14 @@ class Instance:
         command = [exec_path] + [x for param, value in params.items() for x in ["-" + param, str(value)]]
         error_pipe = None
         if profile is not None:
-            if profile is 'memory_usage_profiler':
+            if profile == 'memory_usage_profiler':
                 tool = 'massif'
-            elif profile is 'memory_leak_profiler':
+            elif profile == 'memory_leak_profiler':
                 tool = 'memcheck'
-            elif profile is 'average_cost_profiler':
+            elif profile == 'average_cost_profiler':
                 tool = 'callgrind'
             else:
+                print("Unknown profiler metric")
                 exit(1)
             command = ['valgrind', '--tool=' + tool] + command
             error_pipe = subprocess.PIPE
@@ -48,6 +49,7 @@ class Instance:
                 element = (output[0], int(output[1]) / float(self.N))
                 elements.append(element)
             else:
+                print("Error reading query answer from instance")
                 exit(1)
         return elements
 

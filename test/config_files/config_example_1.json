@@ -1,0 +1,33 @@
+{
+  "name": "Experiment example 1",
+  "seed": 1,
+  "algorithms": [
+    {
+      "name": "SpaceSaving",
+      "params": {
+        "m": 100000
+      }
+    },
+    {
+      "name": "BasicLotterySamplingHH",
+      "params": {
+        // The seed can be overwritten
+        "seed": 2,
+        "phi": 0.0001,
+        "error": 0.00001,
+        "delta": 0.01
+      }
+    }
+  ],
+  "query": "frequent",
+  "query_param": 0.0001,
+  "metrics": ["weighted_recall", "recall", "precision", "sample_size"],
+  "stream": {
+    "name": "Unequal",
+    "params": {
+      "length": 10000000,
+      "alpha": 100,
+      "beta": 1000
+    }
+  }
+}

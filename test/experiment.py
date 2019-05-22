@@ -45,7 +45,7 @@ class Experiment:
         self.profile = None
         for metric in self.config["metrics"]:
             if metric in ["memory_usage_profiler", "memory_leak_profiler", "average_cost_profiler"]:
-                assert(len(self.config["metrics"]) == 1)
+                assert(self.profile is None)
                 assert(self.iterating_over is not None)
                 self.profile = metric
             else:

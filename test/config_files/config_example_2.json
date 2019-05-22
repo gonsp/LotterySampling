@@ -1,0 +1,35 @@
+{
+  "name": "Experiment example 2",
+  // "seed": 1 It is not required
+  "algorithms": [
+    {
+      "name": "SpaceSaving",
+      "params": {
+        // Iterating over a parameter of the algorithms
+        "m": [1000, 2000, 3000, 4000, 5000]
+      }
+    },
+    {
+      "name": "LotterySampling",
+      "params": {
+        "m": [1000, 2000, 3000, 4000, 5000]
+      }
+    }
+  ],
+  "query": "top_k",
+  "query_param": 1000,
+  // Arbitrary amount of metrics. However there are two restraints:
+  // 1- In case there is a profiler metric, there can't be any other metric.
+  // 2- To use a profiler metric, some parameter needs to be a list like above.
+  "metrics": ["average_exec_time", "threshold", "top_k_query_time"],
+  "stream": {
+    "name": "Zipf",
+    "params": {
+      "length": 1000000,
+      "alpha": 1.0001
+      // Instead of iterating over a parameter of the algorithms,
+      // it's also possible to iterate over a parameter of the stream:
+      // "alpha": [1.0001, 1.001. 1.01, 1.1]
+    }
+  }
+}

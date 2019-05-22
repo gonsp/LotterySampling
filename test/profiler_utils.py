@@ -59,6 +59,7 @@ def get_cost(pid):
                 break
 
     if id_main is None or id_process_element is None:
+        print("Error reading profiler output")
         exit(1)
 
     cost_main = None
