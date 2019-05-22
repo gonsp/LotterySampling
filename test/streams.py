@@ -53,6 +53,7 @@ def chunk_stream(stream, chunk_size):
         else:
             raise StopIteration
 
+
 class Zipf(Stream):
 
     def __init__(self, length, alpha=1.5, offset=-1, seed=None, save=True):
@@ -83,16 +84,16 @@ class Uniform(Stream):
 
 class Unequal(Stream):
 
-    def __init__(self, length, alpha=100, beta=100, seed=None, save=True):
+    def __init__(self, length, alpha, beta, seed=None, save=True):
         super().__init__(length, save)
-        self.data = np.zeros(length, dtype=int)
+        data = np.zeros(length, dtype=int)
         for i in range(alpha):
             for j in range(beta):
-                self.data[i*beta + j] = i
+                data[i*beta + j] = i
         for i in range(alpha * beta, length):
-            self.data[i] = i - alpha * (beta - 1)
+            data[i] = i - alpha * (beta - 1)
         np.random.seed(seed)
-        self.data = iter(np.random.permutation(self.data))
+        self.data = iter(np.random.permutation(data))
 
 
     def next_element(self):

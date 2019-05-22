@@ -13,6 +13,8 @@ def get_squared_error(instance, stream, query_name, parameter):
 
 def get_recall(instance, stream, query_name, parameter):
     reported_elements, real_elements = execute_query(instance, stream, query_name, parameter)
+    if len(real_elements) == 0:
+        return 1
     return len(reported_elements.keys() & real_elements.keys()) / len(real_elements)
 
 
@@ -25,7 +27,10 @@ def get_precision(instance, stream, query_name, parameter):
 
 def get_weighted_recall(instance, stream, query_name, parameter):
     reported_elements, real_elements = execute_query(instance, stream, query_name, parameter)
-    return get_intersection_sum(reported_elements, real_elements) / sum(freq for freq in real_elements.values())
+    freq_real_elements = sum(freq for freq in real_elements.values())
+    if freq_real_elements == 0:
+        return 1
+    return get_intersection_sum(reported_elements, real_elements) / freq_real_elements
 
 
 def get_weighted_precision(instance, stream, query_name, parameter):

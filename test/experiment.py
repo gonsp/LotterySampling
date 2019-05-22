@@ -67,6 +67,7 @@ class Experiment:
 
 
     def create_instances(self, iteration):
+        print("Building binaries and instantiating algorithms")
         instances = []
         for algorithm in self.config["algorithms"]:
             params = copy.deepcopy(algorithm["params"])
@@ -127,7 +128,6 @@ class Experiment:
             if self.profile is None:
                 for instance in instances:
                     instance.finish()
-        shutil.rmtree(".tmp/", ignore_errors=True)
 
 
     def get_metrics(self, instances, stream):
@@ -159,8 +159,7 @@ class Experiment:
             y = np.zeros((1, len(self.config["algorithms"]), len(self.config["metrics"])))
 
         folder = "results/" + start_time.strftime('%Y-%m-%d-%H:%M:%S') + "/"
-        if not os.path.exists(folder):
-            os.makedirs(folder)
+        os.makedirs(folder, exist_ok=True)
 
         for i, metric in enumerate(self.config["metrics"]):
             filename = folder + metric + '-' + self.config["name"]
