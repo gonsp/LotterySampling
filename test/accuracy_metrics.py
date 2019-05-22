@@ -45,7 +45,7 @@ def get_weighted_precision_2(instance, stream, query_name, parameter):
 
 
 def get_sorting_error(instance, stream, query_name, k):
-    assert query_name is 'k_top_query'
+    assert query_name is 'top_k'
     reported_elements, _ = execute_query(instance, stream, query_name, k, original_order=True)
     error = 0
     for i, element in enumerate(reported_elements):

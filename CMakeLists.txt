@@ -12,6 +12,14 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")
 
+foreach(flags
+        CMAKE_CXX_FLAGS_RELEASE
+        CMAKE_CXX_FLAGS_RELWITHDEBINFO
+        CMAKE_CXX_FLAGS_MINSIZEREL)
+        string(REGEX REPLACE "(^| )[/-]D *NDEBUG($| )" " " "${flags}" "${${flags}}")
+endforeach()
+
+
 #set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O3")
 #set(CMAKE_CXX_FLAGS_RELEASEWITHASSERTS "-Wall -O3")
 

@@ -83,11 +83,11 @@ class Unequal(Stream):
         for i in range(alpha * beta, length):
             self.data[i] = i - alpha * (beta - 1)
         np.random.seed(seed)
-        self.data = np.random.permutation(self.data)
+        self.data = iter(np.random.permutation(self.data))
 
 
     def next_element(self):
-        return self.data[self.N]
+        return next(self.data)
 
 
 class File(Stream):

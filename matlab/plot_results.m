@@ -11,6 +11,8 @@ switch answer
         path = strcat(last_experiment_results.folder, "/", last_experiment_results.name, "/*.csv");
     case 'Choose'
         path = strcat(uigetdir('../test/results'), "/*.csv");
+    otherwise
+        return
 end
 
 figure_handle = figure('units','normalized','outerposition',[0 0 1 1]);
