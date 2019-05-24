@@ -5,9 +5,11 @@
 #include <vector>
 
 namespace CountSketch {
+    
+    
+using namespace std;
 
-
-using Counters = std::vector<std::vector<int>>;
+using Counters = vector<vector<int>>;
 
 template<class Element>
 using FrequencyOrder = SortedTree::SortedTree<Element, &Element::compare_freq, &Element::frequency_order_locator>;
@@ -38,19 +40,19 @@ struct Element {
 };
 
 
-// TODO improve this (use random hash functions, the std::hash<int> doesn't work for this)
+// TODO improve this (use random hash functions, the hash<int> doesn't work for this)
 template<class T>
 struct Hasher {
 
-    std::hash<std::string> hasher;
+    hash<string> hasher;
 
     size_t operator()(T t) const {
-        return hasher(std::to_string(t));
+        return hasher(to_string(t));
     }
 };
 
 template<>
-size_t Hasher<std::string>::operator()(std::string t) const {
+size_t Hasher<string>::operator()(string t) const {
     return hasher(t);
 }
 

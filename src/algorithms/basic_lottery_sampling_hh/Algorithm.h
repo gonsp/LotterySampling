@@ -9,6 +9,8 @@
 namespace BasicLotterySamplingHH {
 
 
+using namespace std;
+
 template<class T>
 class Algorithm : public GenericAlgorithm<Element, T, FrequencyOrder<Element<T>>> {
 
@@ -30,13 +32,15 @@ private:
 
     double get_frequency_threshold(double f) const override;
 
+    double get_threshold() const;
+
 public:
 
     Algorithm(const InputParser& parameters);
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
 
-    double get_threshold() const override;
+    unordered_map<string, double> get_custom_stats() const override;
 };
 
 

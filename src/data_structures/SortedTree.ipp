@@ -4,8 +4,6 @@
 namespace SortedTree {
 
 
-using namespace std;
-
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator<Element, comparator_func>> locator_field>
 void SortedTree<Element, comparator_func, locator_field>::insert_element(Element* element) {
     element->*locator_field = s.insert(element);
@@ -29,17 +27,17 @@ void SortedTree<Element, comparator_func, locator_field>::update_key(Element* el
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator<Element, comparator_func>> locator_field>
 Iterator<Element, comparator_func> SortedTree<Element, comparator_func, locator_field>::begin() {
     return s.rbegin();
-};
+}
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator<Element, comparator_func>> locator_field>
 Iterator<Element, comparator_func> SortedTree<Element, comparator_func, locator_field>::end() {
     return s.rend();
-};
+}
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator<Element, comparator_func>> locator_field>
 unsigned long SortedTree<Element, comparator_func, locator_field>::size() const {
     return s.size();
-};
+}
 
 
 }

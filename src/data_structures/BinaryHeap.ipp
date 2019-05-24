@@ -4,8 +4,6 @@
 namespace BinaryHeap {
 
 
-using namespace std;
-
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator> locator_field>
 BinaryHeap<Element, comparator_func, locator_field>::BinaryHeap(unsigned int m) {
     v.reserve(m+1);
@@ -67,7 +65,7 @@ void BinaryHeap<Element, comparator_func, locator_field>::pop_and_push(
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator> locator_field>
 bool BinaryHeap<Element, comparator_func, locator_field>::is_inside(Element* element) const {
     return element->*locator_field != -1;
-};
+}
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator> locator_field>
 void BinaryHeap<Element, comparator_func, locator_field>::key_updated(Element* element) {

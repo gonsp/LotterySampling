@@ -30,10 +30,6 @@ public:
     Algorithm(const InputParser& parameters);
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
-
-    double get_threshold() const override;
-
-    void print_state() override;
 };
 
 

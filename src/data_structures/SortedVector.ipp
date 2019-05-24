@@ -4,8 +4,6 @@
 namespace SortedVector {
 
 
-using namespace std;
-
 template<class Element, ClassField<Element, Locator> locator_field>
 SortedVector<Element, locator_field>::SortedVector(unsigned int m) {
     v.reserve(m);

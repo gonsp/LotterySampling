@@ -7,8 +7,6 @@
 
 namespace BasicLotterySampling {
 
-    
-using namespace std;
 
 template<class Element>
 using FrequencyOrder = SortedTree::SortedTree<Element, &Element::compare_freq, &Element::frequency_order_locator>;

@@ -59,7 +59,6 @@ struct Element {
     }
 
     FrequencyOrderLocator<Element<T>> frequency_order_locator;
-
 };
 
 template<class T>

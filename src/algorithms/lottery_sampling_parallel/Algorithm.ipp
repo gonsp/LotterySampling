@@ -6,7 +6,6 @@
 namespace LotterySamplingParallel {
 
 
-using namespace std;
 
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
@@ -75,24 +74,6 @@ void Algorithm<T>::update_element(Element<T>& element) {
                 element_instance.ticket = token;
                 instances[i].key_updated(&element_instance);
             }
-        }
-    }
-}
-
-template<class T>
-void Algorithm<T>::print_state() {
-    for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
-        Element<T>& element = *(*it);
-        cout << element.id << ", " << element.get_freq() << endl;
-
-        for(int i = 0; i < instances.size(); ++i) {
-            Ticket ticket;
-            if(element.instances.count(i) == 0) {
-                ticket = 0;
-            } else {
-                ticket = element.instances.find(i)->second.ticket;
-            }
-            cout << TicketUtils::normalize_ticket(ticket) << " ";
         }
     }
 }

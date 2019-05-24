@@ -3,8 +3,6 @@
 namespace LossyCounting {
 
 
-using namespace std;
-
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     error = stod(parameters.get_parameter("-error"));

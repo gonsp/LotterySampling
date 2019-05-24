@@ -31,7 +31,7 @@ QueryResults<T> GenericAlgorithm<Element, T, FrequencyOrder>::frequent_query(dou
         results.push_back(std::make_pair(element->id, element->get_freq()));
     }
     return results;
-};
+}
 
 template<template<typename> class Element, class T, class FrequencyOrder>
 QueryResults<T> GenericAlgorithm<Element, T, FrequencyOrder>::top_k_query(int k, std::ostream& stream) {
@@ -41,7 +41,7 @@ QueryResults<T> GenericAlgorithm<Element, T, FrequencyOrder>::top_k_query(int k,
         results.push_back(std::make_pair(element->id, element->get_freq()));
     }
     return results;
-};
+}
 
 template<template<typename> class Element, class T, class FrequencyOrder>
 void GenericAlgorithm<Element, T, FrequencyOrder>::remove_element(const T& element_id) {

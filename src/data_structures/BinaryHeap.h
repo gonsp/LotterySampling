@@ -8,6 +8,8 @@
 namespace BinaryHeap {
 
 
+using namespace std;
+
 typedef int Locator;
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator> locator_field>
@@ -18,7 +20,7 @@ class BinaryHeap {
 
 private:
 
-    std::vector<Element*> v;
+    vector<Element*> v;
     PointerComparator<Element, comparator_func> comparator;
 
     Element* pop(Locator locator);

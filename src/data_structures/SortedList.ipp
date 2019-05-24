@@ -4,8 +4,6 @@
 namespace SortedList {
 
 
-using namespace std;
-
 template<class Element, ClassField<Element, Locator<Element>> locator_field>
 void SortedList<Element, locator_field>::insert_element(Element* element) {
     if(bucket_list.empty() || prev(bucket_list.end())->key != 1) {
@@ -28,7 +26,7 @@ void SortedList<Element, locator_field>::remove_element(Element* element) {
         bucket_list.erase(iterator.bucket_iterator);
     }
     --element_count;
-};
+}
 
 template<class Element, ClassField<Element, Locator<Element>> locator_field>
 Element* SortedList<Element, locator_field>::replace_last(Element* element) {
@@ -91,7 +89,7 @@ Iterator<Element> SortedList<Element, locator_field>::end() {
 template<class Element, ClassField<Element, Locator<Element>> locator_field>
 unsigned long SortedList<Element, locator_field>::size() const {
     return element_count;
-};
+}
 
 template<class Element>
 Iterator<Element> Iterator<Element>::Iterator::operator++() {

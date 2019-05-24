@@ -5,13 +5,15 @@
 #include <set>
 
 namespace SortedTree {
-
+    
+    
+using namespace std;
 
 template<class Element, ComparatorFunction<Element> comparator_func>
-using Iterator = typename std::multiset<Element*, PointerComparator<Element, comparator_func>>::reverse_iterator;
+using Iterator = typename multiset<Element*, PointerComparator<Element, comparator_func>>::reverse_iterator;
 
 template<class Element, ComparatorFunction<Element> comparator_func>
-using Locator = typename std::multiset<Element*, PointerComparator<Element, comparator_func>>::iterator;
+using Locator = typename multiset<Element*, PointerComparator<Element, comparator_func>>::iterator;
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator<Element, comparator_func>> locator_field>
 class SortedTree {
@@ -23,7 +25,7 @@ class SortedTree {
 
 private:
 
-    std::multiset<Element*, PointerComparator<Element, comparator_func>> s;
+    multiset<Element*, PointerComparator<Element, comparator_func>> s;
 
 public:
 

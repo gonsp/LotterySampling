@@ -4,7 +4,6 @@
 namespace SpaceSaving {
 
 
-using namespace std;
 
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
@@ -51,17 +50,10 @@ void Algorithm<T>::update_element(Element<T>& element) {
 }
 
 template<class T>
-double Algorithm<T>::get_threshold() const {
-    return threshold;
-}
-
-template<class T>
-void Algorithm<T>::print_state() {
-    for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
-        Element<T>* element = *it;
-        cout << element->id << ", " << element->get_freq() << endl; //<< ", " << element->over_estimation << endl;
-    }
-    assert(frequency_order.size() == this->sample_size());
+unordered_map<string, double> Algorithm<T>::get_custom_stats() const {
+    unordered_map<string, double> stats;
+    stats["threshold"] = threshold;
+    return stats;
 }
 
 

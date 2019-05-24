@@ -4,8 +4,6 @@
 namespace Frequent {
 
 
-using namespace std;
-
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
@@ -41,13 +39,5 @@ void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.increase_key(&element);
 }
 
-template<class T>
-void Algorithm<T>::print_state() {
-    for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
-        Element<T>* element = *it;
-        cout << element->id << ", " << element->get_freq() << endl;
-    }
-    assert(frequency_order.size() == this->sample_size());
-}
 
 }

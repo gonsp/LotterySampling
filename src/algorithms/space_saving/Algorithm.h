@@ -11,6 +11,8 @@
 namespace SpaceSaving {
 
 
+using namespace std;
+
 template<class T>
 class Algorithm : public GenericAlgorithm<Element, T, FrequencyOrder<Element<T>>> {
 
@@ -33,9 +35,7 @@ public:
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
 
-    double get_threshold() const override;
-
-    void print_state() override;
+    unordered_map<string, double> get_custom_stats() const override;
 };
 
 

@@ -8,13 +8,15 @@
 namespace SortedVector {
 
 
+using namespace std;
+
 typedef unsigned int KeyType;
 
 template<class Element>
-using Iterator = typename std::vector<Element*>::iterator;
+using Iterator = typename vector<Element*>::iterator;
 
 template<class Element>
-using IteratorConst = typename std::vector<Element*>::const_iterator;
+using IteratorConst = typename vector<Element*>::const_iterator;
 
 struct Bucket {
     KeyType key;
@@ -26,7 +28,7 @@ struct Bucket {
     }
 };
 
-typedef std::list<Bucket> BucketList;
+typedef list<Bucket> BucketList;
 
 typedef BucketList::iterator BucketListIterator;
 
@@ -34,7 +36,6 @@ struct Locator {
     unsigned int pos;
     BucketListIterator bucket_iterator;
 };
-
 
 
 template<class Element, ClassField<Element, Locator> locator_field>
@@ -48,7 +49,7 @@ class SortedVector {
 
 private:
 
-    std::vector<Element*> v;
+    vector<Element*> v;
     BucketList bucket_list;
 
     bool is_bucket_size_one(const Bucket& bucket) const;

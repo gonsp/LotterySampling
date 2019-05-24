@@ -8,8 +8,6 @@
 
 namespace BasicLotterySamplingHH {
 
-    
-using namespace std;
 
 template<class Element>
 using FrequencyOrder = SortedList::SortedList<Element, &Element::frequency_order_locator>;

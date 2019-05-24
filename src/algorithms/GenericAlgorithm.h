@@ -3,6 +3,7 @@
 
 #include <ostream>
 #include <unordered_map>
+#include <string>
 #include <list>
 
 template<class T>
@@ -24,11 +25,11 @@ public:
 
     virtual unsigned int sample_size() const = 0;
 
-    virtual double get_threshold() const { return 0; };
+    virtual std::unordered_map<std::string, double> get_custom_stats() const {
+        return std::unordered_map<std::string, double>();
+    }
 
-    virtual void print_state() {}; // For debugging purposes
-
-    virtual ~GenericAlgorithmInterface() {};
+    virtual ~GenericAlgorithmInterface() {}
 
 };
 

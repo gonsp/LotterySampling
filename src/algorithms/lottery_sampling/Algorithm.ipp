@@ -5,8 +5,6 @@
 namespace LotterySampling {
 
 
-using namespace std;
-
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
@@ -37,7 +35,6 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         if(element.ticket < ticket_order.top()->ticket) {
             return false;
         }
-
         Element<T>* removed_element = frequency_order.replace_last(&element);
         ticket_order.pop_and_push(removed_element, &element);
         this->remove_element(removed_element->id);
@@ -58,22 +55,10 @@ void Algorithm<T>::update_element(Element<T>& element) {
 }
 
 template<class T>
-double Algorithm<T>::get_threshold() const {
-    return TicketUtils::normalize_ticket(ticket_order.top()->ticket);
-}
-
-template<class T>
-void Algorithm<T>::print_state() {
-    for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
-        Element<T>* element = *it;
-        cout << element->id << ", " << element->get_freq() << ", " << TicketUtils::normalize_ticket(element->ticket);
-        if(ticket_order.is_inside(element)) {
-            cout << "*" << endl;
-        } else {
-            cout << endl;
-        }
-    }
-    assert(frequency_order.size() == this->sample_size());
+unordered_map<string, double> Algorithm<T>::get_custom_stats() const {
+    unordered_map<string, double> stats;
+    stats["threshold"] = TicketUtils::normalize_ticket(ticket_order.top()->ticket);
+    return stats;
 }
 
 

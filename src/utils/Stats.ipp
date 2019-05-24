@@ -1,7 +1,6 @@
 #include <algorithms/GenericAlgorithm.h>
 #include "Stats.h"
 
-using namespace std::chrono;
 
 Stats::Stats() {
     frequent_query_time = 0;
@@ -11,16 +10,16 @@ Stats::Stats() {
     process_element_time = 0;
     process_element_count = 0;
 
-    initial_time = high_resolution_clock::now();
+    initial_time = std::chrono::high_resolution_clock::now();
 }
 
 Stats::counter Stats::get_interval(time_point from) {
-    time_point to = high_resolution_clock::now();
-    return duration_cast<nanoseconds>(to - from).count();
+    time_point to = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(to - from).count();
 }
 
 void Stats::start_counting() {
-    start_time = high_resolution_clock::now();
+    start_time = std::chrono::high_resolution_clock::now();
 }
 
 void Stats::finish_counting(counter& counter) {
@@ -33,10 +32,13 @@ void Stats::finish_counting(counter& counter) {
 
 template<class T>
 void Stats::report(std::ostream& stream, GenericAlgorithmInterface<T>* algorithm) {
+    std::unordered_map<std::string, double> custom_stats = algorithm->get_custom_stats();
     // Python string format to build a dictionary
     stream << "{";
+    for(auto it = custom_stats.begin(); it != custom_stats.end(); ++it) {
+        stream << "'" << it->first << "': " << it->second << ",";
+    }
     stream << "'sample_size': " << algorithm->sample_size() << ",";
-    stream << "'threshold': " << algorithm->get_threshold() << ",";
     stream << "'total_exec_time': " << process_element_time << ",";
     stream << "'average_exec_time': " << double(process_element_time) / process_element_count << ",";
     stream << "'N': " << process_element_count << ",";

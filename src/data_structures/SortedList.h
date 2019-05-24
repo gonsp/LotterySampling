@@ -6,12 +6,15 @@
 
 namespace SortedList {
 
+
+using namespace std;
+
 // Internal types
 
 typedef unsigned int KeyType;
 
 template<class Element>
-using ElementList = std::list<Element*>;
+using ElementList = list<Element*>;
 
 template<class Element>
 struct Bucket {
@@ -24,13 +27,13 @@ struct Bucket {
 };
 
 template<class Element>
-using BucketList = std::list<Bucket<Element>>;
+using BucketList = list<Bucket<Element>>;
 
 
 
 
 template<class Element>
-struct Iterator : public std::iterator<std::bidirectional_iterator_tag, Element> {
+struct Iterator : public iterator<bidirectional_iterator_tag, Element> {
 
 private:
 

@@ -31,13 +31,11 @@ private:
 
 public:
 
-    Algorithm(const InputParser& parameters) : Algorithm(parameters, false) {};
+    Algorithm(const InputParser& parameters) : Algorithm(parameters, false) {}
 
     Algorithm(const InputParser& parameters, bool count_min);
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
-
-    void print_state() override;
 };
 
 

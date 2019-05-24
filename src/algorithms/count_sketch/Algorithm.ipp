@@ -5,8 +5,6 @@
 namespace CountSketch {
 
 
-using namespace std;
-
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters, bool count_min) {
     m = (unsigned int) stoul(parameters.get_parameter("-m"));
@@ -42,9 +40,9 @@ int Algorithm<T>::update_count(Element<T>& element) {
         element_counters[i] = counters[i][index];
     }
     if(count_min) {
-        return *std::min_element(element_counters.begin(), element_counters.end());
+        return *min_element(element_counters.begin(), element_counters.end());
     } else {
-        std::nth_element(element_counters.begin(), element_counters.begin() + h/2, element_counters.end());
+        nth_element(element_counters.begin(), element_counters.begin() + h/2, element_counters.end());
         return element_counters[h/2];
     }
 }
@@ -72,21 +70,6 @@ template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
     frequency_order.update_key(&element, &Element<T>::freq, element.freq + 1);
     update_count(element);
-}
-
-template<class T>
-void Algorithm<T>::print_state() {
-    for(auto it = frequency_order.begin(); it != frequency_order.end(); ++it) {
-        Element<T>* element = *it;
-        cout << element->id << ", " << element->get_freq() << endl;
-    }
-    assert(frequency_order.size() == this->sample_size());
-    for(int i = 0; i < h; ++i) {
-        for(int j = 0; j < q; ++j) {
-            cout << counters[i][j] << ", ";
-        }
-        cout << endl;
-    }
 }
 
 

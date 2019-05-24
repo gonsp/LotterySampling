@@ -7,8 +7,6 @@
 namespace BasicLotterySamplingHH {
 
 
-using namespace std;
-
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     phi = stod(parameters.get_parameter("-phi"));
@@ -69,6 +67,13 @@ void Algorithm<T>::update_element(Element<T>& element) {
         element.ticket = token;
         ticket_order.key_updated(&element);
     }
+}
+
+template<class T>
+unordered_map<string, double> Algorithm<T>::get_custom_stats() const {
+    unordered_map<string, double> stats;
+    stats["threshold"] = get_threshold();
+    return stats;
 }
 
 template<class T>

@@ -27,8 +27,6 @@ public:
     Algorithm(const InputParser& parameters);
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
-
-    void print_state() override;
 };
 
 
