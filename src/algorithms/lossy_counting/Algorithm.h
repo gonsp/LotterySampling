@@ -3,8 +3,6 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lossy_counting/Types.h"
-#include "utils/InputParser.h"
-#include <string>
 
 
 namespace LossyCounting {
@@ -24,13 +22,13 @@ private:
 
     void update_element(Element<T>& element) override;
 
-    double get_frequency_threshold(double f) const override;
-
 public:
 
     Algorithm(const InputParser& parameters);
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
+
+    double get_frequency_threshold(double f) const override;
 };
 
 

@@ -2,9 +2,9 @@
 #define _BasicLotterySamplingHH_Types_H_
 
 #include "data_structures/BinaryHeap.h"
-#include <data_structures/SortedList.h>
-#include "data_structures/SortedTree.h"
+#include "data_structures/SortedList.h"
 #include "utils/TicketUtils.h"
+
 
 namespace BasicLotterySamplingHH {
 

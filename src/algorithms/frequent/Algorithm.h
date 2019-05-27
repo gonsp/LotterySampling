@@ -3,7 +3,6 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/frequent/Types.h"
-#include "utils/InputParser.h"
 
 
 namespace Frequent {

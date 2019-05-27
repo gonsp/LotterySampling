@@ -3,8 +3,6 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling_lof/Types.h"
-#include "utils/InputParser.h"
-#include <string>
 
 
 namespace LotterySamplingLOF {

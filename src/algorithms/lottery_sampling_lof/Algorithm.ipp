@@ -1,6 +1,5 @@
 #include "algorithms/lottery_sampling_lof/Algorithm.h"
-#include "utils/TicketUtils.h"
-#include <iostream>
+
 
 namespace LotterySamplingLOF {
 

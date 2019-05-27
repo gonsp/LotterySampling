@@ -3,8 +3,8 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/basic_lottery_sampling/Types.h"
-#include "utils/InputParser.h"
 #include "utils/TicketUtils.h"
+
 
 namespace BasicLotterySampling {
 

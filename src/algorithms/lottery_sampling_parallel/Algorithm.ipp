@@ -1,10 +1,7 @@
 #include "algorithms/lottery_sampling_parallel/Algorithm.h"
-#include "utils/InputParser.h"
-#include "utils/TicketUtils.h"
-#include <iostream>
+
 
 namespace LotterySamplingParallel {
-
 
 
 template<class T>

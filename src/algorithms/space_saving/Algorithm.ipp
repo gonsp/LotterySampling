@@ -1,8 +1,7 @@
 #include "algorithms/space_saving/Algorithm.h"
-#include <iostream>
+
 
 namespace SpaceSaving {
-
 
 
 template<class T>

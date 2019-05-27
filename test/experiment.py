@@ -2,7 +2,6 @@ import copy
 import os
 import random
 import json
-import shutil
 import numpy as np
 import accuracy_metrics
 from streams import chunk_stream
@@ -13,8 +12,7 @@ from datetime import datetime
 class Experiment:
 
     def __init__(self, config_file_path):
-        self.config_file_path = config_file_path
-        self.config = self.load_config_file(config_file_path)
+        self.config, self.config_json = self.load_config_file(config_file_path)
 
         self.iterating_over = None
         self.iterations = 1
@@ -55,11 +53,12 @@ class Experiment:
 
     def load_config_file(self, config_file_path):
         with open(config_file_path) as config_file:
-            config = ""
-            for line in config_file:
-                if "//" not in line:
-                    config += line
-            return json.loads(config)
+            config_json = config_file.readlines()
+        config_json_without_comments = ""
+        for line in config_json:
+            if "//" not in line:
+                config_json_without_comments += line
+        return json.loads(config_json_without_comments), config_json
 
 
     def get_random_seed(self):
@@ -173,5 +172,6 @@ class Experiment:
                         file.write(str(x[j]) + ',' + line)
             os.remove(filename + '.tmp')
 
-        shutil.copy(self.config_file_path, folder + "config_file.json")
+        with open(folder + "config_file.json", "w") as config_file:
+            config_file.writelines(self.config_json)
 

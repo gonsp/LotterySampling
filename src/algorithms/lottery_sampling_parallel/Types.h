@@ -1,10 +1,11 @@
 #ifndef _LotterySamplingParallel_Types_H_
 #define _LotterySamplingParallel_Types_H_
 
+#include <unordered_map>
 #include "data_structures/BinaryHeap.h"
 #include "data_structures/SortedTree.h"
 #include "utils/TicketUtils.h"
-#include <unordered_map>
+
 
 namespace LotterySamplingParallel {
 

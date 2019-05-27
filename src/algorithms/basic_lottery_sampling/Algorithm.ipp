@@ -1,7 +1,5 @@
 #include "algorithms/basic_lottery_sampling/Algorithm.h"
-#include "utils/InputParser.h"
-#include "utils/TicketUtils.h"
-#include <stack>
+
 
 namespace BasicLotterySampling {
 

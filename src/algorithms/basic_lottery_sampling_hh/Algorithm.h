@@ -3,8 +3,8 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/basic_lottery_sampling_hh/Types.h"
-#include "utils/InputParser.h"
 #include "utils/TicketUtils.h"
+
 
 namespace BasicLotterySamplingHH {
 
@@ -30,8 +30,6 @@ private:
 
     void update_element(Element<T>& element) override;
 
-    double get_frequency_threshold(double f) const override;
-
     double get_threshold() const;
 
 public:
@@ -39,6 +37,8 @@ public:
     Algorithm(const InputParser& parameters);
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
+
+    double get_frequency_threshold(double f) const override;
 
     unordered_map<string, double> get_custom_stats() const override;
 };

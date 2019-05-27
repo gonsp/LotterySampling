@@ -3,7 +3,6 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling/Types.h"
-#include "utils/InputParser.h"
 #include "utils/TicketUtils.h"
 
 

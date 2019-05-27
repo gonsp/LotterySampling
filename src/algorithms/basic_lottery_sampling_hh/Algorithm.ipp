@@ -1,8 +1,6 @@
 #include "algorithms/basic_lottery_sampling_hh/Algorithm.h"
-#include "utils/InputParser.h"
-#include "utils/TicketUtils.h"
-#include "math.h"
-#include <stack>
+#include <math.h>
+
 
 namespace BasicLotterySamplingHH {
 

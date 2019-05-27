@@ -3,8 +3,8 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling_parallel/Types.h"
-#include "utils/InputParser.h"
 #include "utils/TicketUtils.h"
+
 
 namespace LotterySamplingParallel {
 

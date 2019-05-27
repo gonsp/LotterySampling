@@ -3,7 +3,6 @@
 
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/count_sketch/Types.h"
-#include "utils/InputParser.h"
 
 
 namespace CountSketch {

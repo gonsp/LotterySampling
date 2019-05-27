@@ -1,5 +1,5 @@
 #include "algorithms/frequent/Algorithm.h"
-#include <iostream>
+
 
 namespace Frequent {
 

@@ -1,8 +1,8 @@
 #ifndef _Frequent_Types_H_
 #define _Frequent_Types_H_
 
-#include "data_structures/SortedList.h"
 #include "data_structures/SortedVector.h"
+
 
 namespace Frequent {
 
