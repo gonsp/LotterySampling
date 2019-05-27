@@ -1,5 +1,4 @@
 #include "algorithms/count_sketch/Algorithm.h"
-#include <iostream>
 #include <algorithm>
 
 
@@ -12,10 +11,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters, bool count_min) {
     this->set_monitored_size(m);
     h = (unsigned int) stoul(parameters.get_parameter("-h"));
     q = (unsigned int) stoul(parameters.get_parameter("-q"));
-    if(h % 2 == 1) {
-        cerr << "h needs to be even" << endl;
-        exit(1);
-    }
+    assert(h % 2 == 1);
     this->count_min = count_min;
     counters = Counters(h, vector<int>(q, 0));
 }

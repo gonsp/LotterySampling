@@ -58,6 +58,9 @@ set(SOURCE_FILES
         src/algorithms/lossy_counting/Algorithm.h
         src/algorithms/lossy_counting/Algorithm.ipp
         src/algorithms/lossy_counting/Types.h
+        src/algorithms/sticky_sampling/Algorithm.h
+        src/algorithms/sticky_sampling/Algorithm.ipp
+        src/algorithms/sticky_sampling/Types.h
         src/algorithms/frequent/Algorithm.h
         src/algorithms/frequent/Algorithm.ipp
         src/algorithms/frequent/Types.h
