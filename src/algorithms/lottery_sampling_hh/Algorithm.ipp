@@ -1,7 +1,7 @@
-#include "algorithms/lottery_sampling_lof/Algorithm.h"
+#include "algorithms/lottery_sampling_hh/Algorithm.h"
 
 
-namespace LotterySamplingLOF {
+namespace LotterySamplingHH {
 
 
 template<class T>

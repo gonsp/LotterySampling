@@ -19,12 +19,14 @@ template<class T>
 GenericAlgorithmInterface<T>* create_algorithm_instance(const InputParser& params) {
     if(!params.has_parameter("-a") || params.get_parameter("-a") == "LotterySampling") {
         return new LotterySampling::Algorithm<T>(params);
-    } else if(params.get_parameter("-a") == "SpaceSaving") {
+    } else if(params.get_parameter("-a") == "LotterySamplingHH") {
         return new SpaceSaving::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "BasicLotterySampling") {
         return new BasicLotterySampling::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "BasicLotterySamplingHH") {
         return new BasicLotterySamplingHH::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "SpaceSaving") {
+        return new SpaceSaving::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "LotterySamplingParallel") {
         return new LotterySamplingParallel::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "Frequent") {

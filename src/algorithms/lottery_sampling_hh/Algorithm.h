@@ -1,11 +1,11 @@
-#ifndef _LotterySamplingLOF_Algorithm_H_
-#define _LotterySamplingLOF_Algorithm_H_
+#ifndef _LotterySamplingHH_Algorithm_H_
+#define _LotterySamplingHH_Algorithm_H_
 
 #include "algorithms/GenericAlgorithm.h"
-#include "algorithms/lottery_sampling_lof/Types.h"
+#include "algorithms/lottery_sampling_hh/Types.h"
 
 
-namespace LotterySamplingLOF {
+namespace LotterySamplingHH {
 
 
 template<class T>
@@ -33,6 +33,6 @@ public:
 
 }
 
-#include "algorithms/lottery_sampling_lof/Algorithm.ipp"
+#include "algorithms/lottery_sampling_hh/Algorithm.ipp"
 
 #endif //_LotterySamplingLFO_Algorithm_H_

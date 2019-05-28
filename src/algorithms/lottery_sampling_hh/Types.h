@@ -1,12 +1,12 @@
-#ifndef _LotterySamplingLOF_Types_H_
-#define _LotterySamplingLOF_Types_H_
+#ifndef _LotterySamplingHH_Types_H_
+#define _LotterySamplingHH_Types_H_
 
 #include "data_structures/BinaryHeap.h"
 #include "data_structures/SortedVector.h"
 #include "utils/TicketUtils.h"
 
 
-namespace LotterySamplingLOF {
+namespace LotterySamplingHH {
 
 
 template<class Element>
@@ -46,4 +46,4 @@ struct Element {
 
 }
 
-#endif //_LotterySamplingLOF_Types_H_
+#endif //_LotterySamplingHH_Types_H_
