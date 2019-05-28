@@ -21,6 +21,7 @@ private:
 
     TicketUtils ticket_generator;
     unsigned int m;
+    double phi;
 
     bool insert_element(Element<T>& element) override;
 
@@ -31,6 +32,8 @@ public:
     Algorithm(const InputParser& parameters);
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
+
+    double get_frequency_threshold(double f) const override;
 
     unordered_map<string, double> get_custom_stats() const override;
 };

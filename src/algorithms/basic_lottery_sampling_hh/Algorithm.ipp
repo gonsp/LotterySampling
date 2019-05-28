@@ -30,7 +30,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 
     element.ticket = ticket_generator.generate_token();
 
-    Ticket threshold = (Ticket) (get_threshold() * TicketUtils::MAX_TICKET);
+    Ticket threshold = Ticket(get_threshold() * TicketUtils::MAX_TICKET);
     if(element.ticket < threshold) {
         return false;
     }
@@ -77,6 +77,7 @@ unordered_map<string, double> Algorithm<T>::get_custom_stats() const {
 template<class T>
 double Algorithm<T>::get_threshold() const {
     double threshold = 1 - (1 / ((phi / r) * this->N));
+    assert(threshold != 1); // This could happen in very long streams due to precision errors
     return max(threshold, 0.0);
 }
 

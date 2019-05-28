@@ -2,6 +2,7 @@
 #include "utils/Stats.h"
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling/Algorithm.h"
+#include "algorithms/lottery_sampling_hh/Algorithm.h"
 #include "algorithms/basic_lottery_sampling/Algorithm.h"
 #include "algorithms/basic_lottery_sampling_hh/Algorithm.h"
 #include "algorithms/lottery_sampling_parallel/Algorithm.h"
@@ -19,12 +20,14 @@ template<class T>
 GenericAlgorithmInterface<T>* create_algorithm_instance(const InputParser& params) {
     if(!params.has_parameter("-a") || params.get_parameter("-a") == "LotterySampling") {
         return new LotterySampling::Algorithm<T>(params);
-    } else if(params.get_parameter("-a") == "SpaceSaving") {
-        return new SpaceSaving::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "LotterySamplingHH") {
+        return new LotterySamplingHH::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "BasicLotterySampling") {
         return new BasicLotterySampling::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "BasicLotterySamplingHH") {
         return new BasicLotterySamplingHH::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "SpaceSaving") {
+        return new SpaceSaving::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "LotterySamplingParallel") {
         return new LotterySamplingParallel::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "Frequent") {
