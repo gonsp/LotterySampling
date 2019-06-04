@@ -7,26 +7,30 @@ answer = questdlg('Open experiment', ...
 switch answer
     case 'Latest'
         experiment_results = dir('../test/results/');
-        last_experiment_results = experiment_results(end);
-        path = strcat(last_experiment_results.folder, '/', last_experiment_results.name, '/*.csv');
+        last_experiment = experiment_results(end);
+        experiment_path = strcat(last_experiment.folder, '/', last_experiment.name);
     case 'Choose'
-        path = strcat(uigetdir('../test/results'), '/*.csv');
+        experiment_path = uigetdir('../test/results');
     otherwise
         return
 end
 
 figure_handle = figure('units','normalized','outerposition',[0 0 1 1]);
 
-metric_result_files = dir(char(path))';
+metric_result_files = dir(char(strcat(experiment_path, '/*.csv')))';
 prev_date = metric_result_files(1).date;
 plots_by_metric = create_plots(metric_result_files);
 pause on
 while true
     while prev_date == metric_result_files(1).date
         pause(1);
-        metric_result_files = dir(char(path))';
+        metric_result_files = dir(char(strcat(experiment_path, '/*.csv')))';
         drawnow;
         if ~figure_handle.isvalid()
+            return
+        end
+        if experiment_finished(experiment_path)
+            refresh_plots(plots_by_metric, metric_result_files)
             return
         end
     end
@@ -55,6 +59,7 @@ function [plots_by_metric] = create_plots(metric_result_files)
 
         legend_plots = legend(plots, algorithm_names);
         legend_plots.Location = 'southoutside';
+        legend_plots.ItemHitFcn = @toggle_line_visibility;
 
         title(experiment_name)
         xlabel(get_column_name(data, 1));
@@ -105,4 +110,17 @@ function create_subplot(i, total_subplots)
     n = ceil(total_subplots / 3);
     m = ceil(total_subplots / n);
     subplot_tight(n, m, i);
+end
+
+function toggle_line_visibility(~, event)
+    if strcmp(event.Peer.Visible, 'on')
+        event.Peer.Visible = 'off';
+    else 
+        event.Peer.Visible = 'on';
+    end
+end
+
+function [finished] = experiment_finished(experiment_path)
+    json_files = dir(char(strcat(experiment_path, '/*.json')));
+    finished = ~contains([json_files.name], 'unfinished');
 end

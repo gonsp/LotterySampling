@@ -95,8 +95,8 @@ class Experiment:
 
         x = []
         y = []
-        self.store_results(start_time, x, y)
         for iteration in range(0, self.iterations):
+            self.store_results(start_time, x, y, finished=False)
             print('Iteration:', iteration + 1, '/', self.iterations)
 
             instances = self.create_instances(iteration)
@@ -105,11 +105,11 @@ class Experiment:
             for chunk in chunk_stream(stream, stream.length // 100):
                 for instance in instances:
                     instance.process_stream_chunk(chunk)
-                print(stream.N * 100 / stream.length, '%')
+                print(round(stream.N * 100 / stream.length, 2), '%')
                 if self.iterating_over is None:
                     x.append(stream.N)
                     y.append(self.get_metrics(instances, stream))
-                    self.store_results(start_time, x, y)
+                    self.store_results(start_time, x, y, finished=False)
 
             if self.profile is not None:
                 for instance in instances:
@@ -122,11 +122,12 @@ class Experiment:
                     value = self.config["stream"]["params"][self.iterating_over[1]][iteration]
                 x.append(value)
                 y.append(self.get_metrics(instances, stream))
-                self.store_results(start_time, x, y)
 
             if self.profile is None:
                 for instance in instances:
                     instance.finish()
+
+        self.store_results(start_time, x, y, finished=True)
 
 
     def get_metrics(self, instances, stream):
@@ -137,7 +138,7 @@ class Experiment:
                 if "get_" + metric in dir(accuracy_metrics):
                     value = getattr(accuracy_metrics, "get_" + metric)(instance, stream, self.config["query"] + "_query", self.config["query_param"])
                 elif metric == "expected_m^{th}_ticket":
-                    assert(instance.algorithm == "LotterySampling")
+                    assert(instance.algorithm.startswith("LotterySampling"))
                     elements = stream.top_k_query(instance.params["m"])
                     freq = elements[-1][1]
                     expected_ticket = 1 - 1 / (freq * stream.N + 1)
@@ -149,7 +150,7 @@ class Experiment:
         return results
 
 
-    def store_results(self, start_time, x, y):
+    def store_results(self, start_time, x, y, finished=True):
         x = np.array(x)
         y = np.array(y)
 
@@ -172,6 +173,10 @@ class Experiment:
                         file.write(str(x[j]) + ',' + line)
             os.remove(filename + '.tmp')
 
-        with open(folder + "config_file.json", "w") as config_file:
+        unfinished_experiment_config_file = folder + "unfinished_config_file.json"
+        finished_experiment_config_file = folder + "config_file.json"
+        if os.path.isfile(unfinished_experiment_config_file):
+            os.remove(unfinished_experiment_config_file)
+        with open(finished_experiment_config_file if finished else unfinished_experiment_config_file, "w") as config_file:
             config_file.writelines(self.config_json)
 

@@ -41,7 +41,7 @@ class Stream():
 
 
     def frequent_query(self, freq):
-        return [(id, count/self.N) for id, count in itertools.takewhile(lambda element: element[1] >= freq * self.N, iter(self.elements))]
+        return [(id, count/self.N) for id, count in itertools.takewhile(lambda element: element[1] >= math.ceil(freq * self.N), iter(self.elements))]
 
 
 def chunk_stream(stream, chunk_size):
@@ -54,20 +54,26 @@ def chunk_stream(stream, chunk_size):
             raise StopIteration
 
 
-class Zipf(Stream):
+class MultiZipf(Stream):
 
-    def __init__(self, length, alpha=1.5, offset=-1, seed=None, save=True):
+    def __init__(self, length, alpha=1.5, segments=2, offset=10000, seed=None, save=True):
         super().__init__(length, save)
         self.alpha = alpha
+        self.segments = segments
         self.offset = offset
         np.random.seed(seed)
 
 
     def next_element(self):
         element = np.random.zipf(self.alpha)
-        while element < self.offset:
-            element = np.random.zipf(self.alpha)
-        return element
+        element += self.offset * (self.N // (self.length / self.segments))
+        return int(element)
+
+
+class Zipf(MultiZipf):
+
+    def __init__(self, length, alpha=1.5, seed=None, save=True):
+        super().__init__(length, alpha=alpha, segments=1, seed=seed, save=save)
 
 
 class Uniform(Stream):
@@ -110,12 +116,13 @@ class File(Stream):
                     element = line[:-1]
                     self.data.append(element)
             self.data *= repetitions
-            if length == -1 or length > len(self.data):
-                length = len(self.data)
+            length = min(len(self.data), length)
             if shuffle:
                 np.random.seed(seed)
                 self.data = np.random.permutation(self.data)
         else:
+            with open(file_path, 'r') as file:
+                length = min(sum(1 for _ in file), length)
             self.data = open(file_path, 'r')
         super().__init__(length, save)
 
@@ -127,4 +134,6 @@ class File(Stream):
                 raise StopIteration
             return element
         else:
+            if self.N == len(self.data):
+                raise StopIteration
             return self.data[self.N]
