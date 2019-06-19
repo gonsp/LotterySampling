@@ -24,6 +24,12 @@ public:
 
     Token generate_token();
 
+    std::pair<bool, Token> generate_token(int leading_ones);
+
+    static void scale_ticket(Ticket& ticket, unsigned int offset);
+
+    static int get_leading_ones(const Ticket& ticket);
+
     static double normalize_ticket(const Ticket& ticket);
 
     static Ticket estimate_ticket(unsigned int count);

@@ -22,6 +22,9 @@ private:
     TicketUtils ticket_generator;
     unsigned int m;
     double phi;
+    int leading_ones;
+
+    void process_element(const T& element_id) override;
 
     bool insert_element(Element<T>& element) override;
 

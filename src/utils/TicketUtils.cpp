@@ -15,6 +15,35 @@ Token TicketUtils::generate_token() {
     return token;
 }
 
+pair<bool, Token> TicketUtils::generate_token(int leading_ones) {
+    while(leading_ones > 0) {
+        if(dist(random_state) < MAX_TICKET << (64 - min(64, leading_ones))) {
+            return pair<bool, Token>(false, 0);
+        }
+        leading_ones -= 64;
+    }
+    return pair<bool, Token>(true, dist(random_state));
+}
+
+void TicketUtils::scale_ticket(Ticket& ticket, unsigned int offset) {
+    assert(offset <= 64);
+    if(offset == 64) {
+        ticket = 0;
+    } else {
+        ticket = ticket << offset;
+    }
+}
+
+int TicketUtils::get_leading_ones(const Ticket& ticket) {
+    int leading_ones = 0;
+    uint64_t bit_mask = 1UL << 63;
+    while((ticket & bit_mask) == bit_mask && leading_ones < 64) {
+        ++leading_ones;
+        bit_mask = bit_mask | (bit_mask >> 1);
+    }
+    return leading_ones;
+}
+
 double TicketUtils::normalize_ticket(const Ticket& ticket) {
     return ticket / double(MAX_TICKET);
 }
