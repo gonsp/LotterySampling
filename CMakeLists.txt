@@ -43,6 +43,15 @@ set(SOURCE_FILES
         src/algorithms/lottery_sampling_hh/Algorithm.h
         src/algorithms/lottery_sampling_hh/Algorithm.ipp
         src/algorithms/lottery_sampling_hh/Types.h
+        src/algorithms/lottery_sampling_v2/Algorithm.h
+        src/algorithms/lottery_sampling_v2/Algorithm.ipp
+        src/algorithms/lottery_sampling_v2/Types.h
+        src/algorithms/lottery_sampling_v2_b/Algorithm.h
+        src/algorithms/lottery_sampling_v2_b/Algorithm.ipp
+        src/algorithms/lottery_sampling_v2_b/Types.h
+        src/algorithms/lottery_sampling_v2_c/Algorithm.h
+        src/algorithms/lottery_sampling_v2_c/Algorithm.ipp
+        src/algorithms/lottery_sampling_v2_c/Types.h
         src/algorithms/basic_lottery_sampling/Algorithm.h
         src/algorithms/basic_lottery_sampling/Algorithm.ipp
         src/algorithms/basic_lottery_sampling/Types.h
@@ -70,6 +79,9 @@ set(SOURCE_FILES
         src/algorithms/count_sketch/Algorithm.h
         src/algorithms/count_sketch/Algorithm.ipp
         src/algorithms/count_sketch/Types.h
+        src/algorithms/freq_obs/Algorithm.h
+        src/algorithms/freq_obs/Algorithm.ipp
+        src/algorithms/freq_obs/Types.h
         src/data_structures/BinaryHeap.h
         src/data_structures/BinaryHeap.ipp
         src/data_structures/SortedTree.h

@@ -3,6 +3,9 @@
 #include "algorithms/GenericAlgorithm.h"
 #include "algorithms/lottery_sampling/Algorithm.h"
 #include "algorithms/lottery_sampling_hh/Algorithm.h"
+#include "algorithms/lottery_sampling_v2/Algorithm.h"
+#include "algorithms/lottery_sampling_v2_b/Algorithm.h"
+#include "algorithms/lottery_sampling_v2_c/Algorithm.h"
 #include "algorithms/basic_lottery_sampling/Algorithm.h"
 #include "algorithms/basic_lottery_sampling_hh/Algorithm.h"
 #include "algorithms/basic_lottery_sampling_top_k/Algorithm.h"
@@ -12,6 +15,7 @@
 #include "algorithms/lossy_counting/Algorithm.h"
 #include "algorithms/sticky_sampling/Algorithm.h"
 #include "algorithms/count_sketch/Algorithm.h"
+#include "algorithms/freq_obs/Algorithm.h"
 #include <iostream>
 #include <string>
 
@@ -19,10 +23,16 @@ using namespace std;
 
 template<class T>
 GenericAlgorithmInterface<T>* create_algorithm_instance(const InputParser& params) {
-    if(!params.has_parameter("-a") || params.get_parameter("-a") == "LotterySampling") {
+    if(params.get_parameter("-a") == "LotterySampling") {
         return new LotterySampling::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "LotterySamplingHH") {
         return new LotterySamplingHH::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "LotterySamplingV2") {
+        return new LotterySamplingV2::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "LotterySamplingV2B") {
+        return new LotterySamplingV2B::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "LotterySamplingV2C") {
+        return new LotterySamplingV2C::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "BasicLotterySampling") {
         return new BasicLotterySampling::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "BasicLotterySamplingHH") {
@@ -43,6 +53,8 @@ GenericAlgorithmInterface<T>* create_algorithm_instance(const InputParser& param
         return new CountSketch::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "CountMin") {
         return new CountSketch::Algorithm<T>(params, true);
+    } else if(params.get_parameter("-a") == "FreqObs") {
+        return new FreqObs::Algorithm<T>(params);
     } else {
         params.error();
         return nullptr;
