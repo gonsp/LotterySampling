@@ -21,7 +21,18 @@ void SortedVector<Element, locator_field>::insert_element(Element* element) {
 }
 
 template<class Element, ClassField<Element, Locator> locator_field>
-Element* SortedVector<Element, locator_field>::replace_last(Element* element) {
+Element* SortedVector<Element, locator_field>::pop_back() {
+    Element* removed_element = v.back();
+    BucketListIterator bucket = (removed_element->*locator_field).bucket_iterator;
+    if(is_bucket_size_one(*bucket)) {
+        bucket_list.erase(bucket);
+    }
+    v.pop_back();
+    return removed_element;
+}
+
+template<class Element, ClassField<Element, Locator> locator_field>
+Element* SortedVector<Element, locator_field>::replace_back(Element* element) {
     assert(!bucket_list.empty());
     Element* removed_element = v[v.size() - 1];
     replace_element(removed_element, element);

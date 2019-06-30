@@ -61,8 +61,10 @@ public:
     SortedVector(unsigned int m);
 
     void insert_element(Element* element);
+    
+    Element* pop_back();
 
-    Element* replace_last(Element* element);
+    Element* replace_back(Element* element);
 
     void replace_element(Element* replaced_element, Element* element);
 

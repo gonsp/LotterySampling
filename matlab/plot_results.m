@@ -103,7 +103,11 @@ function [experiment_name, metric_name, data] = read_results(metric_result_file)
 end
 
 function [name] = get_column_name(data, i)
-    name = data.Properties.VariableNames(i);
+    name = data.Properties.VariableNames(i);    
+    try
+        aux = data.Properties.VariableDescriptions(name);
+        name = extractBetween(aux{1}, '''', '''');
+    end
 end
 
 function create_subplot(i, total_subplots)

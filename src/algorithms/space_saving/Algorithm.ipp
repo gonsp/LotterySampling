@@ -35,7 +35,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         if(ticket_generator.generate_token() < threshold * TicketUtils::MAX_TICKET) {
             return false;
         }
-        Element<T>* removed_element = frequency_order.replace_last(&element);
+        Element<T>* removed_element = frequency_order.replace_back(&element);
         this->remove_element(removed_element->id);
 
         frequency_order.increase_key(&element);

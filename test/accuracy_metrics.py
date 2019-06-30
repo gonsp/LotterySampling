@@ -64,7 +64,7 @@ def execute_query(instance, stream, query_name, parameter, original_order=False)
     query = getattr(instance, query_name)
     reported_elements = query(parameter)
     query = getattr(stream, query_name)
-    real_elements = [(str(id), freq) for id, freq in query(parameter)]
+    real_elements = query(parameter)
     if not original_order:
         reported_elements = dict(reported_elements)
         real_elements = dict(real_elements)

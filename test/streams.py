@@ -37,11 +37,11 @@ class Stream():
 
 
     def top_k_query(self, k):
-        return [(id, count/self.N) for id, count in itertools.islice(iter(self.elements), k)]
+        return [(str(id), count/self.N) for id, count in itertools.islice(iter(self.elements), k)]
 
 
     def frequent_query(self, freq):
-        return [(id, count/self.N) for id, count in itertools.takewhile(lambda element: element[1] >= math.ceil(freq * self.N), iter(self.elements))]
+        return [(str(id), count/self.N) for id, count in itertools.takewhile(lambda element: element[1] >= math.ceil(freq * self.N), iter(self.elements))]
 
 
 def chunk_stream(stream, chunk_size):

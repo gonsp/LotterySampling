@@ -166,7 +166,7 @@ class Experiment:
             np.savetxt(filename + '.tmp', y[:, :, i], delimiter=',')
             with open(filename + '.tmp', 'r') as csv:
                 with open(filename + '.csv', 'w') as file:
-                    algorithms = [algorithm["name"] for algorithm in self.config["algorithms"]]
+                    algorithms = [algorithm["name_csv"] if "name_csv" in algorithm else algorithm["name"] for algorithm in self.config["algorithms"]]
                     x_axis_name = "N" if self.iterating_over is None else self.iterating_over[1]
                     file.write(x_axis_name + ',' + ','.join(algorithms) + '\n')
                     for j, line in enumerate(csv):
