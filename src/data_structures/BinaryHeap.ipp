@@ -28,7 +28,7 @@ void BinaryHeap<Element, comparator_func, locator_field>::remove_element(Element
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator> locator_field>
 Element* BinaryHeap<Element, comparator_func, locator_field>::pop(Locator locator) {
     assert(locator >= 0 and locator < this->size());
-    Element* element = top();
+    Element* element = v[locator];
     if(locator == this->size() - 1) {
         v.pop_back();
     } else {
