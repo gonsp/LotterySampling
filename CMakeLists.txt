@@ -49,6 +49,9 @@ set(SOURCE_FILES
         src/algorithms/basic_lottery_sampling_hh/Algorithm.h
         src/algorithms/basic_lottery_sampling_hh/Algorithm.ipp
         src/algorithms/basic_lottery_sampling_hh/Types.h
+        src/algorithms/basic_lottery_sampling_top_k/Algorithm.h
+        src/algorithms/basic_lottery_sampling_top_k/Algorithm.ipp
+        src/algorithms/basic_lottery_sampling_top_k/Types.h
         src/algorithms/lottery_sampling_parallel/Algorithm.h
         src/algorithms/lottery_sampling_parallel/Algorithm.ipp
         src/algorithms/lottery_sampling_parallel/Types.h

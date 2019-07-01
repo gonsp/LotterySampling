@@ -5,6 +5,7 @@
 #include "algorithms/lottery_sampling_hh/Algorithm.h"
 #include "algorithms/basic_lottery_sampling/Algorithm.h"
 #include "algorithms/basic_lottery_sampling_hh/Algorithm.h"
+#include "algorithms/basic_lottery_sampling_top_k/Algorithm.h"
 #include "algorithms/lottery_sampling_parallel/Algorithm.h"
 #include "algorithms/space_saving/Algorithm.h"
 #include "algorithms/frequent/Algorithm.h"
@@ -26,6 +27,8 @@ GenericAlgorithmInterface<T>* create_algorithm_instance(const InputParser& param
         return new BasicLotterySampling::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "BasicLotterySamplingHH") {
         return new BasicLotterySamplingHH::Algorithm<T>(params);
+    } else if(params.get_parameter("-a") == "BasicLotterySamplingTopK") {
+        return new BasicLotterySamplingTopK::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "SpaceSaving") {
         return new SpaceSaving::Algorithm<T>(params);
     } else if(params.get_parameter("-a") == "LotterySamplingParallel") {
