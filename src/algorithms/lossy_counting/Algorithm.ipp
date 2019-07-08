@@ -20,31 +20,21 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     unsigned int window = (unsigned int) ceil(this->N / ceil(1 / error));
 
     if(this->sample_size() > 0) {
-        Element<T>* element_min_freq = *prev(estimated_frequency_order.end());
-        if(element_min_freq->freq + element_min_freq->over_estimation < window) {
+        Element<T>* element_min_freq = *prev(frequency_order.end());
+        if(element_min_freq->freq < window) {
             frequency_order.remove_element(element_min_freq);
-            estimated_frequency_order.remove_element(element_min_freq);
             this->remove_element(element_min_freq->id);
         }
     }
 
-    element.over_estimation = window - 1;
-    element.freq = 1;
+    element.freq = window;
     frequency_order.insert_element(&element);
-    estimated_frequency_order.insert_element(&element);
     return true;
 }
 
 template<class T>
 void Algorithm<T>::update_element(Element<T>& element) {
-    frequency_order.increase_key(&element);
-    estimated_frequency_order.update_key(&element, &Element<T>::freq, element.freq + 1);
-}
-
-template<class T>
-double Algorithm<T>::get_frequency_threshold(double f) const {
-    assert(error < f / 2);
-    return f - error;
+    frequency_order.update_key(&element, &Element<T>::freq, element.freq + 1);
 }
 
 

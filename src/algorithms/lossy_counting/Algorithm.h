@@ -14,7 +14,6 @@ class Algorithm : public GenericAlgorithm<Element, T, FrequencyOrder<Element<T>>
 private:
 
     FrequencyOrder<Element<T>> frequency_order;
-    EstimatedFrequencyOrder<Element<T>>  estimated_frequency_order;
 
     double error;
 
@@ -27,8 +26,6 @@ public:
     Algorithm(const InputParser& parameters);
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
-
-    double get_frequency_threshold(double f) const override;
 };
 
 
