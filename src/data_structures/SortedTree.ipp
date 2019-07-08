@@ -25,6 +25,11 @@ void SortedTree<Element, comparator_func, locator_field>::update_key(Element* el
 }
 
 template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator<Element, comparator_func>> locator_field>
+Element* SortedTree<Element, comparator_func, locator_field>::back() {
+    return *prev(end());
+}
+
+template<class Element, ComparatorFunction<Element> comparator_func, ClassField<Element, Locator<Element, comparator_func>> locator_field>
 Iterator<Element, comparator_func> SortedTree<Element, comparator_func, locator_field>::begin() {
     return s.rbegin();
 }

@@ -97,7 +97,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
 }
 
 template<class T>
-unordered_map<string, double> Algorithm<T>::get_custom_stats() const {
+unordered_map<string, double> Algorithm<T>::get_custom_stats() {
     unordered_map<string, double> stats;
     stats["threshold"] = TicketUtils::normalize_ticket(level_1.top()->ticket);
     return stats;

@@ -53,7 +53,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
     element.freq++;
 
     if(ticket_order.is_inside(&element)) {
-        if(element.freq > (*prev(frequency_order.end()))->freq) {
+        if(element.freq > frequency_order.back()->freq) {
             Element<T>* replaced_element = frequency_order.replace_back(&element);
             ticket_order.pop_and_push(&element, replaced_element);
         } else if(token > element.ticket) {
@@ -72,13 +72,13 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
 template<class T>
 double Algorithm<T>::get_threshold() const {
-    double threshold = 1 - (1 / ((*prev(frequency_order.end()))->get_freq() / r));
+    double threshold = 1 - (1 / (frequency_order.back()->get_freq() / r));
     assert(threshold < 1); // This could happen in very long streams due to precision errors
     return max(threshold, 0.0);
 }
 
 template<class T>
-unordered_map<string, double> Algorithm<T>::get_custom_stats() const {
+unordered_map<string, double> Algorithm<T>::get_custom_stats() {
     unordered_map<string, double> stats;
     if(this->sample_size() < k) {
         stats["threshold"] = 0;

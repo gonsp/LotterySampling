@@ -97,7 +97,7 @@ double Algorithm<T>::get_frequency_threshold(double f) const {
 }
 
 template<class T>
-unordered_map<string, double> Algorithm<T>::get_custom_stats() const {
+unordered_map<string, double> Algorithm<T>::get_custom_stats() {
     unordered_map<string, double> stats;
     if(phi == -1) {
         stats["threshold"] = this->sample_size() > 0 ? TicketUtils::normalize_ticket(ticket_order.top()->ticket) : 0;

@@ -34,7 +34,7 @@ public:
 
     double get_frequency_threshold(double f) const override;
 
-    unordered_map<string, double> get_custom_stats() const override;
+    unordered_map<string, double> get_custom_stats() override;
 };
 
 

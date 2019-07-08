@@ -25,7 +25,7 @@ public:
 
     virtual unsigned int sample_size() const = 0;
 
-    virtual std::unordered_map<std::string, double> get_custom_stats() const {
+    virtual std::unordered_map<std::string, double> get_custom_stats() {
         return std::unordered_map<std::string, double>();
     }
 

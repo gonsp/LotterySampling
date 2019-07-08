@@ -36,7 +36,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
             return false;
         }
 
-        Element<T>* element_min_freq = *prev(frequency_order.end());
+        Element<T>* element_min_freq = frequency_order.back();
         frequency_order.remove_element(element_min_freq);
         this->remove_element(element_min_freq->id);
 
@@ -57,7 +57,7 @@ double Algorithm<T>::get_frequency_threshold(double f) const {
 }
 
 template<class T>
-unordered_map<string, double> Algorithm<T>::get_custom_stats() const {
+unordered_map<string, double> Algorithm<T>::get_custom_stats() {
     unordered_map<string, double> stats;
     stats["threshold"] = TicketUtils::normalize_ticket(TicketUtils::estimate_ticket(floor(phi * this->N)));
     return stats;

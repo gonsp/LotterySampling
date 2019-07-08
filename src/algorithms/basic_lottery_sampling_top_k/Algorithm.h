@@ -36,7 +36,7 @@ public:
 
     FrequencyOrder<Element<T>>& get_frequency_order() override;
 
-    unordered_map<string, double> get_custom_stats() const override;
+    unordered_map<string, double> get_custom_stats() override;
 };
 
 

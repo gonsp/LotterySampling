@@ -50,6 +50,11 @@ Element* SortedList<Element, locator_field>::replace_back(Element* element) {
 }
 
 template<class Element, ClassField<Element, Locator<Element>> locator_field>
+Element* SortedList<Element, locator_field>::back() {
+    return *prev(end());
+}
+
+template<class Element, ClassField<Element, Locator<Element>> locator_field>
 void SortedList<Element, locator_field>::increase_key(Element* element) {
     Iterator<Element>& iterator = element->*locator_field;
     int new_key = iterator.bucket_iterator->key + 1;

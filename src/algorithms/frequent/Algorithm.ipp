@@ -21,7 +21,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     if(this->sample_size() < m) {
         frequency_order.insert_element(&element);
     } else {
-        bool is_inserted = (*prev(frequency_order.end()))->get_freq() == offset;
+        bool is_inserted = (frequency_order.back())->get_freq() == offset;
         if(!is_inserted) {
             ++offset;
             return false;

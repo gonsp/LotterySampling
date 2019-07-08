@@ -20,7 +20,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     unsigned int window = (unsigned int) ceil(this->N / ceil(1 / error));
 
     if(this->sample_size() > 0) {
-        Element<T>* element_min_freq = *prev(frequency_order.end());
+        Element<T>* element_min_freq = frequency_order.back();
         if(element_min_freq->freq < window) {
             frequency_order.remove_element(element_min_freq);
             this->remove_element(element_min_freq->id);

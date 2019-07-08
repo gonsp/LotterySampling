@@ -51,7 +51,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     if(this->sample_size() < m) {
         frequency_order.insert_element(&element);
     } else {
-        Element<T>* removed_element = *prev(frequency_order.end());
+        Element<T>* removed_element = frequency_order.back();
         bool is_inserted = removed_element->get_freq() < element.get_freq();
         if(!is_inserted) {
             return false;

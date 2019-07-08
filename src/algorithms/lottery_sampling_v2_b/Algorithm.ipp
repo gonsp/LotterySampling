@@ -28,7 +28,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
         frequency_order.insert_element(&element);
     } else { // Max number of monitored elements is reached. This new one may replace the one with less f'
 
-        Ticket threshold = TicketUtils::estimate_ticket((*prev(frequency_order.end()))->get_freq());
+        Ticket threshold = TicketUtils::estimate_ticket(frequency_order.back()->get_freq());
 
         if(ticket_generator.generate_token() < threshold) {
             return false;
@@ -48,12 +48,12 @@ void Algorithm<T>::update_element(Element<T>& element) {
 }
 
 template<class T>
-unordered_map<string, double> Algorithm<T>::get_custom_stats() const {
+unordered_map<string, double> Algorithm<T>::get_custom_stats() {
     unordered_map<string, double> stats;
     if(this->sample_size() < m) {
         stats["threshold"] = 0;
     } else {
-        stats["threshold"] = TicketUtils::normalize_ticket(TicketUtils::estimate_ticket((*prev(frequency_order.end()))->get_freq()));
+        stats["threshold"] = TicketUtils::normalize_ticket(TicketUtils::estimate_ticket(frequency_order.back()->get_freq()));
     }
     return stats;
 }

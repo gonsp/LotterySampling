@@ -36,6 +36,8 @@ public:
     template<class KeyType, class Field>
     void update_key(Element* element, Field key_field, KeyType new_key);
 
+    Element* back();
+
     unsigned long size() const;
 
     Iterator<Element, comparator_func> begin();

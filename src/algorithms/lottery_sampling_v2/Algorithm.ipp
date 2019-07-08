@@ -39,7 +39,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
 
         element.freq = max_k_th_f_obs + 1;
 
-        Element<T>* removed_element = *prev(frequency_order.end());
+        Element<T>* removed_element = frequency_order.back();
         frequency_order.remove_element(removed_element);
         obs_frequency_order.remove_element(removed_element);
         this->remove_element(removed_element->id);
@@ -68,7 +68,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
 }
 
 template<class T>
-unordered_map<string, double> Algorithm<T>::get_custom_stats() const {
+unordered_map<string, double> Algorithm<T>::get_custom_stats() {
     unordered_map<string, double> stats;
     if(this->sample_size() < m) {
         stats["threshold"] = 0;
