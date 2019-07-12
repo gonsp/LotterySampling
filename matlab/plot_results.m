@@ -15,9 +15,12 @@ switch answer
         return
 end
 
-figure_handle = figure('units','normalized','outerposition',[0 0 1 1]);
+figure_handle = figure('units', 'normalized', 'outerposition', [0 0 1 1]);
 
-metric_result_files = dir(char(strcat(experiment_path, '/*.csv')))';
+metric_result_files = [];
+while isempty(metric_result_files)
+    metric_result_files = dir(char(strcat(experiment_path, '/*.csv')))';
+end
 prev_date = metric_result_files(1).date;
 plots_by_metric = create_plots(metric_result_files);
 pause on
@@ -43,7 +46,7 @@ function [plots_by_metric] = create_plots(metric_result_files)
     plots_by_metric = {};
     for metric_result_file = metric_result_files
     
-        [experiment_name, metric_name, data] = read_results(metric_result_file);
+        [metric_name, data] = read_results(metric_result_file);
 
         plots = [];
         algorithm_names = {};
@@ -61,11 +64,13 @@ function [plots_by_metric] = create_plots(metric_result_files)
         legend_plots.Location = 'southoutside';
         legend_plots.ItemHitFcn = @toggle_line_visibility;
 
-        title(experiment_name)
         xlabel(get_column_name(data, 1));
         ylabel(metric_name)
         if strcmp(metric_name, 'Recall') || strcmp(metric_name, 'Precision') || strcmp(metric_name, 'Weighted recall')
             ylim([0, 1])
+        end
+        if strcmp(metric_name, 'Sample size')
+            ylim([0, inf])
         end
 
         set(findall(gca, 'Type', 'Line'),'LineWidth',1);
@@ -80,7 +85,7 @@ end
 function refresh_plots(plots_by_metric, metric_result_files)
     i = 1;
     for metric_result_file = metric_result_files
-        [~, ~, data] = read_results(metric_result_file);
+        [~, data] = read_results(metric_result_file);
                     
         plots = plots_by_metric{i};
         for algorithm_index = 2 : size(data, 2)
@@ -93,10 +98,8 @@ function refresh_plots(plots_by_metric, metric_result_files)
     drawnow;
 end
 
-function [experiment_name, metric_name, data] = read_results(metric_result_file)
-    experiment_name = extractBefore(extractAfter(metric_result_file.name, '-'), '.');
-    metric_name = extractBefore(metric_result_file.name, '-');
-    metric_name = strrep(metric_name, '_', ' ');
+function [metric_name, data] = read_results(metric_result_file)
+    metric_name = strrep(extractBefore(metric_result_file.name, '.'), '_', ' ');
     metric_name(1) = upper(metric_name(1));
     path = strcat(metric_result_file.folder, '/', metric_result_file.name);
     data = readtable(path);
@@ -106,7 +109,9 @@ function [name] = get_column_name(data, i)
     name = data.Properties.VariableNames(i);    
     try
         aux = data.Properties.VariableDescriptions(name);
-        name = extractBetween(aux{1}, '''', '''');
+        if ~isempty(aux{1})
+            name = extractBetween(aux{1}, '''', '''');
+        end
     end
 end
 

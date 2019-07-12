@@ -21,7 +21,8 @@
   // Arbitrary amount of metrics. However there are two restraints:
   // 1- In case there is a profiler metric, there can't be any other metric.
   // 2- To use a profiler metric, some parameter needs to be a list like above.
-  "metrics": ["average_exec_time", "threshold", "top_k_query_time"],
+  // It's possible to join in a list of metrics two or more so they are stored in a single plot (csv file).
+  "metrics": ["average_exec_time", ["threshold", "E[T_k]"], "top_k_query_time"],
   "stream": {
     "name": "Zipf",
     "params": {

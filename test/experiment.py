@@ -1,12 +1,8 @@
-import copy
-import os
-import random
 import json
-import numpy as np
-import accuracy_metrics
+import copy
 from streams import chunk_stream
 from instance import Instance
-from datetime import datetime
+from metrics_builder import MetricsBuilder
 
 
 class Experiment:
@@ -91,12 +87,9 @@ class Experiment:
 
 
     def run(self):
-        start_time = datetime.now()
+        metrics = MetricsBuilder("N" if self.iterating_over is None else self.iterating_over[1], self.config["metrics"])
 
-        x = []
-        y = []
         for iteration in range(0, self.iterations):
-            self.store_results(start_time, x, y, finished=False)
             print('Iteration:', iteration + 1, '/', self.iterations)
 
             instances = self.create_instances(iteration)
@@ -107,9 +100,8 @@ class Experiment:
                     instance.process_stream_chunk(chunk)
                 print(round(stream.N * 100 / stream.length, 2), '%')
                 if self.iterating_over is None:
-                    x.append(stream.N)
-                    y.append(self.get_metrics(instances, stream))
-                    self.store_results(start_time, x, y, finished=False)
+                    metrics.capture(stream.N, instances, stream, self.config)
+                    metrics.save(self.config_json, finished=False)
 
             if self.profile is not None:
                 for instance in instances:
@@ -117,66 +109,14 @@ class Experiment:
 
             if self.iterating_over is not None:
                 if self.iterating_over[0] == "algorithms":
-                    value = next(iter(self.config["algorithms"]))["params"][self.iterating_over[1]][iteration]
+                    x = next(iter(self.config["algorithms"]))["params"][self.iterating_over[1]][iteration]
                 else:
-                    value = self.config["stream"]["params"][self.iterating_over[1]][iteration]
-                x.append(value)
-                y.append(self.get_metrics(instances, stream))
+                    x = self.config["stream"]["params"][self.iterating_over[1]][iteration]
+                metrics.capture(x, instances, stream, self.config)
+                metrics.save(self.config_json, finished=False)
 
             if self.profile is None:
                 for instance in instances:
                     instance.finish()
 
-        self.store_results(start_time, x, y, finished=True)
-
-
-    def get_metrics(self, instances, stream):
-        results = []
-        for instance in instances:
-            values = []
-            for metric in self.config["metrics"]:
-                if "get_" + metric in dir(accuracy_metrics):
-                    value = getattr(accuracy_metrics, "get_" + metric)(instance, stream, self.config["query"] + "_query", self.config["query_param"])
-                elif metric == "expected_m^{th}_ticket":
-                    assert(instance.algorithm.startswith("LotterySampling"))
-                    elements = stream.top_k_query(instance.params["m"])
-                    freq = elements[-1][1]
-                    expected_ticket = 1 - 1 / (freq * stream.N + 1)
-                    value = expected_ticket
-                else:
-                    value = instance.get_stats()[metric]
-                values.append(value)
-            results.append(values)
-        return results
-
-
-    def store_results(self, start_time, x, y, finished=True):
-        x = np.array(x)
-        y = np.array(y)
-
-        if y.size == 0:
-            x = [0]
-            y = np.zeros((1, len(self.config["algorithms"]), len(self.config["metrics"])))
-
-        folder = "results/" + start_time.strftime('%Y-%m-%d-%H:%M:%S') + "/"
-        os.makedirs(folder, exist_ok=True)
-
-        for i, metric in enumerate(self.config["metrics"]):
-            filename = folder + metric + '-' + self.config["name"]
-            np.savetxt(filename + '.tmp', y[:, :, i], delimiter=',')
-            with open(filename + '.tmp', 'r') as csv:
-                with open(filename + '.csv', 'w') as file:
-                    algorithms = [algorithm["name_csv"] if "name_csv" in algorithm else algorithm["name"] for algorithm in self.config["algorithms"]]
-                    x_axis_name = "N" if self.iterating_over is None else self.iterating_over[1]
-                    file.write(x_axis_name + ',' + ','.join(algorithms) + '\n')
-                    for j, line in enumerate(csv):
-                        file.write(str(x[j]) + ',' + line)
-            os.remove(filename + '.tmp')
-
-        unfinished_experiment_config_file = folder + "unfinished_config_file.json"
-        finished_experiment_config_file = folder + "config_file.json"
-        if os.path.isfile(unfinished_experiment_config_file):
-            os.remove(unfinished_experiment_config_file)
-        with open(finished_experiment_config_file if finished else unfinished_experiment_config_file, "w") as config_file:
-            config_file.writelines(self.config_json)
-
+        metrics.save(self.config_json, finished=True)
