@@ -9,7 +9,8 @@ namespace BasicLotterySamplingTopK {
 template<class T>
 Algorithm<T>::Algorithm(const InputParser& parameters) {
     k = (unsigned int) stoul(parameters.get_parameter("-k"));
-    r = stod(parameters.get_parameter("-r"));
+    delta = stod(parameters.get_parameter("-delta"));
+    r = log(k/delta);
     int seed;
     if(parameters.has_parameter("-seed")) {
         seed = stoi(parameters.get_parameter("-seed"));
@@ -72,7 +73,7 @@ void Algorithm<T>::update_element(Element<T>& element) {
 
 template<class T>
 double Algorithm<T>::get_threshold() const {
-    double threshold = 1 - (1 / (frequency_order.back()->get_freq() / r));
+    double threshold = 1 - ((2 * r) / frequency_order.back()->get_freq());
     assert(threshold < 1); // This could happen in very long streams due to precision errors
     return max(threshold, 0.0);
 }

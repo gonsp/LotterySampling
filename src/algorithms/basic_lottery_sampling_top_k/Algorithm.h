@@ -20,6 +20,7 @@ private:
     mutable FrequencyOrder<Element<T>> frequency_order;
 
     unsigned int k;
+    double delta;
     double r;
 
     TicketUtils ticket_generator;

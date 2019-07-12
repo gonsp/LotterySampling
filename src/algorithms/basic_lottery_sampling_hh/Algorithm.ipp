@@ -10,7 +10,7 @@ Algorithm<T>::Algorithm(const InputParser& parameters) {
     phi = stod(parameters.get_parameter("-phi"));
     delta = stod(parameters.get_parameter("-delta"));
     error = stod(parameters.get_parameter("-error"));
-    r = phi/error * log(1/(phi * delta));
+    r = log(1/(phi * delta));
     int seed;
     if(parameters.has_parameter("-seed")) {
         seed = stoi(parameters.get_parameter("-seed"));
@@ -76,7 +76,7 @@ unordered_map<string, double> Algorithm<T>::get_custom_stats() {
 
 template<class T>
 double Algorithm<T>::get_threshold() const {
-    double threshold = 1 - (1 / ((phi / r) * this->N));
+    double threshold = 1 - (r / (error * this->N));
     assert(threshold < 1); // This could happen in very long streams due to precision errors
     return max(threshold, 0.0);
 }
