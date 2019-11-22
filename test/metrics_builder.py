@@ -1,5 +1,4 @@
 import os
-import math
 import numpy as np
 from datetime import datetime
 import accuracy_metrics
@@ -32,12 +31,6 @@ class MetricsBuilder:
                 elif metric == "E[T_k]":
                     assert(config["query"] == "top_k")
                     add_value(metric, 1 - (1 / (stream.top_k_query(config["query_param"])[-1][1] * stream.N + 1)))
-                elif metric == "1 - 1/f(x_k)":
-                    assert(config["query"] == "top_k")
-                    add_value(metric, max(1 - (1 / (stream.top_k_query(config["query_param"])[-1][1] * stream.N)), 0))
-                elif metric == "1 - 2r/f(x_k)":
-                    assert(config["query"] == "top_k")
-                    add_value(metric, max(1 - (2*math.log(config["query_param"] / 0.1) / (stream.top_k_query(config["query_param"])[-1][1] * stream.N)), 0))
                 else:
                     for i, instance in enumerate(instances):
                         algorithm = config["algorithms"][i]

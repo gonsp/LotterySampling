@@ -137,3 +137,22 @@ class File(Stream):
             if self.N == len(self.data):
                 raise StopIteration
             return self.data[self.N]
+
+
+class ZipfNoiseZipf(Stream):
+
+    def __init__(self, length, alpha=1.5, noise=0.3, offset=10000, seed=None, save=True):
+        super().__init__(length, save)
+        self.alpha = alpha
+        self.noise = noise
+        self.offset = offset
+        np.random.seed(seed)
+
+
+    def next_element(self):
+        if self.N < self.length * (1 - self.noise) // 2:
+            return int(np.random.zipf(self.alpha))
+        elif self.N < self.length - self.length * (1 - self.noise) // 2:
+            return self.N
+        else:
+            return int(np.random.zipf(self.alpha) + self.offset)
