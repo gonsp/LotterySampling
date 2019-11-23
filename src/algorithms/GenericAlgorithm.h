@@ -1,7 +1,6 @@
 #ifndef _GenericAlgorithm_H_
 #define _GenericAlgorithm_H_
 
-#include <ostream>
 #include <unordered_map>
 #include <string>
 #include <list>
@@ -17,9 +16,9 @@ class GenericAlgorithmInterface {
 
 public:
 
-    virtual QueryResults<T> frequent_query(double f, std::ostream& stream) = 0;
+    virtual QueryResults<T> frequent_query(double f) = 0;
 
-    virtual QueryResults<T> top_k_query(int k, std::ostream& stream) = 0;
+    virtual QueryResults<T> top_k_query(int k) = 0;
 
     virtual void process_element(const T& element_id) = 0;
 
@@ -65,9 +64,9 @@ public:
 
     unsigned int sample_size() const override;
 
-    QueryResults<T> frequent_query(double f, std::ostream& stream) override;
+    virtual QueryResults<T> frequent_query(double f) override;
 
-    QueryResults<T> top_k_query(int k, std::ostream& stream) override;
+    virtual QueryResults<T> top_k_query(int k) override;
 
 };
 

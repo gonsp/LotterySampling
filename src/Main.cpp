@@ -84,13 +84,13 @@ int main(int num_args, char* args[]) {
                 double freq;
                 cin >> freq;
                 stats.start_frequent_query();
-                print_results(algorithm->frequent_query(freq, cout));
+                print_results(algorithm->frequent_query(freq));
                 stats.end_frequent_query();
             } else if(s == ":k") { // k-top frequent elements query
                 int k;
                 cin >> k;
                 stats.start_top_k_query();
-                print_results(algorithm->top_k_query(k, cout));
+                print_results(algorithm->top_k_query(k));
                 stats.end_top_k_query();
             }
             cout << ":end" << endl;

@@ -24,7 +24,7 @@ void GenericAlgorithm<Element, T, FrequencyOrder>::process_element(const T& elem
 }
 
 template<template<typename> class Element, class T, class FrequencyOrder>
-QueryResults<T> GenericAlgorithm<Element, T, FrequencyOrder>::frequent_query(double f, std::ostream& stream) {
+QueryResults<T> GenericAlgorithm<Element, T, FrequencyOrder>::frequent_query(double f) {
     QueryResults<T> results;
     for(auto it = get_frequency_order().begin(); it != get_frequency_order().end() && (*it)->get_freq() >= ceil(get_frequency_threshold(f) * N); ++it) {
         Element<T>* element = *it;
@@ -34,7 +34,7 @@ QueryResults<T> GenericAlgorithm<Element, T, FrequencyOrder>::frequent_query(dou
 }
 
 template<template<typename> class Element, class T, class FrequencyOrder>
-QueryResults<T> GenericAlgorithm<Element, T, FrequencyOrder>::top_k_query(int k, std::ostream& stream) {
+QueryResults<T> GenericAlgorithm<Element, T, FrequencyOrder>::top_k_query(int k) {
     QueryResults<T> results;
     for(auto it = get_frequency_order().begin(); it != get_frequency_order().end() && k-- > 0; ++it) {
         Element<T>* element = *it;
