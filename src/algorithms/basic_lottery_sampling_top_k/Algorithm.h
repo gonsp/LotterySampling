@@ -16,14 +16,18 @@ class Algorithm : public GenericAlgorithm<Element, T, FrequencyOrder<Element<T>>
 
 private:
 
-    mutable TicketOrder<Element<T>> ticket_order;
     mutable FrequencyOrder<Element<T>> frequency_order;
+    mutable TicketOrder<Element<T>> ticket_order;
 
     unsigned int k;
     double delta;
+    double error;
     double r;
 
     TicketUtils ticket_generator;
+
+    int k_th_freq_obs;
+    int prev_count;
 
     bool insert_element(Element<T>& element) override;
 
@@ -38,6 +42,8 @@ public:
     FrequencyOrder<Element<T>>& get_frequency_order() override;
 
     unordered_map<string, double> get_custom_stats() override;
+
+    QueryResults<T> top_k_query(int k) override;
 };
 
 

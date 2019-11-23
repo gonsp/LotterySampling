@@ -85,6 +85,8 @@ public:
 
     void insert_element(Element* element);
 
+    void insert_element(Element* element, typename BucketList<Element>::iterator bucket);
+
     void remove_element(Element* element);
 
     Element* pop_back();

@@ -10,8 +10,13 @@ void SortedList<Element, locator_field>::insert_element(Element* element) {
         // There are no buckets or the smallest one has key greater than 1
         bucket_list.emplace_back(1);
     }
+    insert_element(element, prev(bucket_list.end()));
+}
+
+template<class Element, ClassField<Element, Locator<Element>> locator_field>
+void SortedList<Element, locator_field>::insert_element(Element* element, typename BucketList<Element>::iterator bucket) {
     Iterator<Element> iterator = Iterator<Element>(&bucket_list);
-    iterator.bucket_iterator = prev(bucket_list.end());
+    iterator.bucket_iterator = bucket;
     iterator.bucket_iterator->elements.emplace_front(element);
     iterator.element_iterator = iterator.bucket_iterator->elements.begin();
     element->*locator_field = iterator;
