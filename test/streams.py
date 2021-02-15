@@ -51,7 +51,7 @@ def chunk_stream(stream, chunk_size):
         if len(chunk) > 0:
             yield chunk
         else:
-            raise StopIteration
+            return None
 
 
 class MultiZipf(Stream):

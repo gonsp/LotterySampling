@@ -25,9 +25,9 @@ class MetricsBuilder:
                 index += 1
 
             for metric in metric_group:
-                if metric == "f(x_k)":
+                if metric == "p(x_k)":
                     assert(config["query"] == "top_k")
-                    add_value(metric, stream.top_k_query(config["query_param"])[-1][1] * stream.N)
+                    add_value(metric, stream.top_k_query(config["query_param"])[-1][1])
                 elif metric == "E[T_k]":
                     assert(config["query"] == "top_k")
                     add_value(metric, 1 - (1 / (stream.top_k_query(config["query_param"])[-1][1] * stream.N + 1)))
