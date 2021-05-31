@@ -43,9 +43,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
             return false;
         }
 
-        for(int i = 0; !ticket_order.empty() && ticket_order.top()->ticket < threshold && i < 2; ++i) {
-            this->remove_element(ticket_order.pop()->id);
-        }
+        purge_sample(false);
 
         ticket_order.push(&element);
         frequency_order.insert_element(&element);
@@ -85,6 +83,16 @@ void Algorithm<T>::update_element(Element<T>& element) {
         if(token > element.ticket) {
             element.ticket = token;
         }
+    }
+
+    purge_sample(false);
+}
+
+template<class T>
+void Algorithm<T>::purge_sample(bool lazy_removal) {
+    Ticket threshold = Ticket(get_threshold() * TicketUtils::MAX_TICKET);
+    for(int i = 0; !ticket_order.empty() && ticket_order.top()->ticket < threshold && (!lazy_removal || i < 2); ++i) {
+        this->remove_element(ticket_order.pop()->id);
     }
 }
 

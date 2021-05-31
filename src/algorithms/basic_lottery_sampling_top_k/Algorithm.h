@@ -33,6 +33,8 @@ private:
 
     void update_element(Element<T>& element) override;
 
+    void purge_sample(bool lazy_removal);
+
     double get_threshold() const;
 
 public:

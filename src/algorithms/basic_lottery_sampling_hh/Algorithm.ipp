@@ -38,18 +38,7 @@ bool Algorithm<T>::insert_element(Element<T>& element) {
     frequency_order.insert_element(&element);
     ticket_order.push(&element);
 
-    if(this->sample_size() > 0) {
-        for(int i = 0; i < 2; ++i) {
-            Element<T>* element_min_ticket = ticket_order.top();
-            if(element_min_ticket->ticket < threshold) {
-                frequency_order.remove_element(element_min_ticket);
-                ticket_order.pop();
-                this->remove_element(element_min_ticket->id);
-            } else {
-                break;
-            }
-        }
-    }
+    purge_sample(false);
 
     return true;
 }
@@ -64,6 +53,17 @@ void Algorithm<T>::update_element(Element<T>& element) {
     if(token > element.ticket) {
         element.ticket = token;
         ticket_order.key_updated(&element);
+    }
+
+    purge_sample(false);
+}
+
+template<class T>
+void Algorithm<T>::purge_sample(bool lazy_removal) {
+    Ticket threshold = Ticket(get_threshold() * TicketUtils::MAX_TICKET);
+    for(int i = 0; !ticket_order.empty() && ticket_order.top()->ticket < threshold && (!lazy_removal || i < 2); ++i) {
+        frequency_order.remove_element(ticket_order.top());
+        this->remove_element(ticket_order.pop()->id);
     }
 }
 
