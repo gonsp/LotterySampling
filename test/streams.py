@@ -156,3 +156,18 @@ class ZipfNoiseZipf(Stream):
             return self.N
         else:
             return int(np.random.zipf(self.alpha) + self.offset)
+
+
+
+class ESA(Stream):
+
+    def __init__(self, length, seed=None, save=True):
+        super().__init__(length, save)
+        np.random.seed(seed)
+
+
+    def next_element(self):
+        if self.N < self.length // 2:
+            return self.N // 2
+        else:
+            return self.length

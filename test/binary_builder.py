@@ -10,6 +10,7 @@ class BinaryBuilder():
     _is_repository_freshly_cloned = False
 
     def build(self, commit=None, profile=None):
+        return '../bin/heavy_hitters'
         compilation_config = 'release' if profile is None else 'debug'
         if commit is None:
             if BinaryBuilder._current_version_executable_path is None:
